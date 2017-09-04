@@ -1,0 +1,18 @@
+[submodule "elastest-torm"]
+	path = elastest-torm
+	url = https://github.com/elastest/elastest-torm.git
+[submodule "elastest-data-manager"]
+	path = elastest-data-manager
+	url = https://github.com/elastest/elastest-data-manager.git
+[submodule "elastest-service-manager"]
+	path = elastest-service-manager
+	url = https://github.com/elastest/elastest-service-manager.git
+[submodule "elastest-instrumentation-manager"]
+	path = elastest-instrumentation-manager
+	url = https://github.com/elastest/elastest-instrumentation-manager.git
+[submodule "elastest-platform-manager"]
+	path = elastest-platform-manager
+	url = https://github.com/elastest/elastest-platform-manager.git
+[submodule "elastest-monitoring-platform"]
+	path = elastest-monitoring-platform
+	url = https://github.com/elastest/elastest-monitoring-platform.git
