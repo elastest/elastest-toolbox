@@ -31,3 +31,6 @@
 [submodule "elastest-bigdata-service"]
 	path = elastest-bigdata-service
 	url = https://github.com/elastest/elastest-bigdata-service.git
+[submodule "elastest-cost-engine"]
+	path = elastest-cost-engine
+	url = https://github.com/elastest/elastest-cost-engine.git
