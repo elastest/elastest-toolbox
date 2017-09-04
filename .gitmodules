@@ -16,3 +16,18 @@
 [submodule "elastest-monitoring-platform"]
 	path = elastest-monitoring-platform
 	url = https://github.com/elastest/elastest-monitoring-platform.git
+[submodule "elastest-user-emulator-service"]
+	path = elastest-user-emulator-service
+	url = https://github.com/elastest/elastest-user-emulator-service.git
+[submodule "elastest-device-emulator-service"]
+	path = elastest-device-emulator-service
+	url = https://github.com/elastest/elastest-device-emulator-service.git
+[submodule "elastest-security-service"]
+	path = elastest-security-service
+	url = https://github.com/elastest/elastest-security-service.git
+[submodule "elastest-monitoring-service"]
+	path = elastest-monitoring-service
+	url = https://github.com/elastest/elastest-monitoring-service.git
+[submodule "elastest-bigdata-service"]
+	path = elastest-bigdata-service
+	url = https://github.com/elastest/elastest-bigdata-service.git
