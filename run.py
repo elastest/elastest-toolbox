@@ -11,8 +11,9 @@ else:
 """
 
 #Temporally dockerCommand:
+
 if (len(sys.argv) > 1 and sys.argv[1] == 'noetm'):
-	dockerCommand = 'docker-compose -f elastest-data-manager/deploy/docker-compose.yml -f elastest-service-manager/deploy/docker-compose.yml -p elastest up'
+	dockerCommand = 'docker-compose -f elastest-data-manager/deploy/docker-compose.yml -f elastest-torm/deploy/docker-compose-dev.yml -f elastest-service-manager/deploy/docker-compose.yml -p elastest up'
 
 else:
 	dockerCommand = 'docker-compose -f elastest-data-manager/deploy/docker-compose.yml -f elastest-torm/deploy/docker-compose.yml -f elastest-service-manager/deploy/docker-compose.yml -p elastest up'
