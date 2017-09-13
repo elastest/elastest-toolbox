@@ -23,7 +23,13 @@ COPY run.py /elastest-toolbox/run.py
 
 COPY down.py /elastest-toolbox/down.py
 
+COPY init.sh /elastest-toolbox/init.sh
+
 RUN chmod 777 /elastest-toolbox/run.py
+
+RUN chmod 777 /elastest-toolbox/down.py
+
+RUN chmod 777 /elastest-toolbox/init.sh
 
 
 
@@ -37,4 +43,4 @@ COPY elastest-service-manager/deploy /elastest-toolbox/elastest-service-manager/
 
 EXPOSE 8091
 
-CMD cd /elastest-toolbox; exec python run.py
+CMD cd /elastest-toolbox; exec ./init.sh

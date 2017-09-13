@@ -11,7 +11,11 @@ else:
 """
 
 #Temporally dockerCommand:
-dockerCommand = 'docker-compose -f elastest-data-manager/deploy/docker-compose.yml -f elastest-torm/deploy/docker-compose.yml -f elastest-service-manager/deploy/docker-compose.yml -p elastest up'
+if (len(sys.argv) > 1 and sys.argv[1] == 'noetm'):
+	dockerCommand = 'docker-compose -f elastest-data-manager/deploy/docker-compose.yml -f elastest-service-manager/deploy/docker-compose.yml -p elastest up'
+
+else:
+	dockerCommand = 'docker-compose -f elastest-data-manager/deploy/docker-compose.yml -f elastest-torm/deploy/docker-compose.yml -f elastest-service-manager/deploy/docker-compose.yml -p elastest up'
 
 if(len(dockerCommand) > 0):
 	subprocess.call(shlex.split(dockerCommand))
