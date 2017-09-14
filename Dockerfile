@@ -41,6 +41,10 @@ COPY elastest-torm/deploy /elastest-toolbox/elastest-torm/deploy
 
 COPY elastest-service-manager/deploy /elastest-toolbox/elastest-service-manager/deploy
 
+COPY elastest-instrumentation-manager/deploy /elastest-toolbox/elastest-instrumentation-manager/deploy
+
+COPY elastest-platform-manager/deploy /elastest-toolbox/elastest-platform-manager/deploy
+
 EXPOSE 8091
 
 CMD cd /elastest-toolbox; exec ./init.sh
