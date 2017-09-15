@@ -45,8 +45,6 @@ COPY eim/deploy /elastest-toolbox/eim/deploy
 
 COPY epm/deploy /elastest-toolbox/epm/deploy
 
-COPY emp/deploy /elastest-toolbox/emp/deploy
-
 EXPOSE 8091
 
 CMD cd /elastest-toolbox; exec ./init.sh
