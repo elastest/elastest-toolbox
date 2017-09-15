@@ -35,15 +35,17 @@ RUN chmod 777 /elastest-toolbox/init.sh
 
 # Copy deploy folders of each component
 
-COPY elastest-data-manager/deploy /elastest-toolbox/elastest-data-manager/deploy
+COPY edm/deploy /elastest-toolbox/edm/deploy
 
-COPY elastest-torm/deploy /elastest-toolbox/elastest-torm/deploy
+COPY etm/deploy /elastest-toolbox/etm/deploy
 
-COPY elastest-service-manager/deploy /elastest-toolbox/elastest-service-manager/deploy
+COPY esm/deploy /elastest-toolbox/esm/deploy
 
-COPY elastest-instrumentation-manager/deploy /elastest-toolbox/elastest-instrumentation-manager/deploy
+COPY eim/deploy /elastest-toolbox/eim/deploy
 
-COPY elastest-platform-manager/deploy /elastest-toolbox/elastest-platform-manager/deploy
+COPY epm/deploy /elastest-toolbox/epm/deploy
+
+COPY emp/deploy /elastest-toolbox/emp/deploy
 
 EXPOSE 8091
 

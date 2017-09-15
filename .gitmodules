@@ -1,36 +1,36 @@
 [submodule "etm"]
-	path = elastest-torm
+	path = etm
 	url = https://github.com/elastest/elastest-torm.git
 [submodule "edm"]
-	path = elastest-data-manager
+	path = edm
 	url = https://github.com/elastest/elastest-data-manager.git
 [submodule "esm"]
-	path = elastest-service-manager
+	path = esm
 	url = https://github.com/elastest/elastest-service-manager.git
 [submodule "eim"]
-	path = elastest-instrumentation-manager
+	path = eim
 	url = https://github.com/elastest/elastest-instrumentation-manager.git
 [submodule "epm"]
-	path = elastest-platform-manager
+	path = epm
 	url = https://github.com/elastest/elastest-platform-manager.git
 [submodule "emp"]
-	path = elastest-monitoring-platform
+	path = emp
 	url = https://github.com/elastest/elastest-monitoring-platform.git
 [submodule "eus"]
-	path = elastest-user-emulator-service
+	path = eus
 	url = https://github.com/elastest/elastest-user-emulator-service.git
 [submodule "eds"]
-	path = elastest-device-emulator-service
+	path = eds
 	url = https://github.com/elastest/elastest-device-emulator-service.git
 [submodule "ess"]
-	path = elastest-security-service
+	path = ess
 	url = https://github.com/elastest/elastest-security-service.git
 [submodule "ems"]
-	path = elastest-monitoring-service
+	path = ems
 	url = https://github.com/elastest/elastest-monitoring-service.git
 [submodule "ebs"]
-	path = elastest-bigdata-service
+	path = ebs
 	url = https://github.com/elastest/elastest-bigdata-service.git
 [submodule "ece"]
-	path = elastest-cost-engine
+	path = ece
 	url = https://github.com/elastest/elastest-cost-engine.git
