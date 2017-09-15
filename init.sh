@@ -49,6 +49,14 @@ if [ $# -eq 0 ] || [ $1 = 'start' ]; then
 
 # docker compose down
 elif [ $1 = 'stop' ]; then
-	echo 'Send stop signal'
-	sh -c 'docker kill --signal=SIGTERM toolbox'
+	echo 'Sending stop signal...'
+	echo ''
+	sh -c 'docker ps -q --filter ancestor="edujgurjc/elastest-toolbox" | xargs -r docker kill --signal=SIGTERM'
+	# If container is stopped, run down just in case there are running containers
+	if [ $? -gt 0 ]; then
+		echo ''
+		echo 'trying again...'
+		echo ''
+	       python run.py 'down'
+	fi
 fi
