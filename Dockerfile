@@ -21,13 +21,9 @@ RUN mkdir /elastest-toolbox
 
 COPY run.py /elastest-toolbox/run.py
 
-COPY down.py /elastest-toolbox/down.py
-
 COPY init.sh /elastest-toolbox/init.sh
 
 RUN chmod 777 /elastest-toolbox/run.py
-
-RUN chmod 777 /elastest-toolbox/down.py
 
 RUN chmod 777 /elastest-toolbox/init.sh
 
@@ -45,6 +41,11 @@ COPY eim/deploy /elastest-toolbox/eim/deploy
 
 COPY epm/deploy /elastest-toolbox/epm/deploy
 
-EXPOSE 8091
+RUN cd /elastest-toolbox
 
-CMD cd /elastest-toolbox; exec ./init.sh
+# Commands
+WORKDIR /elastest-toolbox
+
+ENTRYPOINT ["./init.sh"]
+
+CMD ["start"]
