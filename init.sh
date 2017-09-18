@@ -51,7 +51,7 @@ if [ $# -eq 0 ] || [ $1 = 'start' ]; then
 elif [ $1 = 'stop' ]; then
 	echo 'Sending stop signal...'
 	echo ''
-	sh -c 'docker ps -q --filter ancestor="edujgurjc/elastest-toolbox" | xargs -r docker kill --signal=SIGTERM'
+	sh -c 'docker ps -q --filter ancestor="elastest/platform" | xargs -r docker kill --signal=SIGTERM'
 	# If container is stopped, run down just in case there are running containers
 	if [ $? -gt 0 ]; then
 		echo ''
