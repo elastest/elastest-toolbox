@@ -11,34 +11,36 @@ stop() {
      echo '*  Stopping components  *'
      echo '*************************'
      echo ''
-
-     if [ -z "$OPTIONS" ]; then
-       python run.py 'down'
+     if [ -z "$SUBMODE" ]; then
+       python run.py 'stop' $MODE
      else
-       python run.py 'down' $OPTIONS
+       python run.py 'stop' $MODE $SUBMODE
      fi
      exit 0
   fi
 }
 
 #if there aren't arguments or first arg is start, then up docker compose
-if [ $# -eq 0 ] || [ $1 = 'start' ]; then
+if [ $1 = 'start' ] || [ $1 = 'start-lite' ]; then
 	# Trap SIGTERM to stop execution
 	trap stop TERM
+	export MODE=$1
 
 	# Run run.py script to start components
-	if [ -z "$OPTIONS" ]; then
-	  echo "Starting all components"
-	  python run.py 'up -d' & export RUN_PID=$!
+	if [ -z "$2" ]; then
+	  echo "Starting..."
+	  export SUBMODE=$2
+	  python run.py $1 & export RUN_PID=$!
 	else
-	  echo "Starting with" $OPTIONS
-	  python run.py 'up -d' $OPTIONS & export RUN_PID=$!
+	  echo "Starting with" $2
+	  python run.py $1 $2 & export RUN_PID=$!
 	fi
 
 	echo ''
-	echo '*******************************************************************************************'
-	echo '*  To stop open new terminal and type docker kill --signal=SIGTERM <this_container_name>  *'
-	echo '*******************************************************************************************'
+	echo '*****************************************************************************************'
+	echo '*  To stop open new terminal and type:                                                  *'
+	echo '*  docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop  *'
+	echo '*****************************************************************************************'
 	echo ''
 
 	# Wait for stop signal
@@ -47,16 +49,16 @@ if [ $# -eq 0 ] || [ $1 = 'start' ]; then
 	  wait $!
 	done
 
-# docker compose down
+# docker run stop
 elif [ $1 = 'stop' ]; then
 	echo 'Sending stop signal...'
 	echo ''
 	sh -c 'docker ps -q --filter ancestor="elastest/platform" | xargs -r docker kill --signal=SIGTERM'
-	# If container is stopped, run down just in case there are running containers
+	# If container is stopped, run stop just in case there are running containers
 	if [ $? -gt 0 ]; then
 		echo ''
 		echo 'trying again...'
 		echo ''
-	       python run.py 'down'
+	       python run.py 'stop'
 	fi
 fi
