@@ -11,10 +11,10 @@ stop() {
      echo '*  Stopping components  *'
      echo '*************************'
      echo ''
-     if [ -z "$SUBMODE" ]; then
-       python run.py 'stop' $MODE
+     if [ -z "$PARAMETERS" ]; then
+       python run.py 'stop'
      else
-       python run.py 'stop' $MODE $SUBMODE
+       python run.py 'stop' $PARAMETERS
      fi
      exit 0
   fi
@@ -24,17 +24,10 @@ stop() {
 if [ $1 = 'start' ] || [ $1 = 'start-lite' ]; then
 	# Trap SIGTERM to stop execution
 	trap stop TERM
-	export MODE=$1
 
 	# Run run.py script to start components
-	if [ -z "$2" ]; then
-	  echo "Starting..."
-	  export SUBMODE=$2
-	  python run.py $1 & export RUN_PID=$!
-	else
-	  echo "Starting with" $2
-	  python run.py $1 $2 & export RUN_PID=$!
-	fi
+	export PARAMETERS="$*"
+	python run.py $* & export RUN_PID=$!
 
 	echo ''
 	echo '*****************************************************************************************'

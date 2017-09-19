@@ -1,12 +1,33 @@
-# Short description
-ElasTest Platform can run in two modes:
-## Normal
-The normal mode in ElasTest Platform starts up all core components: EDM, EPM, EDM, EMP, EIM and ETM
+# ElasTest Platform
+ElasTest Platform starts ElasTest on docker containers. Can run in two modes:
 
-## Lite
-The lite mode in ElasTest Platform starts up only EUS and ETM with necesary services: Logstash, Elasticsearch, MySQL, Dockbeat and RabbitMQ
+## Run in normal mode
+The normal mode in ElasTest Platform starts up all core components: EDM, EPM, EDM, EMP, EIM and ETM. To start up platform in normal mode execute:
+```
+docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start
+```
 
-# Run from repo
+## Run in lite mode
+The lite mode in ElasTest Platform starts up only EUS and ETM with necesary services: Logstash, Elasticsearch, MySQL, Dockbeat and RabbitMQ. To start up platform in lite mode execute:
+```
+docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite
+```
+
+## Stop in both modes
+To stop ElasTest Platform in both modes execute:
+```
+docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop
+```
+
+## Parameters
+ElasTest platform allows to pass configuration parameters at the end of the run commands:
+* Not bind ports: `-noports`
+* Force pull of all docker images: `-forcepull`
+* Start in ETM development mode: `-dev=etm`
+>For example: `docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite -noports`
+
+
+# Development
 To run ElasTest platform you need to have docker-compose and python installed.
 Once installed clone elastest-toolbox repository and move into:
 ```
@@ -23,7 +44,7 @@ python run.py start
 ```
 To stop platform execute:
 ```
-python run.py down normal
+python run.py stop normal
 ```
 
 ## Run in lite mode
@@ -33,27 +54,7 @@ python run.py start-lite
 ```
 To stop platform execute:
 ```
-python run.py down lite
+python run.py stop lite
 ```
 
-# Run from docker image
-First, Pull ElasTest Platform image:
-```
-docker pull elastest/platform
-```
-
-## Run in normal mode
-```
-docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start
-```
-
-## Run in lite mode
-To start up platform in lite mode execute:
-```
-docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite
-```
-## Stop in both modes
-To stop ElasTest Platform in both modes execute:
-```
-docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop
-```
+> You can pass parameters of Parameters section
