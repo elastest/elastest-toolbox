@@ -5,12 +5,15 @@ function containerIp () {
     echo $( echo $ip | cut -f2 -d'"' )
 }
 
-docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite -forcepull -noports
+docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite -forcepull -noports
 
-sleep 180;
+echo 'sleep while ETM is starting up'
+sleep 140;
 ET_ETM_API=$(containerIp "etm")
+echo 'check if ETM is started'
 response=$(curl --write-out %{http_code} --silent --output /dev/null http://${ET_ETM_API}:8091)
 
+echo 'stopping ET Platform'
 docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop
 
 if [ $response = '200' ]; then
