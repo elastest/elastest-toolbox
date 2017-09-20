@@ -11,6 +11,20 @@ projectName="elastest"
 
 export COMPOSE_PROJECT_NAME=$projectName
 
+# Start
+
+echo 'Running Platform...'
+docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite -forcepull -noports
+
+
+# Check if ETM container is created
+ET_ETM_API=$(containerIp "etm")
+
+while [ $? -gt 0 ] ; do
+	ET_ETM_API=$(containerIp "etm")
+done
+
+docker logs -f "$COMPOSE_PROJECT_NAME"_etm_1 &
 
 # Connect test container to docker-compose network
 
@@ -20,21 +34,8 @@ echo "containerId = ${containerId}"
 
 docker network connect ${projectName}_elastest ${containerId}
 
-# Start
-
-echo 'Running Platform...'
-docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite -forcepull -noports
-
-ET_ETM_API=$(containerIp "etm")
-
-while [ $? -gt 0 ] ; do
-	ET_ETM_API=$(containerIp "etm")
-done
-
-docker logs -f "$COMPOSE_PROJECT_NAME"_etm_1 &
-
-counter=85
 # wait ETM started
+counter=85
 while ! nc -z -v $ET_ETM_API 8091 ; do
     if [ $counter = 70 ]; then
 	    echo "ETM is not ready in address $ET_ETM_API and port 8091"
