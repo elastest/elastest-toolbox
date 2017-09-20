@@ -7,7 +7,7 @@ function containerIp () {
 
 ET_ETM_API=$(containerIp "etm")
 
-docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start -forcepull -noports
+docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite -forcepull -noports
 
 sleep 180;
 response=$(curl --write-out %{http_code} --silent --output /dev/null http://${ET_ETM_API}:8091)
