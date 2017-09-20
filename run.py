@@ -57,11 +57,11 @@ if (len(sys.argv) > 1):
 	# If mode=start-lite or mode=stop with submode: start-lite or lite
 	elif(mode == 'start-lite' or (mode == 'stop' and (submode == 'start-lite' or submode == 'lite'))):
 		# etm root path docker-compose files:
-		etm_complementary = '-f etm/docker-compose-complementary.yml'
-		etm_complementary_ports = '-f etm/docker-compose-complementary-ports.yml'
-		etm_main = '-f etm/docker-compose-main.yml'
-		etm_main_ports = '-f etm/docker-compose-main-ports.yml'
-		etm_lite = '-f etm/docker-compose-lite.yml'
+		etm_complementary = '-f etm/docker/docker-compose-complementary.yml'
+		etm_complementary_ports = '-f etm/docker/docker-compose-complementary-ports.yml'
+		etm_main = '-f etm/docker/docker-compose-main.yml'
+		etm_main_ports = '-f etm/docker/docker-compose-main-ports.yml'
+		etm_lite = '-f etm/docker/docker-compose-lite.yml'
 		if(not bind_ports):
 			print ''
 			print 'No binding ports'

@@ -35,6 +35,8 @@ COPY edm/deploy /elastest-toolbox/edm/deploy
 
 COPY etm/deploy /elastest-toolbox/etm/deploy
 
+COPY etm/docker /elastest-toolbox/etm/docker
+
 COPY esm/deploy /elastest-toolbox/esm/deploy
 
 COPY eim/deploy /elastest-toolbox/eim/deploy
@@ -42,13 +44,6 @@ COPY eim/deploy /elastest-toolbox/eim/deploy
 COPY epm/deploy /elastest-toolbox/epm/deploy
 
 COPY emp/deploy /elastest-toolbox/emp/deploy
-
-# Add ETM Lite
-ADD etm/docker-compose-complementary.yml /elastest-toolbox/etm/
-ADD etm/docker-compose-complementary-ports.yml /elastest-toolbox/etm/
-ADD etm/docker-compose-main.yml /elastest-toolbox/etm/
-ADD etm/docker-compose-main-ports.yml /elastest-toolbox/etm/
-ADD etm/docker-compose-lite.yml /elastest-toolbox/etm/
 
 RUN cd /elastest-toolbox
 
