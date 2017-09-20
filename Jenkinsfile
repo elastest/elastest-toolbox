@@ -45,7 +45,7 @@ node('docker'){
 		 def platformcontainer = docker.image('elastest/platform')
         	 platformcontainer.pull() // make sure we have the latest available from Docker Hub
 
-	    stage ("IT Test ETM is running") 
-	         sh './it.sh'
+	    stage "IT Test ETM is running"
+	         sh 'chmod 755 it.sh; ./it.sh'
         }
 }
