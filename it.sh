@@ -20,8 +20,9 @@ while [ $? -gt 0 ] ; do
 	ET_ETM_API=$(containerIp "etm")
 done
 
-counter=70
+docker logs -f "$COMPOSE_PROJECT_NAME"_etm_1 &
 
+counter=100
 # wait ETM started
 while ! nc -z -v -w1 "${ET_ETM_API}" 8091 ; do
     if [ $counter = 70 ]; then
@@ -30,7 +31,7 @@ while ! nc -z -v -w1 "${ET_ETM_API}" 8091 ; do
     echo 'Wait while ETM is starting up'
     sleep 2
     # prevent infinite loop
-    counter=$counter-1
+    counter=$(($counter-1))
     if [ $counter = 0 ]; then
 	    echo "Timeout"
 	    exit 1;
