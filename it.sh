@@ -22,7 +22,8 @@ done
 
 counter=70
 
-sudo apt-get install netcat -y
+apt-get install netcat -y
+
 # wait ETM started
 while ! nc -z -v -w1 "${ET_ETM_API}" 8091 ; do
     if [ $counter = 70 ]; then
