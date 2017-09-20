@@ -20,13 +20,15 @@ while [ $? -gt 0 ] ; do
 	ET_ETM_API=$(containerIp "etm")
 done
 
+echo $ET_ETM_API
+
 docker logs -f "$COMPOSE_PROJECT_NAME"_etm_1 &
 
 counter=100
 # wait ETM started
-while ! nc -z -v -w1 "${ET_ETM_API}" 8091 ; do
+while ! nc -z -v -w1 $ET_ETM_API 8091 ; do
     if [ $counter = 70 ]; then
-	    echo "ETM is not ready in address ${ET_ETM_API} and port 8091"
+	    echo "ETM is not ready in address $ET_ETM_API and port 8091"
     fi
     echo 'Wait while ETM is starting up'
     sleep 2
@@ -40,10 +42,10 @@ while ! nc -z -v -w1 "${ET_ETM_API}" 8091 ; do
 done
 
 echo ''
-echo "ETM is ready in address ${ET_ETM_API} and port 8091"
+echo "ETM is ready in address $ET_ETM_API and port 8091"
 
 echo 'Check if ETM is working...'
-response=$(curl --write-out %{http_code} --silent --output /dev/null http://${ET_ETM_API}:8091)
+response=$(curl --write-out %{http_code} --silent --output /dev/null http://$ET_ETM_API:8091)
 
 echo 'Stopping ET Platform...'
 docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop
