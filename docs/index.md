@@ -8,7 +8,7 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform s
 ```
 
 ## Run in lite mode
-The lite mode in ElasTest Platform starts up only EUS and ETM with necesary services: Logstash, Elasticsearch, MySQL, Dockbeat and RabbitMQ. To start up platform in lite mode execute:
+The lite mode in ElasTest Platform starts up only ESM and ETM with necesary services: Logstash, Elasticsearch, MySQL, Dockbeat and RabbitMQ. To start up platform in lite mode execute:
 ```
 docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite
 ```
