@@ -5,11 +5,10 @@ function containerIp () {
     echo $( echo $ip | cut -f2 -d'"' )
 }
 
-ET_ETM_API=$(containerIp "etm")
-
 docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite -forcepull -noports
 
 sleep 180;
+ET_ETM_API=$(containerIp "etm")
 response=$(curl --write-out %{http_code} --silent --output /dev/null http://${ET_ETM_API}:8091)
 
 docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop
