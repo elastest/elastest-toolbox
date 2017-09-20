@@ -20,13 +20,11 @@ while [ $? -gt 0 ] ; do
 	ET_ETM_API=$(containerIp "etm")
 done
 
-echo $ET_ETM_API
-
 docker logs -f "$COMPOSE_PROJECT_NAME"_etm_1 &
 
-counter=100
+counter=85
 # wait ETM started
-while ! nc -z -v -w1 $ET_ETM_API 8091 ; do
+while ! nc -z -v $ET_ETM_API 8091 ; do
     if [ $counter = 70 ]; then
 	    echo "ETM is not ready in address $ET_ETM_API and port 8091"
     fi
