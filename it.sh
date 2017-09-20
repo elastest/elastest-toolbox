@@ -11,6 +11,17 @@ projectName="elastest"
 
 export COMPOSE_PROJECT_NAME=$projectName
 
+
+# Connect test container to docker-compose network
+
+containerId=$(cat /proc/self/cgroup | grep "docker" | sed s/\\//\\n/g | tail -1)
+
+echo "containerId = ${containerId}"
+
+docker network connect ${projectName}_elastest ${containerId}
+
+# Start
+
 echo 'Running Platform...'
 docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite -forcepull -noports
 
