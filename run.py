@@ -11,6 +11,7 @@ parser.add_argument('submode', help='(Only for stop command) Submode equivalent 
 parser.add_argument('-dev', help='ETM dev mode. Usage: -dev=etm', required=False)
 parser.add_argument('-forcepull', help='Force pull of all images. Usage: -forcepull', required=False, action='store_true')
 parser.add_argument('-noports', help='Unbind all ports. Usage: -noports', required=False, action='store_true')
+parser.add_argument('-verbose', help='Show logs of all containers. Usage: -verbose', required=False, action='store_true')
 
 args = parser.parse_args()
 
@@ -19,7 +20,12 @@ dockerCommand = []
 
 mode = args.command #start, start-lite or stop
 submode = args.submode
-instruction = ' up -d'
+
+if(args.verbose == True):
+	instruction = ' up'
+else:
+	instruction = ' up -d'
+
 
 #Parameters
 etm_dev = False
@@ -88,6 +94,6 @@ if(len(dockerCommand) > 0):
 		print '(Without ETM)'
 	print ''
 
-	# Run docker-compose up/down
+	# Run docker-compose up/down''
 	subprocess.call(shlex.split(dockerCommand))
 
