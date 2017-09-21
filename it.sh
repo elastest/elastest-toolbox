@@ -14,7 +14,7 @@ export COMPOSE_PROJECT_NAME=$projectName
 # Start
 
 echo 'Running Platform...'
-docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite -forcepull -noports
+docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite --forcepull --noports
 
 
 # Check if ETM container is created
