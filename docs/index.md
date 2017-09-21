@@ -25,7 +25,7 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform s
 
 To execute ElasTest in `lite` mode the command is: 
 ```
-docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start-lite
 ```
 
 ## How to stop ElasTest
