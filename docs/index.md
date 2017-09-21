@@ -21,11 +21,11 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform s
 
 ## Parameters
 ElasTest platform allows to pass configuration parameters at the end of the run commands:
-* Not bind ports: `-noports`
-* Force pull of all docker images: `-forcepull`
-* Start in ETM development mode: `-dev=etm`
-* Show logs of all containers: `-verbose`
->For example: `docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite -noports`
+* Not bind ports: `--noports` or `-u`
+* Force pull of all docker images: `--forcepull` or `-fp`
+* Start in ETM development mode: `--dev=etm` or `-d=etm`
+* Show logs of all containers: `--verbose` or `-v`
+>For example: `docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite`**` --verbose -fp`**
 
 
 # Development

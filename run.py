@@ -7,11 +7,11 @@ import argparse
 parser = argparse.ArgumentParser(description='Starts up ElasTest Platform.')
 
 parser.add_argument('command', help='Command mode to execute: start, start-lite or stop')
-parser.add_argument('submode', help='(Only for stop command) Submode equivalent to command mode executed: normal or lite', nargs='?', default='normal')
-parser.add_argument('-dev', help='ETM dev mode. Usage: -dev=etm', required=False)
-parser.add_argument('-forcepull', help='Force pull of all images. Usage: -forcepull', required=False, action='store_true')
-parser.add_argument('-noports', help='Unbind all ports. Usage: -noports', required=False, action='store_true')
-parser.add_argument('-verbose', help='Show logs of all containers. Usage: -verbose', required=False, action='store_true')
+parser.add_argument('mode', help='(Only for stop command) Mode equivalent to command mode executed: normal or lite', nargs='?', default='normal')
+parser.add_argument('--dev', '-d', help='ETM dev mode. Usage: -dev=etm', required=False)
+parser.add_argument('--forcepull', '-fp', help='Force pull of all images. Usage: -forcepull', required=False, action='store_true')
+parser.add_argument('--noports', '-np',help='Unbind all ports. Usage: -noports', required=False, action='store_true')
+parser.add_argument('--verbose', '-v', help='Show logs of all containers. Usage: -verbose', required=False, action='store_true')
 
 args = parser.parse_args()
 
@@ -19,7 +19,7 @@ dockerCommand = []
 
 
 mode = args.command #start, start-lite or stop
-submode = args.submode
+submode = args.mode
 
 if(args.verbose == True):
 	instruction = ' up'
