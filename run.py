@@ -99,8 +99,8 @@ if(len(dockerCommand) > 0):
 	print ''
 
 	#Check if ETM is started
-	#if(mode != 'stop' and etm_dev == False):
-		#subprocess.Popen(shlex.split('./checkETM.sh'))
+	if(mode != 'stop' and etm_dev == False):
+		subprocess.Popen(shlex.split('./checkETM.sh'))
 
 	# Run docker-compose up/down''
 	subprocess.call(shlex.split(dockerCommand))
