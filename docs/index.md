@@ -110,3 +110,7 @@ To stop platform execute:
 python run.py stop lite
 ```
 
+## Ports
+* **37006** ElasTest GUI
+* **9200** Elasticsearch API
+
