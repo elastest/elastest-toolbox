@@ -14,7 +14,7 @@ export COMPOSE_PROJECT_NAME=$projectName
 # Start
 
 echo 'Running Platform...'
-docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start-lite --forcepull --noports
+docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start --lite --forcepull --noports
 
 
 # Check if ETM container is created
@@ -56,7 +56,7 @@ echo ''
 echo "ETM is ready in address $ET_ETM_API and port 8091"
 
 echo 'Check if ETM is working...'
-response=$(curl --write-out %{http_code} --silent --output /dev/null http://$ET_ETM_API:8091)
+response=$(curl --write-out %{http_code} --silent --output /dev/null http://$ET_ETM_API:37006)
 
 echo 'Stopping ET Platform...'
 docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop

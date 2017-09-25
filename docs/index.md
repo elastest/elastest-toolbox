@@ -46,22 +46,20 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform -
 The output is:
 
 ```
-usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform [-h] [--dev DEV] [--forcepull] [--noports] [--verbose]
-              mode [submode]
-
-Starts up ElasTest Platform.
+usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform [-h] [--lite] [--dev DEV] [--forcepull] [--noports] [--logs]
+              mode
 
 positional arguments:
-  mode               Mode to execute: start, start-lite or stop
-  submode            (Only for stop command) Submode equivalent to mode
-                     executed: normal or lite
+  mode               Mode to execute: start or stop
 
 optional arguments:
-  --help, -h         Show this help message and exit
-  --dev DEV, -d DEV  Do not start the main container of the specified component. Used to execute that container. Currently, only ETM is supported Usage: --dev=etm
+  -h, --help         show this help message and exit
+  --lite, -lt        Run in Lite mode
+  --dev DEV, -d DEV  ETM dev mode. Usage: --dev=etm
   --forcepull, -fp   Force pull of all images. Usage: --forcepull
-  --noports, -np     Do not bind any ports. Used when you want to avoid port collisions in host. Usage: --noports
-  --logs, -l      Show logs of all containers. Usage: --verbose
+  --noports, -np     Unbind all ports. Usage: --noports
+  --logs, -l         Show logs of all containers. Usage: --logs
+
 ```
 
 ## Development instructions

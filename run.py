@@ -6,8 +6,9 @@ import argparse
 # Define arguments
 parser = argparse.ArgumentParser()
 
-parser.add_argument('mode', help='Mode to execute: start, start-lite or stop')
-parser.add_argument('submode', help='(Only for stop command) Submode equivalent to mode executed: normal or lite', nargs='?', default='normal')
+parser.add_argument('mode', help='Mode to execute: start or stop')
+
+parser.add_argument('--lite', '-lt', help='Run in Lite mode', required=False, action='store_true')
 parser.add_argument('--dev', '-d', help='ETM dev mode. Usage: --dev=etm', required=False)
 parser.add_argument('--forcepull', '-fp', help='Force pull of all images. Usage: --forcepull', required=False, action='store_true')
 parser.add_argument('--noports', '-np',help='Unbind all ports. Usage: --noports', required=False, action='store_true')
@@ -20,15 +21,18 @@ parser.usage=usage
 
 # If there aren't args, show help and exit
 if len(sys.argv)==1:
-    parser.print_help()
-    sys.exit(1)
+	parser.print_help()
+	sys.exit(1)
 
 args = parser.parse_args()
 
 dockerCommand = []
 
-mode = args.mode #start, start-lite or stop
-submode = args.submode
+mode = args.mode #start or stop
+lite = args.lite
+
+if(mode != 'start' and mode != 'stop'):
+	sys.exit(1)
 
 if(args.logs == True):
 	instruction = ' up'
@@ -58,13 +62,14 @@ if(args.dev == 'etm'):
 	etm = etm_complementary
 	etm_dev = True
 
-# If mode=start or mode=stop with submode: start, normal or nothing
-if(mode == 'start' or (mode == 'stop' and (submode == 'start' or submode == 'normal' or submode == ''))):
+# If is NORMAL mode
+if(lite == False):
 	dockerCommand = 'docker-compose ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + ' ' + epm + ' ' + emp + ' -p elastest'
 	message = 'Starting ElasTest Platform in Normal Mode...'
+	submode = 'Normal'
 
-# If mode=start-lite or mode=stop with submode: start-lite or lite
-elif(mode == 'start-lite' or (mode == 'stop' and (submode == 'start-lite' or submode == 'lite'))):
+# If is LITE mode
+else:
 	# etm root path docker-compose files:
 	etm_complementary = '-f etm/docker/docker-compose-complementary.yml'
 	etm_complementary_ports = '-f etm/docker/docker-compose-complementary-ports.yml'
@@ -82,6 +87,7 @@ elif(mode == 'start-lite' or (mode == 'stop' and (submode == 'start-lite' or sub
 		etm = etm + ' ' + etm_main + ' ' + etm_main_ports + ' ' + etm_lite
 	dockerCommand = 'docker-compose ' + etm + ' -p elastest'
 	message = 'Starting ElasTest Platform in Lite Mode...'
+	submode = 'Lite'
 
 # If mode=stop
 if(mode == 'stop'):

@@ -36,7 +36,7 @@ while ! nc -z -v $ET_ETM_API 8091 2> /dev/null; do
     fi
 done
 
-response=$(curl --write-out %{http_code} --silent --output /dev/null http://$ET_ETM_API:8091)
+response=$(curl --write-out %{http_code} --silent --output /dev/null http://$ET_ETM_API:37006)
 
 if [ $response = '200' ]; then
 	echo "ETM is ready in http://$ET_ETM_API:8091"

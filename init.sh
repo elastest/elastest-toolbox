@@ -20,14 +20,17 @@ stop() {
   fi
 }
 
-#if there aren't arguments or first arg is start, then up docker compose
-if [ $1 = 'start' ] || [ $1 = 'start-lite' ]; then
+# Start
+if [ "$1" = 'start' ]; then
 	# Trap SIGTERM to stop execution
 	trap stop TERM
 
 	# Run run.py script to start components
+	export EXPRESION="$*"
+	shift
 	export PARAMETERS="$*"
-	python run.py $* & export RUN_PID=$!
+
+	python run.py $EXPRESION & export RUN_PID=$!
 
 	echo ''
 	echo '*****************************************************************************************'
@@ -42,8 +45,8 @@ if [ $1 = 'start' ] || [ $1 = 'start-lite' ]; then
 	  wait $!
 	done
 
-# docker run stop
-elif [ $1 = 'stop' ]; then
+# Stop (when platform container is in BG or stopped)
+elif [ "$1" = 'stop' ]; then
 	echo 'Sending stop signal...'
 	echo ''
 	sh -c 'docker ps -q --filter ancestor="elastest/platform" | xargs -r docker kill --signal=SIGTERM'
@@ -54,6 +57,7 @@ elif [ $1 = 'stop' ]; then
 		echo ''
 	       python run.py 'stop'
 	fi
-elif [ $1 = '-h' ] || [ $1 = '--help' ]; then
+# HELP
+elif [ "$1" = '-h' ] || [ "$1" = '--help' ]; then
 	       python run.py '-h'
 fi
