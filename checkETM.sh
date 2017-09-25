@@ -31,7 +31,6 @@ while ! nc -z -v $ET_ETM_API 8091 2> /dev/null; do
 	    echo ''
 	    echo "ETM is not ready. Please wait..."
     fi
-    echo 'connecting...'
     sleep 2
     # prevent infinite loop
     counter=$(($counter-1))
