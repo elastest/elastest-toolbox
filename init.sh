@@ -50,9 +50,11 @@ if [ "$1" = 'start' ]; then
 elif [ "$1" = 'stop' ]; then
 	echo 'Sending stop signal...'
 	echo ''
+	nproc=$(echo $(docker ps | grep elastest/platform | wc -l))
 	sh -c 'docker ps -q --filter ancestor="elastest/platform" | xargs -r docker kill --signal=SIGTERM'
+
 	# If container is stopped, run stop just in case there are running containers
-	if [ $? -gt 0 ]; then
+	if [ $? -gt 0 ] || [ $nproc -lt 2 ]; then # 2 containers: started container and this container (stop)
 		echo ''
 		echo 'trying again...'
 		echo ''
