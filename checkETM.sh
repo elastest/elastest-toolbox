@@ -29,7 +29,7 @@ counter=$initial
 while ! nc -z -v $ET_ETM_API 8091 2> /dev/null; do
     if [ $counter = $initial ]; then
 	    echo ''
-	    echo "ETM is not ready. Wait please..."
+	    echo "ETM is not ready. Please wait..."
     fi
     sleep 2
     # prevent infinite loop

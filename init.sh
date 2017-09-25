@@ -35,7 +35,7 @@ if [ "$1" = 'start' ]; then
 
 	echo ''
 	echo '*****************************************************************************************'
-	echo '*  To stop open new terminal and type:                                                  *'
+	echo '*  To stop press Ctrl+C or open new terminal and type:                                  *'
 	echo '*  docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop  *'
 	echo '*****************************************************************************************'
 	echo ''
