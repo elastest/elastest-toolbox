@@ -56,4 +56,4 @@ WORKDIR /elastest-toolbox
 
 ENTRYPOINT ["./init.sh"]
 
-CMD ["start"]
+CMD ["-h"]

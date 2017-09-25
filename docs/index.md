@@ -61,7 +61,7 @@ optional arguments:
   --dev DEV, -d DEV  Do not start the main container of the specified component. Used to execute that container. Currently, only ETM is supported Usage: --dev=etm
   --forcepull, -fp   Force pull of all images. Usage: --forcepull
   --noports, -np     Do not bind any ports. Used when you want to avoid port collisions in host. Usage: --noports
-  --verbose, -v      Show logs of all containers. Usage: --verbose
+  --logs, -l      Show logs of all containers. Usage: --verbose
 ```
 
 ## Development instructions

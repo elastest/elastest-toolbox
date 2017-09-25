@@ -54,6 +54,6 @@ elif [ $1 = 'stop' ]; then
 		echo ''
 	       python run.py 'stop'
 	fi
-elif [ $1 = '-h' ]; then
+elif [ $1 = '-h' ] || [ $1 = '--help' ]; then
 	       python run.py '-h'
 fi

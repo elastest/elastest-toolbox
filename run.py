@@ -4,19 +4,24 @@ import shlex, subprocess
 import argparse
 
 # Define arguments
-parser = argparse.ArgumentParser(description='Starts up ElasTest Platform.')
+parser = argparse.ArgumentParser()
 
 parser.add_argument('mode', help='Mode to execute: start, start-lite or stop')
 parser.add_argument('submode', help='(Only for stop command) Submode equivalent to mode executed: normal or lite', nargs='?', default='normal')
 parser.add_argument('--dev', '-d', help='ETM dev mode. Usage: --dev=etm', required=False)
 parser.add_argument('--forcepull', '-fp', help='Force pull of all images. Usage: --forcepull', required=False, action='store_true')
 parser.add_argument('--noports', '-np',help='Unbind all ports. Usage: --noports', required=False, action='store_true')
-parser.add_argument('--verbose', '-v', help='Show logs of all containers. Usage: --verbose', required=False, action='store_true')
+parser.add_argument('--logs', '-l', help='Show logs of all containers. Usage: --logs', required=False, action='store_true')
 
 # Custom usage message
 usage = parser.format_usage()
 usage = usage.replace("usage: run.py", "docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform")
 parser.usage=usage
+
+# If there aren't args, show help and exit
+if len(sys.argv)==1:
+    parser.print_help()
+    sys.exit(1)
 
 args = parser.parse_args()
 
@@ -25,7 +30,7 @@ dockerCommand = []
 mode = args.mode #start, start-lite or stop
 submode = args.submode
 
-if(args.verbose == True):
+if(args.logs == True):
 	instruction = ' up'
 else:
 	instruction = ' up -d'
