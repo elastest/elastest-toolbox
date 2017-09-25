@@ -14,7 +14,7 @@ RUN apk add --update \
   && rm -rf /var/cache/apk/*
 
 ## netcat
-RUN apt-get -y install netcat
+RUN  apk add --no-cache netcat-openbsd
 
 # Start
 RUN mkdir /elastest-toolbox
