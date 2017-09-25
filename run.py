@@ -13,6 +13,7 @@ parser.add_argument('--dev', '-d', help='ETM dev mode. Usage: --dev=etm', requir
 parser.add_argument('--forcepull', '-fp', help='Force pull of all images. Usage: --forcepull', required=False, action='store_true')
 parser.add_argument('--noports', '-np',help='Unbind all ports. Usage: --noports', required=False, action='store_true')
 parser.add_argument('--logs', '-l', help='Show logs of all containers. Usage: --logs', required=False, action='store_true')
+parser.add_argument('--nocheck', required=False, action='store_true', help=argparse.SUPPRESS)
 
 # Custom usage message
 usage = parser.format_usage()
@@ -110,7 +111,7 @@ if(len(dockerCommand) > 0):
 	print ''
 
 	#Check if ETM is started
-	if(mode != 'stop' and not etm_dev):
+	if(mode != 'stop' and not etm_dev and not args.nocheck):
 		subprocess.Popen(shlex.split('./checkETM.sh'))
 
 	# Run docker-compose up/down''

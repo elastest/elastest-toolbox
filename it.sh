@@ -1,10 +1,13 @@
 #!/bin/bash
 
 function containerIp () {
-    ip=$(docker inspect --format=\"{{.NetworkSettings.Networks."$COMPOSE_PROJECT_NAME"_elastest.IPAddress}}\" "$COMPOSE_PROJECT_NAME"_$1_1 2> /dev/null)
-    error=$?
-    echo $( echo $ip | cut -f2 -d'"' )
-    exit $error
+	ip=$(docker inspect --format=\"{{.NetworkSettings.Networks."$COMPOSE_PROJECT_NAME"_elastest.IPAddress}}\" "$COMPOSE_PROJECT_NAME"_$1_1 2> /dev/null)
+	error=$?
+	if [ -z "$2" ]; then
+		echo $( echo $ip | cut -f2 -d'"' )
+	elif [ "$2" = 'check' ]; then
+		echo $error
+	fi
 }
 
 projectName="elastest"
@@ -14,15 +17,17 @@ export COMPOSE_PROJECT_NAME=$projectName
 # Start
 
 echo 'Running Platform...'
-docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start --lite --forcepull --noports
+docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start --lite --forcepull --noports --nocheck
 
 
 # Check if ETM container is created
-ET_ETM_API=$(containerIp "etm")
+ERROR=$(containerIp "etm" "check")
 
-while [ $? -gt 0 ] ; do
-	ET_ETM_API=$(containerIp "etm")
+while [ $ERROR -gt 0 ] ; do
+	ERROR=$(containerIp "etm" "check")
 done
+
+ET_ETM_API=$(containerIp "etm")
 
 docker logs -f "$COMPOSE_PROJECT_NAME"_etm_1 &
 
@@ -37,11 +42,10 @@ docker network connect ${projectName}_elastest ${containerId}
 # wait ETM started
 initial=90
 counter=$initial
-while ! nc -z -v $ET_ETM_API 8091; do
+while ! nc -z -v $ET_ETM_API 8091 2> /dev/null; do
     if [ $counter = $initial ]; then
 	    echo "ETM is not ready in address $ET_ETM_API and port 8091"
     fi
-    echo "ETM is not ready in address $ET_ETM_API and port 8091"
     echo 'Wait while ETM is starting up'
     sleep 2
     # prevent infinite loop
