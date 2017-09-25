@@ -35,7 +35,7 @@ echo "containerId = ${containerId}"
 docker network connect ${projectName}_elastest ${containerId}
 
 # wait ETM started
-initial=85
+initial=90
 counter=$initial
 while ! nc -z -v $ET_ETM_API 8091 2> /dev/null; do
     if [ $counter = $initial ]; then

@@ -25,7 +25,7 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform s
 
 To execute ElasTest in `lite` mode the command is: 
 ```
-docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start-lite
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --lite
 ```
 
 ## How to stop ElasTest
@@ -101,7 +101,7 @@ python run.py stop normal
 To start ElasTest platform in `lite` mode with the `run.py` script execute:
 
 ```
-python run.py start-lite
+python run.py start --lite
 ```
 To stop platform execute:
 ```

@@ -1,6 +1,6 @@
 node('docker'){
     
-    stage "Elastest-torm images build"
+    stage " Download Elastest-toolbox"
 
         def mycontainer = docker.image('elastest/ci-docker-compose-siblings')
         mycontainer.pull() // make sure we have the latest available from Docker Hub
