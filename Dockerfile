@@ -51,6 +51,8 @@ COPY emp/deploy /elastest-toolbox/emp/deploy
 
 RUN cd /elastest-toolbox
 
+ENV PYTHONUNBUFFERED=0
+
 # Commands
 WORKDIR /elastest-toolbox
 
