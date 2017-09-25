@@ -37,10 +37,11 @@ docker network connect ${projectName}_elastest ${containerId}
 # wait ETM started
 initial=90
 counter=$initial
-while ! nc -z -v $ET_ETM_API 8091 2> /dev/null; do
+while ! nc -z -v $ET_ETM_API 8091; do
     if [ $counter = $initial ]; then
 	    echo "ETM is not ready in address $ET_ETM_API and port 8091"
     fi
+    echo "ETM is not ready in address $ET_ETM_API and port 8091"
     echo 'Wait while ETM is starting up'
     sleep 2
     # prevent infinite loop
