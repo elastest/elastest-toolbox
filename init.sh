@@ -22,8 +22,9 @@ stop() {
 
 # Start
 if [ "$1" = 'start' ]; then
-	# Trap SIGTERM to stop execution
+	# Trap SIGTERM/SIGINT to stop execution
 	trap stop TERM
+	trap stop INT
 
 	# Run run.py script to start components
 	export EXPRESION="$*"
