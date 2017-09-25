@@ -21,7 +21,8 @@ done
 # wait ETM started
 initial=85
 counter=$initial
-while ! nc -z -v $ET_ETM_API 8091 2> /dev/null; do
+while ! nc -z -v $ET_ETM_API 8091; do
+    echo $ET_ETM_API 8091
     if [ $counter = $initial ]; then
 	    echo ''
 	    echo "ETM is not ready. Wait please..."
