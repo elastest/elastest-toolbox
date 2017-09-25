@@ -1,10 +1,13 @@
 #!/bin/bash
 
 containerIp () {
-    ip=$(docker inspect --format=\"{{.NetworkSettings.Networks."$COMPOSE_PROJECT_NAME"_elastest.IPAddress}}\" "$COMPOSE_PROJECT_NAME"_$1_1 2> /dev/null)
-    error=$?
-    echo $( echo $ip | cut -f2 -d'"' )
-    exit $error
+	ip=$(docker inspect --format=\"{{.NetworkSettings.Networks."$COMPOSE_PROJECT_NAME"_elastest.IPAddress}}\" "$COMPOSE_PROJECT_NAME"_$1_1 2> /dev/null)
+	error=$?
+	if [ -z "$2" ]; then
+		echo $( echo $ip | cut -f2 -d'"' )
+	elif [ "$2" = 'check' ]; then
+		echo $error
+	fi
 }
 
 projectName="elastest"
@@ -12,11 +15,13 @@ projectName="elastest"
 export COMPOSE_PROJECT_NAME=$projectName
 
 # Check if ETM container is created
-ET_ETM_API=$(containerIp "etm")
+ERROR=$(containerIp "etm" "check")
 
-while [ $? -gt 0 ] ; do
-	ET_ETM_API=$(containerIp "etm")
+while [ $ERROR -gt 0 ] ; do
+	ERROR=$(containerIp "etm" "check")
 done
+
+ET_ETM_API=$(containerIp "etm")
 
 # wait ETM started
 initial=85
@@ -36,7 +41,7 @@ while ! nc -z -v $ET_ETM_API 8091 2> /dev/null; do
     fi
 done
 
-response=$(curl --write-out %{http_code} --silent --output /dev/null http://$ET_ETM_API:37006)
+response=$(curl --write-out %{http_code} --silent --output /dev/null http://$ET_ETM_API:8091)
 
 if [ $response = '200' ]; then
 	echo "ETM is ready in http://$ET_ETM_API:8091"

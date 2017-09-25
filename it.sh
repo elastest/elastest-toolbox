@@ -61,7 +61,7 @@ echo ''
 echo "ETM is ready in address $ET_ETM_API and port 8091"
 
 echo 'Check if ETM is working...'
-responseCheck=$(curl --write-out %{http_code} --silent --output /dev/null http://$ET_ETM_API:37006)
+responseCheck=$(curl --write-out %{http_code} --silent --output /dev/null http://$ET_ETM_API:8091)
 
 echo 'Stopping ET Platform...'
 docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop
