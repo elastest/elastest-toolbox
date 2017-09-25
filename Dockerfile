@@ -13,6 +13,9 @@ RUN apk add --update \
   && pip install virtualenv \
   && rm -rf /var/cache/apk/*
 
+## netcat
+RUN apt-get -y install netcat
+
 # Start
 RUN mkdir /elastest-toolbox
 
@@ -51,6 +54,7 @@ COPY emp/deploy /elastest-toolbox/emp/deploy
 
 RUN cd /elastest-toolbox
 
+# Python prints in order
 ENV PYTHONUNBUFFERED=0
 
 # Commands
