@@ -105,7 +105,7 @@ python run.py start --lite
 ```
 To stop platform execute:
 ```
-python run.py stop lite
+python run.py stop --lite
 ```
 
 ## Ports
