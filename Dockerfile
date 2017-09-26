@@ -26,13 +26,13 @@ COPY run.py /elastest-toolbox/run.py
 
 COPY init.sh /elastest-toolbox/init.sh
 
-COPY checkETM.sh /elastest-toolbox/checkETM.sh
+COPY checkETM.py /elastest-toolbox/checkETM.py
 
 RUN chmod 777 /elastest-toolbox/run.py
 
 RUN chmod 777 /elastest-toolbox/init.sh
 
-RUN chmod 777 /elastest-toolbox/checkETM.sh
+RUN chmod 777 /elastest-toolbox/checkETM.py
 
 
 
