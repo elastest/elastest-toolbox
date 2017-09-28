@@ -1,0 +1,16 @@
+version: '3'
+services:
+    esm_services_config:
+        build: 
+          context: ../
+          dockerfile: ./esm_services/Dockerfile
+        volumes:
+            - esm_services:/esm_services
+        networks:
+            - elastest
+networks:
+    elastest:
+      driver: bridge
+volumes:
+    esm_services:
+      driver: local

@@ -53,6 +53,8 @@ esm = '-f esm/deploy/docker-compose.yml'
 eim = '-f eim/deploy/docker-compose.yml'
 epm = '-f epm/deploy/docker-compose.yml'
 
+esm_services = '-f esm_services/docker-compose.yml'
+
 etm_complementary = '-f etm/deploy/docker-compose-complementary.yml'
 etm_main = '-f etm/deploy/docker-compose-main.yml'
 etm_lite = '-f etm/deploy/docker-compose-lite.yml'
@@ -65,7 +67,7 @@ if(args.dev == 'etm'):
 
 # If is NORMAL mode
 if(lite == False):
-	dockerCommand = 'docker-compose ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + ' ' + epm + ' ' + emp + ' -p elastest'
+	dockerCommand = 'docker-compose ' + esm_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + ' ' + epm + ' ' + emp + ' -p elastest'
 	message = 'Starting ElasTest Platform in Normal Mode...'
 	submode = 'Normal'
 
@@ -86,7 +88,7 @@ else:
 	etm = etm_complementary + ' ' + etm_complementary_ports
 	if (not etm_dev):
 		etm = etm + ' ' + etm_main + ' ' + etm_main_ports + ' ' + etm_lite
-	dockerCommand = 'docker-compose ' + etm + ' -p elastest'
+	dockerCommand = 'docker-compose ' + esm_services + ' ' + etm + ' -p elastest'
 	message = 'Starting ElasTest Platform in Lite Mode...'
 	submode = 'Lite'
 
