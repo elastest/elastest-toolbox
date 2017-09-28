@@ -52,6 +52,8 @@ COPY epm/deploy /elastest-toolbox/epm/deploy
 
 COPY emp/deploy /elastest-toolbox/emp/deploy
 
+COPY esm_services /elastest-toolbox/esm_services
+
 RUN cd /elastest-toolbox
 
 # Python prints in order
