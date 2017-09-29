@@ -28,6 +28,7 @@ counter=$initial
 
 while [ $ERROR -gt 0 ] ; do
 	ERROR=$(containerIp "etm" "check")
+	sleep 2
 	# prevent infinite loop
 	counter=$(($counter-1))
 		if [ $counter = 0 ]; then
