@@ -23,8 +23,18 @@ docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platfor
 # Check if ETM container is created
 ERROR=$(containerIp "etm" "check")
 
+initial=70
+counter=$initial
+
 while [ $ERROR -gt 0 ] ; do
 	ERROR=$(containerIp "etm" "check")
+	# prevent infinite loop
+	counter=$(($counter-1))
+		if [ $counter = 0 ]; then
+		    echo "Timeout while checking if ETM container is created"
+		    exit 1;
+		    break;
+		fi
 done
 
 ET_ETM_API=$(containerIp "etm")
@@ -51,7 +61,7 @@ while ! nc -z -v $ET_ETM_API 8091 2> /dev/null; do
     # prevent infinite loop
     counter=$(($counter-1))
     if [ $counter = 0 ]; then
-	    echo "Timeout"
+	    echo "Timeout while wait for ETM started"
 	    exit 1;
 	    break;
     fi

@@ -49,7 +49,7 @@ def checkWorking(url):
 etmIP = containerIP();
 
 # Check if service is started
-counterDefault = 90
+counterDefault = 105
 counter = counterDefault
 checkCommand = 'nc -z -v ' + etmIP + ' 8091'
 wait = True
