@@ -52,7 +52,10 @@ COPY epm/deploy /elastest-toolbox/epm/deploy
 
 COPY emp/deploy /elastest-toolbox/emp/deploy
 
-COPY esm_services /elastest-toolbox/esm_services
+# Copy platform-services
+
+COPY platform-services /elastest-toolbox/platform-services
+
 
 RUN cd /elastest-toolbox
 

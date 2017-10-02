@@ -1,11 +1,9 @@
 version: '3'
 services:
-    esm_services_config:
-        build: 
-          context: ../
-          dockerfile: ./esm_services/Dockerfile
+    platform-services:
+        image: elastest/platform-services
         volumes:
-            - esm_services:/esm_services
+            - esm_services:/platform-services
         networks:
             - elastest
 networks:

@@ -1,5 +1,7 @@
 FROM alpine:3.5
 
+RUN ls
+
 COPY ebs/elastestservice.json /esm_services/ebs-elastestservice.json
 COPY eds/elastestservice.json /esm_services/eds-elastestservice.json
 COPY ems/elastestservice.json /esm_services/ems-elastestservice.json

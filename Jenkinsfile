@@ -21,6 +21,24 @@ node('docker'){
                 submoduleCfg: [], 
                 userRemoteConfigs: [[url: 'https://github.com/elastest/elastest-toolbox']]
               ])
+
+            stage "Platform-Services image build"
+    
+              "Create platform-services docker image"
+            
+                echo ("Creating elastest/platform-services image..")                
+                sh 'docker build -t elastest/platform-services . -f platform-services/Dockerfile'
+    
+            stage "Publish Platform-Services docker image"
+    
+                echo ("Publish elastest/platform-services image")
+                def platformservicesimage = docker.image('elastest/platform-services')
+                //this is work arround as withDockerRegistry is not working properly 
+                withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'elastestci-dockerhub',
+                    usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                    sh 'docker login -u "$USERNAME" -p "$PASSWORD"'
+                    platformservicesimage.push()
+                }
             
             
             stage "Platform image build"
