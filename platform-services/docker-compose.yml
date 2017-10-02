@@ -3,7 +3,7 @@ services:
     platform-services:
         image: elastest/platform-services
         volumes:
-            - esm_services:/platform-services
+            - platform-services:/platform-services
         networks:
             - elastest
 networks:
