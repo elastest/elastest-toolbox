@@ -10,5 +10,5 @@ networks:
     elastest:
       driver: bridge
 volumes:
-    esm_services:
+    platform-services:
       driver: local
