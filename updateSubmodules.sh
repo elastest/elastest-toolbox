@@ -1,6 +1,7 @@
 #!/bin/bash
 function tryAdd () {
 	git add .
+	git diff --cached --exit-code
 	return $?
 }
 
