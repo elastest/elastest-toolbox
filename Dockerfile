@@ -2,8 +2,6 @@ FROM weboaks/alpine-docker-compose
 
 RUN apk update
 
-RUN apk add git
-
 # Add python
 RUN apk add --update \
     python \

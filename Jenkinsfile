@@ -22,6 +22,13 @@ node('docker'){
                 userRemoteConfigs: [[url: 'https://github.com/elastest/elastest-toolbox']]
               ])
 
+            stage "Commit platform submodules"
+    
+              "Commit platform submodules"
+
+                echo ("Commit submodules if is necessary")     
+		sh 'chmod 755 updateSubmodules.sh; ./updateSubmodules.sh'           	
+
             stage "Platform-Services image build"
     
               "Create platform-services docker image"
