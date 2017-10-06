@@ -2,6 +2,7 @@
 import sys
 import shlex, subprocess
 import argparse
+import os
 
 # Define arguments
 parser = argparse.ArgumentParser()
@@ -13,7 +14,7 @@ parser.add_argument('--dev', '-d', help='ETM dev mode. Usage: --dev=etm', requir
 parser.add_argument('--forcepull', '-fp', help='Force pull of all images. Usage: --forcepull', required=False, action='store_true')
 parser.add_argument('--noports', '-np',help='Unbind all ports. Usage: --noports', required=False, action='store_true')
 parser.add_argument('--logs', '-l', help='Show logs of all containers. Usage: --logs', required=False, action='store_true')
-parser.add_argument('--nocheck', required=False, action='store_true', help=argparse.SUPPRESS)
+parser.add_argument('--wait', '-w', help='Wait until etm has been started. Usage: --wait', required=False, action='store_true')
 
 # Custom usage message
 usage = parser.format_usage()
@@ -28,6 +29,7 @@ if len(sys.argv)==1:
 args = parser.parse_args()
 
 dockerCommand = []
+checkETMScript = 'checkETM.py'
 
 mode = args.mode #start or stop
 lite = args.lite
@@ -36,8 +38,10 @@ if(mode != 'start' and mode != 'stop'):
 	sys.exit(1)
 
 if(args.logs == True):
+	FNULL = subprocess.stdout
 	instruction = ' up'
 else:
+	FNULL = open(os.devnull, 'w')
 	instruction = ' up -d'
 
 
@@ -95,8 +99,7 @@ else:
 # If mode=stop
 if(mode == 'stop'):
 	instruction = ' down'
-	message = 'Stopping ElasTest Platform (' + submode + ' mode)...'
-		
+	message = 'Stopping ElasTest Platform (' + submode + ' mode)...'		
 
 if(len(dockerCommand) > 0):
 	# If Force pull, do pull for each image
@@ -111,11 +114,28 @@ if(len(dockerCommand) > 0):
 	if(etm_dev):
 		print '(Without ETM)'
 	print ''
+	
+	# If not wait, or wait but is etm dev or stop mode
+	# run normally (run docker-compose in foreground without check)
+	if(not args.wait or (args.wait and (etm_dev or mode == 'stop'))):
+		#Check if ETM is started
+		if(mode != 'stop' and not etm_dev):
+			subprocess.Popen(['python', checkETMScript])
 
-	#Check if ETM is started
-	if(mode != 'stop' and not etm_dev and not args.nocheck):
-		subprocess.Popen(['python','checkETM.py'])
+		# Run docker-compose up/down''
+		subprocess.call(shlex.split(dockerCommand))
 
-	# Run docker-compose up/down''
-	subprocess.call(shlex.split(dockerCommand))
+	# If wait, run run docker-compose and wait to check ETM finished
+	else:
+		# Run docker-compose up/down
+		if(args.logs):
+			# If print logs, run in bg
+			subprocess.Popen(shlex.split(dockerCommand), stdout=FNULL, stderr=subprocess.STDOUT)
+		else:
+			subprocess.call(shlex.split(dockerCommand), stdout=FNULL, stderr=subprocess.STDOUT)
+		print ''
+		print 'Waiting for ETM...'
 
+		# Run check ETM
+		import checkETM	
+		
