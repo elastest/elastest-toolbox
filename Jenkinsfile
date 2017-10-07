@@ -34,12 +34,12 @@ node('docker'){
               "Create platform-services docker image"
             
                 echo ("Creating elastest/platform-services image..")                
-                sh 'docker build -t elastest/platform-services . -f platform-services/Dockerfile'
+                sh 'docker build -t elastest/platform-services:0.5.0-alpha1 . -f platform-services/Dockerfile'
     
             stage "Publish Platform-Services docker image"
     
                 echo ("Publish elastest/platform-services image")
-                def platformservicesimage = docker.image('elastest/platform-services')
+                def platformservicesimage = docker.image('elastest/platform-services:0.5.0-alpha1')
                 //this is work arround as withDockerRegistry is not working properly 
                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'elastestci-dockerhub',
                     usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
@@ -53,12 +53,12 @@ node('docker'){
               "Create platform docker image"
             
                 echo ("Creating elastest/platform image..")                
-                sh 'docker build -t elastest/platform .'
+                sh 'docker build -t elastest/platform:0.5.0-alpha1 .'
     
             stage "Publish Platform docker image"
     
                 echo ("Publish elastest/platform image")
-                def platformimage = docker.image('elastest/platform')
+                def platformimage = docker.image('elastest/platform:0.5.0-alpha1')
                 //this is work arround as withDockerRegistry is not working properly 
                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'elastestci-dockerhub',
                     usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
@@ -67,7 +67,7 @@ node('docker'){
                 }
 
             stage "Download Platform docker image"
-		 def platformcontainer = docker.image('elastest/platform')
+		 def platformcontainer = docker.image('elastest/platform:0.5.0-alpha1')
         	 platformcontainer.pull() // make sure we have the latest available from Docker Hub
 
 	    stage "IT Test ETM is running"
