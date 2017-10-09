@@ -17,9 +17,10 @@ tryAdd
 ERROR=$?
 
 if [ $ERROR -gt 0 ] ; then
-	echo "Trying to push submodules"
+	echo "Trying to commit submodules..."
 	git commit -m "Update submodules"
-	git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/elastest/elastest-toolbox.git origin master
+	echo "Commited, trying to push..."
+	git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/elastest/elastest-toolbox.git
 	exit 1
 else
 	echo "There are not changes"
