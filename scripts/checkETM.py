@@ -28,9 +28,12 @@ def containerIP():
 	if (counter == 0):
 		print 'Timeout: container ' + containerName + ' not created'
 		exit(1)
-	print ''
-	print 'Container created with IP: ' + ip
 	return ip
+
+def getEtmUrl():
+	ip = containerIP()
+	url = 'http://' + ip + ':' + etmPort
+	return url
 
 def checkWorking(url):
 	working = False
@@ -66,41 +69,46 @@ def insertPlatformIntoNetwork():
 		pass
 
 
+# Main function
+def runCheckETM():
 
-# Insert platform into network
-insertPlatformIntoNetwork()
+	# Insert platform into network
+	insertPlatformIntoNetwork()
 
-# Get ETM container IP
-etmIP = containerIP();
-
-# Check if service is started and running
-counterDefault = 145
-counter = counterDefault
-
-url = 'http://' + etmIP + ':' + etmPort
-wait = True
-working = False
-
-while (wait and counter > 0):
-	working = checkWorking(url)
-	if (working):
-		wait = False
-	else:
-		if (counter == counterDefault or counter == (counterDefault / 2)):
-			print 'ETM is not ready. Please wait...'
-
-		counter-=1
-		time.sleep(2)
+	# Get ETM container IP
+	etmIP = containerIP()
+	print ''
+	print 'Container created with IP: ' + etmIP
 
 
-if (counter == 0):
-	print 'Timeout: container ' + containerName + ' not started'
-	exit(1)
-else:
-	if (working):
-		print 'ETM is ready in ' + url
-		exit(0)
-	else:
-		print 'ERROR: ElasTest ETM not started correctly'
+	# Check if service is started and running
+	counterDefault = 145
+	counter = counterDefault
+
+	url = getEtmUrl()
+	wait = True
+	working = False
+
+	while (wait and counter > 0):
+		working = checkWorking(url)
+		if (working):
+			wait = False
+		else:
+			if (counter == counterDefault or counter == (counterDefault / 2)):
+				print 'ETM is not ready. Please wait...'
+
+			counter-=1
+			time.sleep(2)
+
+
+	if (counter == 0):
+		print 'Timeout: container ' + containerName + ' not started'
 		exit(1)
+	else:
+		if (working):
+			print 'ETM is ready in ' + url
+			exit(0)
+		else:
+			print 'ERROR: ElasTest ETM not started correctly'
+			exit(1)
 

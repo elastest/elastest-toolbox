@@ -18,22 +18,8 @@ RUN  apk add --no-cache netcat-openbsd
 RUN mkdir /elastest-toolbox
 
 
-# Copy scripts
-
-COPY run.py /elastest-toolbox/run.py
-
-COPY init.py /elastest-toolbox/init.py
-
-COPY messages.py /elastest-toolbox/messages.py
-
-COPY checkETM.py /elastest-toolbox/checkETM.py
-
-RUN chmod 777 /elastest-toolbox/run.py
-
-RUN chmod 777 /elastest-toolbox/init.py
-
-RUN chmod 777 /elastest-toolbox/checkETM.py
-
+# Copy scripts folder
+COPY scripts /elastest-toolbox/scripts
 
 
 # Copy deploy folders of each component
@@ -57,13 +43,13 @@ COPY emp/deploy /elastest-toolbox/emp/deploy
 COPY platform-services /elastest-toolbox/platform-services
 
 
-RUN cd /elastest-toolbox
+RUN cd /elastest-toolbox/scripts
 
 # Python prints in order
 ENV PYTHONUNBUFFERED=0
 
 # Commands
-WORKDIR /elastest-toolbox
+WORKDIR /elastest-toolbox/scripts
 
 ENTRYPOINT ["python","init.py"]
 

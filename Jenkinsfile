@@ -71,6 +71,6 @@ node('docker'){
         	 platformcontainer.pull() // make sure we have the latest available from Docker Hub
 
 	    stage "IT Test ETM is running"
-	         sh 'chmod 755 it.sh; ./it.sh'
+	         sh 'cd scripts; chmod 755 it.sh; ./it.sh'
         }
 }
