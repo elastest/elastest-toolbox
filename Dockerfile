@@ -22,13 +22,15 @@ RUN mkdir /elastest-toolbox
 
 COPY run.py /elastest-toolbox/run.py
 
-COPY init.sh /elastest-toolbox/init.sh
+COPY init.py /elastest-toolbox/init.py
+
+COPY messages.py /elastest-toolbox/messages.py
 
 COPY checkETM.py /elastest-toolbox/checkETM.py
 
 RUN chmod 777 /elastest-toolbox/run.py
 
-RUN chmod 777 /elastest-toolbox/init.sh
+RUN chmod 777 /elastest-toolbox/init.py
 
 RUN chmod 777 /elastest-toolbox/checkETM.py
 
@@ -63,6 +65,6 @@ ENV PYTHONUNBUFFERED=0
 # Commands
 WORKDIR /elastest-toolbox
 
-ENTRYPOINT ["./init.sh"]
+ENTRYPOINT ["python","init.py"]
 
 CMD ["-h"]

@@ -38,7 +38,7 @@ if(mode != 'start' and mode != 'stop'):
 	sys.exit(1)
 
 if(args.logs == True):
-	FNULL = subprocess.stdout
+	FNULL = subprocess.STDOUT
 	instruction = ' up'
 else:
 	FNULL = open(os.devnull, 'w')
@@ -118,10 +118,6 @@ if(len(dockerCommand) > 0):
 	# If not wait, or wait but is etm dev or stop mode
 	# run normally (run docker-compose in foreground without check)
 	if(not args.wait or (args.wait and (etm_dev or mode == 'stop'))):
-		#Check if ETM is started
-		if(mode != 'stop' and not etm_dev):
-			subprocess.Popen(['python', checkETMScript])
-
 		# Run docker-compose up/down''
 		subprocess.call(shlex.split(dockerCommand))
 
