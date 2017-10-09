@@ -35,16 +35,18 @@ To stop ElasTest Platform you can execute:
 docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop
 ```
 
-## How to check if ElasTest is started
+## Wait for ElasTest is started and running
 
-Once ElasTest Platform is started run the following command:
+Once ElasTest Platform start command is launched, you can run the following command to wait for ElasTest is started and running.
+This command waits for about ten minutes max for Elastest to start and run; while prints ElasTest status information.
 ```
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform wait
 ```
 
 ## How to inspect ElasTest Platform
 
-Once ElasTest Platform is started run the following command to inspect API Url:
+Once ElasTest Platform is started, you can run the inspect command to know more information:
+With --api argument you can get the ElasTest API URL once ElasTest is running.
 ```
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform inspect --api
 ```

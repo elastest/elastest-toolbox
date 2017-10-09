@@ -2,7 +2,7 @@
 function tryAdd () {
 	git add .
 	git diff --cached --exit-code
-	return $?
+	echo $?
 }
 
 
@@ -21,8 +21,7 @@ if [ $ERROR -gt 0 ] ; then
 else
 	echo "Trying to push submodules"
 	git commit -m "Update submodules"
-	git push origin master
-	git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/elastest/elastest-toolbox.git
+	git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/elastest/elastest-toolbox.git origin master
 	exit 1
 fi
 
