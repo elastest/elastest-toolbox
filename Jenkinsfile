@@ -55,6 +55,9 @@ node('docker'){
                 echo ("Creating elastest/platform image..")                
                 sh 'docker build -t elastest/platform .'
     
+            stage "IT Test ETM is running"
+	         sh 'cd scripts; chmod 755 it.sh; ./it.sh'
+
             stage "Publish Platform docker image"
     
                 echo ("Publish elastest/platform image")
@@ -70,7 +73,5 @@ node('docker'){
 		 def platformcontainer = docker.image('elastest/platform')
         	 platformcontainer.pull() // make sure we have the latest available from Docker Hub
 
-	    stage "IT Test ETM is running"
-	         sh 'cd scripts; chmod 755 it.sh; ./it.sh'
         }
 }

@@ -11,16 +11,17 @@ docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platfor
 
 # Check if is started
 echo 'Checking if ETM is working...'
-responseCheck=$('docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform wait')
+docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform wait
+responseCheck=$?
 
 echo 'Stopping ET Platform...'
 docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop
 echo ''
 
-if [ $responseCheck -eq 0 ]; then
-	echo 'ElasTest ETM started'
-	exit 0;
-else
+if [ $responseCheck -gt 0 ] ; then
 	echo 'ElasTest ETM not started'
 	exit 1;
+else
+	echo 'ElasTest ETM started'
+	exit 0;
 fi 
