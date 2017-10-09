@@ -74,11 +74,12 @@ def runCheckETM():
         print ''
         print 'Waiting for ETM...'
 
+	# Get ETM container IP
+	etmIP = containerIP()
+
 	# Insert platform into network
 	insertPlatformIntoNetwork()
 
-	# Get ETM container IP
-	etmIP = containerIP()
 	print ''
 	print 'Container created with IP: ' + etmIP
 

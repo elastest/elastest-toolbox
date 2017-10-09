@@ -101,25 +101,25 @@ git clone --recursive https://github.com/elastest/elastest-toolbox
 ```
 cd elastest-toolbox/scripts
 ```
-To start ElasTest platform in `normal` mode with the `init.py` script execute:
+To start ElasTest platform in `normal` mode with the `main.py` script execute:
 
 ```
-python init.py start
+python main.py start
 ```
 
 To stop platform execute:
 ```
-python init.py stop normal
+python main.py stop normal
 ```
 
-To start ElasTest platform in `lite` mode with the `init.py` script execute:
+To start ElasTest platform in `lite` mode with the `main.py` script execute:
 
 ```
-python init.py start --lite
+python main.py start --lite
 ```
 To stop platform execute:
 ```
-python init.py stop --lite
+python main.py stop --lite
 ```
 
 ## Ports

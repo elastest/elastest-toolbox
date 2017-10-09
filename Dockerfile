@@ -51,6 +51,6 @@ ENV PYTHONUNBUFFERED=0
 # Commands
 WORKDIR /elastest-toolbox/scripts
 
-ENTRYPOINT ["python","init.py"]
+ENTRYPOINT ["python","main.py"]
 
 CMD ["-h"]

@@ -48,7 +48,6 @@ if(len(sys.argv) > 1):
 
 	elif(args[1] == 'wait'):
 		checkResult = runCheckETM()
-		print 'check: ' + checkResult
 		exit(checkResult)
 	elif(args[1] == 'inspect'):
 		subprocess.call(['python', 'inspect.py'] + params)

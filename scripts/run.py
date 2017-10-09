@@ -121,8 +121,6 @@ if(len(dockerCommand) > 0):
 	# Run docker-compose up/down
     	if(args.logs):
 	# If print logs, run in bg
-	    subprocess.Popen(shlex.split(dockerCommand),
-		             stdout=FNULL, stderr=subprocess.STDOUT)
+	    subprocess.Popen(shlex.split(dockerCommand))
 	else:
-	    subprocess.call(shlex.split(dockerCommand),
-		            stdout=FNULL, stderr=subprocess.STDOUT)
+	    subprocess.call(shlex.split(dockerCommand))
