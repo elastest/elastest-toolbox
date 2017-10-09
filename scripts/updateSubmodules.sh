@@ -2,7 +2,7 @@
 function tryAdd () {
 	git add .
 	git diff --cached --exit-code
-	echo $?
+	return $?
 }
 
 
@@ -13,7 +13,8 @@ git submodule foreach git checkout master
 git submodule foreach git pull
 
 #Try add
-ERROR=$(tryAdd)
+tryAdd
+ERROR=$?
 
 if [ $ERROR -gt 0 ] ; then
 	echo "There are not changes"
