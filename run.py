@@ -29,7 +29,6 @@ if len(sys.argv)==1:
 args = parser.parse_args()
 
 dockerCommand = []
-checkETMScript = 'checkETM.py'
 
 mode = args.mode #start or stop
 lite = args.lite
