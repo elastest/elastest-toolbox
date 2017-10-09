@@ -8,6 +8,7 @@ function tryAdd () {
 
 # Pull all submodules
 echo "Checking if there are changes"
+cd ..
 git submodule foreach git checkout master
 git submodule foreach git pull
 

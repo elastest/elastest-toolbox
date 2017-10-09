@@ -35,6 +35,20 @@ To stop ElasTest Platform you can execute:
 docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop
 ```
 
+## How to check if ElasTest is started
+
+Once ElasTest Platform is started run the following command:
+```
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform wait
+```
+
+## How to inspect ElasTest Platform
+
+Once ElasTest Platform is started run the following command to inspect API Url:
+```
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform inspect --api
+```
+
 ## Execution options
 
 If you execute the following command you can see the options that can be used:
@@ -85,27 +99,27 @@ Clone elastest-toolbox repository and move into:
 git clone --recursive https://github.com/elastest/elastest-toolbox
 ```
 ```
-cd elastest-toolbox
+cd elastest-toolbox/scripts
 ```
-To start ElasTest platform in `normal` mode with the `run.py` script execute:
+To start ElasTest platform in `normal` mode with the `init.py` script execute:
 
 ```
-python run.py start
+python init.py start
 ```
 
 To stop platform execute:
 ```
-python run.py stop normal
+python init.py stop normal
 ```
 
-To start ElasTest platform in `lite` mode with the `run.py` script execute:
+To start ElasTest platform in `lite` mode with the `init.py` script execute:
 
 ```
-python run.py start --lite
+python init.py start --lite
 ```
 To stop platform execute:
 ```
-python run.py stop --lite
+python init.py stop --lite
 ```
 
 ## Ports

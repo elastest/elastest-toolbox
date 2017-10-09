@@ -71,6 +71,8 @@ def insertPlatformIntoNetwork():
 
 # Main function
 def runCheckETM():
+        print ''
+        print 'Waiting for ETM...'
 
 	# Insert platform into network
 	insertPlatformIntoNetwork()
@@ -103,12 +105,12 @@ def runCheckETM():
 
 	if (counter == 0):
 		print 'Timeout: container ' + containerName + ' not started'
-		exit(1)
+		return 1
 	else:
 		if (working):
 			print 'ETM is ready in ' + url
-			exit(0)
+			return 0
 		else:
 			print 'ERROR: ElasTest ETM not started correctly'
-			exit(1)
+			return 1
 

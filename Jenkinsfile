@@ -27,7 +27,7 @@ node('docker'){
               "Commit platform submodules"
 
                 echo ("Commit submodules if is necessary")     
-		sh 'chmod 755 updateSubmodules.sh; ./updateSubmodules.sh'           	
+		sh 'cd scripts; chmod 755 updateSubmodules.sh; ./updateSubmodules.sh'           	
 
             stage "Platform-Services image build"
     

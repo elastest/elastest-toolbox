@@ -6,6 +6,7 @@ import shlex, subprocess
 import os
 from functools import partial
 from messages import *
+from checkETM import *
 
 FNULL = open(os.devnull, 'w')
 
@@ -46,9 +47,11 @@ if(len(sys.argv) > 1):
 			result = subprocess.call(['python', 'run.py', 'stop'])
 
 	elif(args[1] == 'wait'):
-		print ''
+		checkResult = runCheckETM()
+		print 'check: ' + checkResult
+		exit(checkResult)
 	elif(args[1] == 'inspect'):
-		print ''
+		subprocess.call(['python', 'inspect.py'] + params)
 	elif(args[1] == '-h' or args[1] == '--help'):
 		subprocess.call(['python', 'run.py', '-h'])
 	else:
