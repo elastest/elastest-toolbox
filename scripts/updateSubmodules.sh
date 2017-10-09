@@ -21,6 +21,7 @@ else
 	echo "Trying to push submodules"
 	git commit -m "Update submodules"
 	git push origin master
+	git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/elastest/elastest-toolbox.git
 fi
 
 exit 0

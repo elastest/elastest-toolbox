@@ -24,6 +24,7 @@ def containerIP():
 		except subprocess.CalledProcessError:	
 			pass
 		counter-=1
+		time.sleep(2)
 
 	if (counter == 0):
 		print 'Timeout: container ' + containerName + ' not created'

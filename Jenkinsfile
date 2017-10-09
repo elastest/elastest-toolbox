@@ -27,7 +27,10 @@ node('docker'){
               "Commit platform submodules"
 
                 echo ("Commit submodules if is necessary")     
-		sh 'cd scripts; chmod 755 updateSubmodules.sh; ./updateSubmodules.sh'           	
+		withCredentials([usernamePassword(credentialsId: 'GitHub-elastest' passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+		    sh ('cd scripts; chmod 755 updateSubmodules.sh; ./updateSubmodules.sh')
+		}
+
 
             stage "Platform-Services image build"
     
