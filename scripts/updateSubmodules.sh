@@ -5,6 +5,9 @@ function tryAdd () {
 	return $?
 }
 
+# HARDCODED EXIT
+echo 'Ignoring update submodules'
+exit 0
 
 # Pull all submodules
 echo "Checking if there are changes"

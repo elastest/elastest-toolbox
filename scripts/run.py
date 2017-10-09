@@ -10,7 +10,7 @@ from checkETM import *
 def getArgs():
 	# Define arguments
 	parser = argparse.ArgumentParser()
-	parser.add_argument('mode', help='Mode to execute: start or stop')
+	parser.add_argument('mode', help='Mode to execute: start or stop', type=str, choices=set(('start','stop')))
 	parser.add_argument('--lite', '-lt', help='Run in Lite mode', required=False, action='store_true')
 	parser.add_argument('--dev', '-d', help='ETM dev mode. Usage: --dev=etm', required=False)
 	parser.add_argument('--forcepull', '-fp', help='Force pull of all images. Usage: --forcepull', required=False, action='store_true')
@@ -36,9 +36,6 @@ dockerCommand = []
 
 mode = args.mode  # start or stop
 lite = args.lite
-
-if(mode != 'start' and mode != 'stop'):
-	sys.exit(1)
 
 if(args.logs == True):
 	FNULL = subprocess.STDOUT

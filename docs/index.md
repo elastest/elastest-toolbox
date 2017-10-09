@@ -62,11 +62,33 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform -
 The output is:
 
 ```
-usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform [-h] [--lite] [--dev DEV] [--forcepull] [--noports] [--logs]
-              mode
+usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform [-h] {start,inspect,stop,wait}
 
 positional arguments:
-  mode               Mode to execute: start or stop
+  {start,inspect,stop,wait}
+                        Instruction to execute
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+```
+
+In addition, you can execute the following commands to see the help of the instructions:
+
+### Start
+
+```
+docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start -h
+```
+
+The output is:
+
+```
+usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform [-h] [--lite] [--dev DEV] [--forcepull] [--noports] [--logs]
+              {start,stop}
+
+positional arguments:
+  {start,stop}       Mode to execute: start or stop
 
 optional arguments:
   -h, --help         show this help message and exit
@@ -76,6 +98,22 @@ optional arguments:
   --noports, -np     Unbind all ports. Usage: --noports
   --logs, -l         Show logs of all containers. Usage: --logs
 
+```
+
+### Inspect
+
+```
+docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform inspect -h
+```
+
+The output is:
+
+```
+usage: inspect.py [-h] [--api]
+
+optional arguments:
+  -h, --help  show this help message and exit
+  --api, -a   Return current status of ElasTest API
 ```
 
 ## Development instructions
