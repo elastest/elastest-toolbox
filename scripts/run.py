@@ -119,8 +119,11 @@ if(len(dockerCommand) > 0):
 	print ''
 
 	# Run docker-compose up/down
-    	if(args.logs):
-	# If print logs, run in bg
-	    subprocess.Popen(shlex.split(dockerCommand))
-	else:
-	    subprocess.call(shlex.split(dockerCommand))
+	try:
+	    	if(args.logs):
+		# If print logs, run in bg
+		    subprocess.Popen(shlex.split(dockerCommand), stderr=FNULL)
+		else:
+		    subprocess.call(shlex.split(dockerCommand), stderr=FNULL)
+	except KeyboardInterrupt: # Hide error on SIGINT
+		pass
