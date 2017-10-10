@@ -16,8 +16,8 @@ def setServerAddress(address):
 	default = env_var_name + '=localhost'
 	
 	try:
-		searchAndReplace(etm_dir + '/deploy/docker-compose.env', default, env_var)
-		searchAndReplace(etm_dir + '/docker/docker-compose.env', default, env_var)
+		searchAndReplace(etm_dir + '/deploy/docker-compose-main.yml', default, env_var)
+		searchAndReplace(etm_dir + '/docker/docker-compose-main.yml', default, env_var)
 	except subprocess.CalledProcessError:	
 		print 'Error: Environment variable could not be inserted'
 		exit(1)
