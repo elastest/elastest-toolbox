@@ -121,7 +121,7 @@ def runPlatform(params):
 
 		# Run docker-compose up/down
 		try:
-		    	if(args.logs):
+		    	if(args.logs and mode == 'start'):
 			# If print logs, run in bg
 				subprocess.Popen(shlex.split(dockerCommand), stderr=FNULL)
 			else:
