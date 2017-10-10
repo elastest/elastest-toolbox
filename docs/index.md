@@ -109,7 +109,7 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform i
 The output is:
 
 ```
-usage: inspect.py [-h] [--api]
+usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform inspect [-h] [--api]
 
 optional arguments:
   -h, --help  show this help message and exit

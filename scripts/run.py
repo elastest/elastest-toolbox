@@ -5,6 +5,7 @@ import subprocess
 import argparse
 import os
 from checkETM import *
+from setEnv import *
 
 
 def getArgs():
@@ -16,6 +17,7 @@ def getArgs():
 	parser.add_argument('--forcepull', '-fp', help='Force pull of all images. Usage: --forcepull', required=False, action='store_true')
 	parser.add_argument('--noports', '-np', help='Unbind all ports. Usage: --noports', required=False, action='store_true')
 	parser.add_argument('--logs', '-l', help='Show logs of all containers. Usage: --logs', required=False, action='store_true')
+	parser.add_argument('--server-address', '-sa', help='Set server address Env Var. Usage: --server-address', required=False)
 
 	# Custom usage message
 	usage = parser.format_usage()
@@ -36,6 +38,9 @@ dockerCommand = []
 
 mode = args.mode  # start or stop
 lite = args.lite
+
+if(args.server_address):
+	setServerAddress(args.server_address)
 
 if(args.logs == True):
 	FNULL = subprocess.STDOUT
@@ -61,7 +66,6 @@ platform_services = '-f ../platform-services/docker-compose.yml'
 
 etm_complementary = '-f ../etm/deploy/docker-compose-complementary.yml'
 etm_main = '-f ../etm/deploy/docker-compose-main.yml'
-etm_lite = '-f ../etm/deploy/docker-compose-lite.yml'
 etm = etm_complementary + ' ' + etm_main
 
 # If -dev=etm run without ETM
@@ -82,7 +86,6 @@ else:
 	etm_complementary_ports = '-f ../etm/docker/docker-compose-complementary-ports.yml'
 	etm_main = '-f ../etm/docker/docker-compose-main.yml'
 	etm_main_ports = '-f ../etm/docker/docker-compose-main-ports.yml'
-	etm_lite = '-f ../etm/docker/docker-compose-lite.yml'
 	if(args.noports):
 	        print ''
         	print 'No binding ports'
@@ -91,7 +94,7 @@ else:
 
 	etm = etm_complementary + ' ' + etm_complementary_ports
 	if (not etm_dev):
-		etm = etm + ' ' + etm_main + ' ' + etm_main_ports + ' ' + etm_lite
+		etm = etm + ' ' + etm_main + ' ' + etm_main_ports
 	dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' -p elastest'
 	message = 'Starting ElasTest Platform in Lite Mode...'
 	submode = 'Lite'
