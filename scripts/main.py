@@ -66,10 +66,9 @@ if(args.instruction == 'start'):
 	signal.signal(signal.SIGTERM, partial(stop, params))
 	
 	if(len(params) == 0 or (len(params) > 0 and params[0] != '-h' and params[0] != '--help')):
-		proc = subprocess.Popen(['python', 'run.py'] + expresion)
+		subprocess.Popen(['python', 'run.py'] + expresion)
 		printMsg('stop help')
 		signal.pause()
-		
 	else:
 		subprocess.call(['python', 'run.py'] + expresion)
 
