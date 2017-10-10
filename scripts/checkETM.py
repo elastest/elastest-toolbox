@@ -23,6 +23,8 @@ def containerIP():
 			ip = ip.rstrip()
 		except subprocess.CalledProcessError:	
 			pass
+		except KeyboardInterrupt: # Hide error on SIGINT
+			exit(0)
 		counter-=1
 		time.sleep(2)
 
@@ -45,6 +47,8 @@ def checkWorking(url):
 	    return working
 	except urllib2.URLError as e2:
 	    return working
+	except KeyboardInterrupt: # Hide error on SIGINT
+		exit(0)
 	else:
 	    # 200
 	    working = True
@@ -68,6 +72,8 @@ def insertPlatformIntoNetwork():
 		print 'Platform inserted into network succesfully'
 	except subprocess.CalledProcessError:
 		pass
+	except KeyboardInterrupt: # Hide error on SIGINT
+		exit(0)
 
 
 # Main function

@@ -4,9 +4,12 @@ import sys
 import argparse
 import shlex, subprocess
 import os
+import threading
 from functools import partial
 from messages import *
 from checkETM import *
+from run import *
+from inspect import *
 
 FNULL = open(os.devnull, 'w')
 
@@ -48,7 +51,7 @@ def argsToList(args):
 
 def stop(params, signal, frame):
 	printMsg('stopping')
-	result = subprocess.call(['python', 'run.py', 'stop'] + params)
+	result = runPlatform(['stop'] + params)
         sys.exit(result)
 
 
@@ -66,11 +69,14 @@ if(args.instruction == 'start'):
 	signal.signal(signal.SIGTERM, partial(stop, params))
 	
 	if(len(params) == 0 or (len(params) > 0 and params[0] != '-h' and params[0] != '--help')):
-		subprocess.Popen(['python', 'run.py'] + expresion)
+		# Run in background and wait signal
+		run_thread = threading.Thread(target=runPlatform, args=[expresion])
+		run_thread.start()
+
 		printMsg('stop help')
 		signal.pause()
 	else:
-		subprocess.call(['python', 'run.py'] + expresion)
+		runPlatform(expresion)
 
 elif(args.instruction == 'stop'):
 	print 'Sending stop signal...'
@@ -87,12 +93,11 @@ elif(args.instruction == 'stop'):
 		print ''
 		print 'trying again...'
 		print ''
-		result = subprocess.call(['python', 'run.py', 'stop'])
+		result = runPlatform(['stop'])
 
 elif(args.instruction == 'wait'):
 	checkResult = runCheckETM()
 	exit(checkResult)
 elif(args.instruction == 'inspect'):
-	subprocess.call(['python', 'inspect.py'] + params)
-
+	inspectPlatform(params)
 
