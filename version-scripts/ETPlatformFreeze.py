@@ -4,8 +4,11 @@ import shlex
 import sys
 from ETDockerNightly import *
 
-def buildImageFromToolbox(tag, image):
-	command = 'sh -c "cd ..; docker build -t ' + image + ' . -f platform-services/Dockerfile"' #Note: cd only in this call
+def buildImageFromToolbox(tag, image, dockerfile):
+	if(not dockerfile):
+		dockerfile = ''
+	docker_command = 'docker build -t ' + image + ' . ' + dockerfile
+	command = 'sh -c "cd ..; ' + docker_command + '"' #Note: cd only in this call
 	build_result = subprocess.call(shlex.split(command))
 
 	if(build_result > 0):
@@ -14,12 +17,13 @@ def buildImageFromToolbox(tag, image):
 
 def buildPlatformServices(tag):
 	image = 'elastest/platform-services:' + tag
-	buildImageFromToolbox(tag, image)
+	dockerfile = '-f platform-services/Dockerfile'
+	buildImageFromToolbox(tag, image, dockerfile)
 	return image
 
 def buildPlatform(tag):
 	image = 'elastest/platform:' + tag
-	buildImageFromToolbox(tag, image)
+	buildImageFromToolbox(tag, image, '')
 	return image
 
 
