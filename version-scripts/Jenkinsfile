@@ -29,7 +29,12 @@ node('docker'){
               "Freezing platform docker image"
             
                 echo ("Freezing platform docker image")                
-                python ETPlatformFreeze.py
+		withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'elastestci-dockerhub',
+                    usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                    sh 'docker login -u "$USERNAME" -p "$PASSWORD"'
+                    python ETPlatformFreeze.py
+                }
+
 
         }
 }
