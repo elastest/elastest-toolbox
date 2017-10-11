@@ -12,7 +12,7 @@ def buildImageFromToolbox(tag, image, dockerfile):
 	build_result = subprocess.call(shlex.split(command))
 
 	if(build_result > 0):
-		print 'Error on build image: ' + image
+		print('Error on build image: ' + image)
 		exit(1)
 
 def buildPlatformServices(tag):

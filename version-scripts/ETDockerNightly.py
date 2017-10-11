@@ -10,7 +10,7 @@ def pullImage(image):
 	pull_result = subprocess.call(shlex.split(pull + image))
 
 	if(pull_result > 0):
-		print 'Error on pull image ' + image
+		print('Error on pull image ' + image)
 		exit(1)
 
 def getNightlyTag():
@@ -22,7 +22,7 @@ def tagImage(image, tag):
 	tag_result = subprocess.call(shlex.split(tag_command))
 
 	if(tag_result > 0):
-		print 'Error on tag image ' + new_tagged
+		print('Error on tag image ' + new_tagged)
 		exit(1)
 	return new_tagged
 
@@ -31,7 +31,7 @@ def pushImage(image):
 	push_result = subprocess.call(shlex.split(push + image))
 
 	if(push_result > 0):
-		print 'Error on push image ' + image
+		print('Error on push image ' + image)
 		exit(1)
 
 def createETNightlyImage(image, tag):
@@ -44,7 +44,7 @@ def createETNightlyImage(image, tag):
 	# Push
 	pushImage(new_image)
 
-	print 'Image ' + new_image + ' pushed'
+	print('Image ' + new_image + ' pushed')
 	return tag
 
 #Main functions
@@ -56,7 +56,7 @@ def createETNightlyImages():
 
 	for image in images_list:
 		createETNightlyImage(image, tag)
-	print 'All images has been pushed'
+	print('All images has been pushed')
 	return tag
 
 def updateFilesToNightly():
