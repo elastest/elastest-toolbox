@@ -2,6 +2,7 @@
 import yaml
 import json
 from ETFiles import *
+from DockerUtils import *
 
 core_list = []
 tss_list = []
@@ -148,12 +149,17 @@ def loadETLists():
     engines_list = getEnginesList()
 
 
-def getElastestImages(without_tag):
+def getAllImages():
     loadETLists()
     images_list = []
     images_list = images_list + getCoreImages()
     images_list = images_list + getTSSImages()
     images_list = images_list + getEnginesImages()
+    return images_list
+
+
+def getElastestImages(without_tag):
+    images_list = getAllImages()
 
     elastest_images = []
     for image in images_list:
@@ -171,3 +177,9 @@ def updateFilesImagesWithTag(tag):
     updateCoreImagesTag(tag)
     updateTSSImagesTag(tag)
     updateEnginesImagesTag(tag)
+
+
+def pullAllImages():
+    images_list = getAllImages()
+    for image in images_list:
+        pullImage(image)

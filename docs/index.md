@@ -84,20 +84,24 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform s
 The output is:
 
 ```
-usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform [-h] [--lite] [--dev DEV] [--forcepull] [--noports] [--logs]
-              {start,stop}
+usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start [-h] [--lite] [--dev DEV] [--pullall] [--pullcore] [--noports]
+               [--logs] [--server-address SERVER_ADDRESS]
+               {start,stop}
 
 positional arguments:
-  {start,stop}       Mode to execute: start or stop
+  {start,stop}          Mode to execute: start or stop
 
 optional arguments:
-  -h, --help         show this help message and exit
-  --lite, -lt        Run in Lite mode
-  --dev DEV, -d DEV  ETM dev mode. Usage: --dev=etm
-  --forcepull, -fp   Force pull of all images. Usage: --forcepull
-  --noports, -np     Unbind all ports. Usage: --noports
-  --logs, -l         Show logs of all containers. Usage: --logs
-
+  -h, --help            show this help message and exit
+  --lite, -lt           Run in Lite mode
+  --dev DEV, -d DEV     ETM dev mode. Usage: --dev=etm
+  --pullall, -pa        Force pull of all images. Usage: --pullall
+  --pullcore, -pc       Force pull of only necessary images. Usage: --pullcore
+  --noports, -np        Unbind all ports. Usage: --noports
+  --logs, -l            Show logs of all containers. Usage: --logs
+  --server-address SERVER_ADDRESS, -sa SERVER_ADDRESS
+                        Set server address Env Var. Usage: --server-
+                        address=XXXXXX
 ```
 
 ### Inspect

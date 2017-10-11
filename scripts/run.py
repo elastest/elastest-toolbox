@@ -1,5 +1,7 @@
 #!/usr/bin/python3 -u
 import sys
+sys.path.append('../version-scripts')
+from ETImages import *
 import shlex
 import subprocess
 import argparse
@@ -8,20 +10,22 @@ from checkETM import *
 from setEnv import *
 
 
+
 def getArgs(params):
 	# Define arguments
 	parser = argparse.ArgumentParser()
 	parser.add_argument('mode', help='Mode to execute: start or stop', type=str, choices=set(('start','stop')))
 	parser.add_argument('--lite', '-lt', help='Run in Lite mode', required=False, action='store_true')
 	parser.add_argument('--dev', '-d', help='ETM dev mode. Usage: --dev=etm', required=False)
-	parser.add_argument('--forcepull', '-fp', help='Force pull of all images. Usage: --forcepull', required=False, action='store_true')
+	parser.add_argument('--pullall', '-pa', help='Force pull of all images. Usage: --pullall', required=False, action='store_true')
+	parser.add_argument('--pullcore', '-pc', help='Force pull of only necessary images. Usage: --pullcore', required=False, action='store_true')
 	parser.add_argument('--noports', '-np', help='Unbind all ports. Usage: --noports', required=False, action='store_true')
 	parser.add_argument('--logs', '-l', help='Show logs of all containers. Usage: --logs', required=False, action='store_true')
 	parser.add_argument('--server-address', '-sa', help='Set server address Env Var. Usage: --server-address=XXXXXX', required=False)
 
 	# Custom usage message
 	usage = parser.format_usage()
-	usage = usage.replace("usage: run.py", "docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform")
+	usage = usage.replace("usage: main.py", "docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start")
 	parser.usage = usage
 
 	# If there aren't args, show help and exit
@@ -106,11 +110,16 @@ def runPlatform(params):
 		message = 'Stopping ElasTest Platform (' + submode + ' mode)...'
 
 	if(len(dockerCommand) > 0):
-		# If Force pull, do pull for each image
-		if(mode != 'stop' and args.forcepull == True):
-			print 'Forcing pull...'
-			print ''
-			subprocess.call(shlex.split(dockerCommand + ' pull'))
+		# If Force pull or pull necessary images, do pull for each image
+		if(mode != 'stop'):
+			if(args.pullall):
+				print 'Forcing pull...'
+				print ''
+				pullAllImages()
+			elif(args.pullcore):
+				print 'Pulling necessary images...'
+				print ''
+				subprocess.call(shlex.split(dockerCommand + ' pull'))
 
 		dockerCommand = dockerCommand + instruction
 		print ''

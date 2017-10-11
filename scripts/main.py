@@ -71,9 +71,9 @@ if(args.instruction == 'start'):
 	if(len(params) == 0 or (len(params) > 0 and params[0] != '-h' and params[0] != '--help')):
 		# Run in background and wait signal
 		run_thread = threading.Thread(target=runPlatform, args=[expresion])
+		printMsg('stop help')
 		run_thread.start()
 
-		printMsg('stop help')
 		signal.pause()
 	else:
 		runPlatform(expresion)
