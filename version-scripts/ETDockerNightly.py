@@ -28,10 +28,10 @@ def tagImage(image, tag):
 
 def pushImage(image):
 	push = 'docker push '
-	push_result = subprocess.call(shlex.split(push + new_tagged))
+	push_result = subprocess.call(shlex.split(push + image))
 
 	if(push_result > 0):
-		print 'Error on push image ' + new_tagged
+		print 'Error on push image ' + image
 		exit(1)
 
 def createETNightlyImage(image, tag):
