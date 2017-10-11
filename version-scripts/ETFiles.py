@@ -42,7 +42,7 @@ def getEnginesList():
 
 
 
-# Yaml Reader
+# Yaml
 def getYml(path):
 	with open(path, 'r') as stream:
 	    try:
@@ -51,11 +51,22 @@ def getYml(path):
 		return yaml.load('')
 
 
-# Json Reader
+def saveYml(path, yml):
+	with open(path, 'w') as outfile:
+	    yaml.dump(yml, outfile, default_flow_style=False)
+
+
+# Json
 
 def getJson(path):
 	with open(path, 'r') as stream:
 		data = json.load(stream)
 		return data
 	return json.load('')
+
+
+def saveJson(path, json_file):
+	with open(path, 'w') as outfile:
+	    # json.dump(json_file, outfile)
+            json.dump(json_file, outfile, sort_keys=True, indent=4, separators=(',', ': '))
 

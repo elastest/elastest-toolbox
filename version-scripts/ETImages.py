@@ -26,12 +26,17 @@ def getImagesList(d):
 	return getValuesListOfKey(d, 'image')
 
 
-def getYmlFromETServicesJson(path):
+def getYmlFromETServicesJsonPath(path):
 	data = getJson(path)
+	return getYmlFromETServicesJsonFile(data)
+
+
+def getYmlFromETServicesJsonFile(json):
 	try:
-		return yaml.load(data['manifest']['manifest_content'])
+		return yaml.load(json['manifest']['manifest_content'])
 	except KeyError:
 		return yaml.load('')
+
 
 #*** Images Lists Getters By File Type ***#
 
@@ -44,7 +49,7 @@ def getImagesFromYmlFilesList(files_list):
 def getImagesFromJsonFilesList(files_list):
 	files_images = []
 	for path in files_list:
-		files_images = files_images + getImagesList(getYmlFromETServicesJson(path))
+		files_images = files_images + getImagesList(getYmlFromETServicesJsonPath(path))
 	return files_images
 
 
@@ -62,15 +67,22 @@ def getEnginesImages():
 
 ##################################    Updaters    ##################################
 
+def setYmlToETServicesJsonFile(json, yaml):
+	json['manifest']['manifest_content'] = yaml
+	return json
+
 def modifyImageTag(image, tag):
 	new_image = image.split(':')[0]
 	new_image = new_image + ':' + tag
 	return new_image
 
+
 def updateImagesTagOfReadYml(d, tag):
 	key = 'image'
 	if key in d:
-		d[key] = modifyImageTag(d[key], tag)
+		# If is ElasTest Image, set image tag
+		if(d[key].startswith(et_image_name_prefix)):
+			d[key] = modifyImageTag(d[key], tag)
         	return d
 	for k in d:
         	if isinstance(d[k], dict):
@@ -80,6 +92,17 @@ def updateImagesTagOfReadYml(d, tag):
 def updateImagesTagOfYmlFile(path, tag):
 	yml_file = getYml(path)
 	new_yml = updateImagesTagOfReadYml(yml_file, tag)
+	# Save new yml file with images tag updated
+	saveYml(path, new_yml)
+
+def updateImagesTagOfJsonFile(path, tag):
+	json_file = getJson(path)
+	yml = getYmlFromETServicesJsonFile(json_file)
+	new_yml = updateImagesTagOfReadYml(yml, tag)
+	json_file = setYmlToETServicesJsonFile(json_file, new_yml)
+
+	# Save new json file with images tag updated
+	saveJson(path, json_file)
 
 
 #*** Images Lists Updaters By File Type ***#
@@ -91,7 +114,7 @@ def updateImagesTagOfYmlFiles(files_list, tag):
 def updateImagesTagOfJsonFilesList(files_list, tag):
 	files_images = []
 	for path in files_list:
-		files_images = files_images + getImagesList(getYmlFromETServicesJson(path))
+		updateImagesTagOfJsonFile(path, tag)
 
 
 #*** Images Lists Updaters By Component Type ***#
@@ -144,5 +167,4 @@ def updateFilesImagesWithTag(tag):
 	updateEnginesImagesTag(tag)
 
 
-#print(getElastestImages(True))
 
