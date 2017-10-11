@@ -28,45 +28,46 @@ ere = '../etm/elastest-torm/src/main/resources/test_engines/ere.yml'
 
 
 def getCoreList():
-	core_list = [emp, edm, esm, eim, epm, etm_complementary_normal, etm_main_normal, etm_complementary_lite, etm_main_lite]
-	return core_list
+    core_list = [emp, edm, esm, eim, epm, etm_complementary_normal,
+                 etm_main_normal, etm_complementary_lite, etm_main_lite]
+    return core_list
+
 
 def getTSSList():
-	tss_list = [eus, ebs, ess, eds, ems]
-	return tss_list
+    tss_list = [eus, ebs, ess, eds, ems]
+    return tss_list
+
 
 def getEnginesList():
-	engines_list = [ece, ere]
-	return engines_list
-
-
+    engines_list = [ece, ere]
+    return engines_list
 
 
 # Yaml
 def getYml(path):
-	with open(path, 'r') as stream:
-	    try:
-		return yaml.load(stream)		
-	    except yaml.YAMLError as exc:
-		return yaml.load('')
+    with open(path, 'r') as stream:
+        try:
+            return yaml.load(stream)
+        except yaml.YAMLError as exc:
+            return yaml.load('')
 
 
 def saveYml(path, yml):
-	with open(path, 'w') as outfile:
-	    yaml.dump(yml, outfile, default_flow_style=False)
+    with open(path, 'w') as outfile:
+        yaml.dump(yml, outfile, default_flow_style=False)
 
 
 # Json
 
 def getJson(path):
-	with open(path, 'r') as stream:
-		data = json.load(stream)
-		return data
-	return json.load('')
+    with open(path, 'r') as stream:
+        data = json.load(stream)
+        return data
+    return json.load('')
 
 
 def saveJson(path, json_file):
-	with open(path, 'w') as outfile:
-	    # json.dump(json_file, outfile)
-            json.dump(json_file, outfile, sort_keys=True, indent=4, separators=(',', ': '))
-
+    with open(path, 'w') as outfile:
+        # json.dump(json_file, outfile)
+        json.dump(json_file, outfile, sort_keys=True,
+                  indent=4, separators=(',', ': '))
