@@ -32,6 +32,7 @@ node('docker'){
 		withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'elastestci-dockerhub',
                     usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                     sh 'docker login -u "$USERNAME" -p "$PASSWORD"'
+                    sh 'cd version-scripts'
                     python ETPlatformFreeze.py
                 }
 
