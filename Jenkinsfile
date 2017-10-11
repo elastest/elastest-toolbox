@@ -72,9 +72,5 @@ node('docker'){
                     platformimage.push()
                 }
 
-            stage "Download Platform docker image"
-		 def platformcontainer = docker.image('elastest/platform')
-        	 platformcontainer.pull() // make sure we have the latest available from Docker Hub
-
         }
 }

@@ -67,15 +67,10 @@ def getEnginesImages():
 
 ##################################    Updaters    ##################################
 
-def setYmlToETServicesJsonFile(json, yaml):
-	json['manifest']['manifest_content'] = yaml
-	return json
-
 def modifyImageTag(image, tag):
 	new_image = image.split(':')[0]
 	new_image = new_image + ':' + tag
 	return new_image
-
 
 def updateImagesTagOfReadYml(d, tag):
 	key = 'image'
@@ -99,7 +94,7 @@ def updateImagesTagOfJsonFile(path, tag):
 	json_file = getJson(path)
 	yml = getYmlFromETServicesJsonFile(json_file)
 	new_yml = updateImagesTagOfReadYml(yml, tag)
-	json_file = setYmlToETServicesJsonFile(json_file, new_yml)
+	json_file['manifest']['manifest_content'] = new_yml
 
 	# Save new json file with images tag updated
 	saveJson(path, json_file)
@@ -165,6 +160,4 @@ def updateFilesImagesWithTag(tag):
 	updateCoreImagesTag(tag)
 	updateTSSImagesTag(tag)
 	updateEnginesImagesTag(tag)
-
-
 

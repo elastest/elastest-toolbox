@@ -1,0 +1,35 @@
+node('docker'){
+    
+    stage " Download Elastest-toolbox"
+
+        def mycontainer = docker.image('elastest/ci-docker-compose-py-siblings')
+        mycontainer.pull() // make sure we have the latest available from Docker Hub
+        mycontainer.inside("-u jenkins -v /var/run/docker.sock:/var/run/docker.sock:rw -v ${WORKSPACE}:/home/jenkins/.m2") {
+            
+            checkout([
+                $class: 'GitSCM', 
+                branches: scm.branches, 
+                doGenerateSubmoduleConfigurations: false, 
+                extensions: [[
+                  $class: 'SubmoduleOption', 
+                  disableSubmodules: false, 
+                  parentCredentials: true, 
+                  recursiveSubmodules: true, 
+                  reference: '', 
+                  trackingSubmodules: false
+                ]], 
+                submoduleCfg: [], 
+                userRemoteConfigs: [[url: 'https://github.com/elastest/elastest-toolbox']]
+              ])
+
+
+
+            stage "Platform image freeze"
+    
+              "Freezing platform docker image"
+            
+                echo ("Freezing platform docker image")                
+                python ETPlatformFreeze.py
+
+        }
+}

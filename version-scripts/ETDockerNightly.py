@@ -16,8 +16,8 @@ def pullImage(image):
 def getNightlyTag():
 	return time.strftime('%Y%m%d')
 
-def tagImage(image):
-	new_tagged = image + ':' + getNightlyTag()
+def tagImage(image, tag):
+	new_tagged = image + ':' + tag
 	tag_command = 'docker tag ' + image + ' ' + new_tagged
 	tag_result = subprocess.call(shlex.split(tag_command))
 
@@ -34,29 +34,33 @@ def pushImage(image):
 		print 'Error on push image ' + new_tagged
 		exit(1)
 
-def createETNightlyImage(image):
+def createETNightlyImage(image, tag):
 	# Pull
 	pullImage(image)
 
 	# Tag
-	new_image = tagImage(image)
+	new_image = tagImage(image, tag)
 
 	# Push
 	pushImage(new_image)
 
 	print 'Image ' + new_image + ' pushed'
-	return new_image
+	return tag
 
 #Main functions
 
 def createETNightlyImages():
 	images_list = getElastestImages(True)
-	new_images_list = []
+	tag =  getNightlyTag()
+
+
 	for image in images_list:
-		new_images_list.append(createETNightlyImage(image))
+		createETNightlyImage(image, tag)
 	print 'All images has been pushed'
-	return new_images_list
+	return tag
 
 def updateFilesToNightly():
-	updateFilesImagesWithTag(getNightlyTag())
+	tag = createETNightlyImages()
+	updateFilesImagesWithTag(tag)
+	return tag
 
