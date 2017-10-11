@@ -22,15 +22,15 @@ def getArgs(params):
 
 	args = parser.parse_args(params)
 	return args
+
 def inspectPlatform(params):
 	args = getArgs(params)
 	if(args.api):
-		checkResult = runCheckETM()
-		if(checkResult == 0):
+		try:
+			ip = getETMIp()
 			apiUrl = getEtmUrl()
-			print ''
-			print 'ElasTest API info:'
-			print 'Url: ' + apiUrl
-			exit(0)
-		else:
+			checkWorking(apiUrl)
+		except subprocess.CalledProcessError:
+			exit(1)
+		except KeyboardInterrupt:
 			exit(1)

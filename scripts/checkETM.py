@@ -9,18 +9,29 @@ projectName = 'elastest'
 component = 'etm'
 containerName = projectName + '_' + component + '_1'
 etmPort = '8091'
+etprintEnabled=True
+
+# Custom print function
+def etprint(msg):
+	if(etprintEnabled):
+		print(msg)
+
+def getETMIp():
+	command = "docker inspect --format=\"{{.NetworkSettings.Networks." + projectName + "_elastest.IPAddress}}\" "+ containerName
+	ip = subprocess.check_output(shlex.split(command), stderr=subprocess.PIPE)
+	# remove /n
+	ip = ip.rstrip()
+	return ip
 
 def containerIP():
 	ip = ''
 	wait = True
-	counter = 120
+	counterDefault = 120
+	counter = counterDefault
 	while (wait and counter > 0):
 		try:
-			command = "docker inspect --format=\"{{.NetworkSettings.Networks." + projectName + "_elastest.IPAddress}}\" "+ containerName
-			ip = subprocess.check_output(shlex.split(command), stderr=subprocess.PIPE)
+			ip = getETMIp()
 			wait = False
-			# remove /n
-			ip = ip.rstrip()
 		except subprocess.CalledProcessError:	
 			pass
 		except KeyboardInterrupt: # Hide error on SIGINT
@@ -29,7 +40,7 @@ def containerIP():
 		time.sleep(2)
 
 	if (counter == 0):
-		print 'Timeout: container ' + containerName + ' not created'
+		etprint('Timeout: container ' + containerName + ' not created')
 		exit(1)
 	return ip
 
@@ -67,9 +78,9 @@ def insertPlatformIntoNetwork():
 		commandTwo = 'docker network connect ' + projectName + '_elastest ' + id
 		result = subprocess.call(shlex.split(commandTwo))
 		if(result > 0):
-			print 'Error: Unable to register Platform on the network'
+			etprint('Error: Unable to register Platform on the network')
 			exit (1)
-		print 'Platform inserted into network succesfully'
+		etprint('Platform inserted into network succesfully')
 	except subprocess.CalledProcessError:
 		pass
 	except KeyboardInterrupt: # Hide error on SIGINT
@@ -77,19 +88,20 @@ def insertPlatformIntoNetwork():
 
 
 # Main function
-def runCheckETM():
-        print ''
-        print 'Waiting for ETM...'
+def runCheckETM(printEnabled=True):
+	global etprintEnabled
+	etprintEnabled = printEnabled
+        etprint('')
+        etprint('Waiting for ETM...')
 
 	# Get ETM container IP
 	etmIP = containerIP()
 
+	etprint('')
+	etprint('Container created with IP: ' + etmIP)
+
 	# Insert platform into network
 	insertPlatformIntoNetwork()
-
-	print ''
-	print 'Container created with IP: ' + etmIP
-
 
 	# Check if service is started and running
 	counterDefault = 145
@@ -105,20 +117,20 @@ def runCheckETM():
 			wait = False
 		else:
 			if (counter == counterDefault or counter == (counterDefault / 2)):
-				print 'ETM is not ready. Please wait...'
+				etprint('ETM is not ready. Please wait...')
 
 			counter-=1
 			time.sleep(2)
 
 
 	if (counter == 0):
-		print 'Timeout: container ' + containerName + ' not started'
+		etprint('Timeout: container ' + containerName + ' not started')
 		return 1
 	else:
 		if (working):
-			print 'ETM is ready in ' + url
+			etprint('ETM is ready in ' + url)
 			return 0
 		else:
-			print 'ERROR: ElasTest ETM not started correctly'
+			etprint('ERROR: ElasTest ETM not started correctly')
 			return 1
 

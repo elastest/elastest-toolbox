@@ -46,7 +46,7 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform w
 ## How to inspect ElasTest Platform
 
 Once ElasTest Platform is started, you can run the inspect command to know more information:
-With --api argument you can get the ElasTest API URL once ElasTest is running.
+With --api argument you can get the ElasTest API URL once ElasTest is running. If not is running exits with code 1
 ```
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform inspect --api
 ```
