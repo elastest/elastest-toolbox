@@ -45,9 +45,16 @@ def containerIP():
 	return ip
 
 def getEtmUrl():
-	ip = containerIP()
-	url = 'http://' + ip + ':' + etmPort
-	return url
+	try:
+		ip = getETMIp()
+		url = 'http://' + ip + ':' + etmPort
+		return url
+	except subprocess.CalledProcessError:	
+		pass
+	except KeyboardInterrupt: # Hide error on SIGINT
+		exit(0)
+	print 'container not created'
+	return ''
 
 def checkWorking(url):
 	working = False
