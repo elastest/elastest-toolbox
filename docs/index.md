@@ -12,13 +12,13 @@ To install Docker CE (Community Edition), please follow the [official installati
 
 ElasTest can be executed in two modes:
 * **full**: ElasTest is executed with all components. It is ideal to execute in a server with high computing resources. It can take several minutes to start all services included.
-* **lite**: This mode is designed to be lighter than `normal` mode. It executes a basic persistence (no redundancy) and doesn't execute the monitoring platform. It is ideal to execute ElasTest in the development laptop as it consume less resources and starts in less time.
+* **lite**: This mode is designed to be lighter than `full` mode. It executes a basic persistence (no redundancy) and doesn't execute the monitoring platform. It is ideal to execute ElasTest in the development laptop as it consume less resources and starts in less time.
 
 Test Support Services and Engines are started on demand by the user when needed to improve startup time and save some resources if that components are not used.
 
 ## How to start ElasTest
 
-ElasTest is executed in `normal` mode with the following command:
+ElasTest is executed in `full` mode with the following command:
 ```
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start
 ```
@@ -28,36 +28,38 @@ To execute ElasTest in `lite` mode the command is:
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --lite
 ```
 
-Any of these commands will block the shell until ElasTest is stopped. This command can be executed with the docker flag `-d` to execute ElasTest detached from the shell. That is, if `-d` is used, then the commands returns immediatelly and ElasTest is started in background. This command is very useful when ElasTest is started from an automation script:
+> **NOTE**: To execute ElasTest in Windows or Mac with Docker Toolbox it is necessary to obtain the virtual machine IP with the command `docker-machine ip default` and specify it in the parameter `server-address`. For example, if IP is 192.168.99.100, then the command will look like:
+
+`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --lite --server-address=192.168.99.100`
+
+The `start` command will block the shell until ElasTest is stopped (see bellow how to stop it). But if the docker option `-d` (detached) is used, then the commands returns immediatelly and ElasTest is executed in background. This command is very useful to start ElasTest within a script if more actions needs to be done:
 ```
 docker run -d --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --lite
 ```
-> **NOTE**: To execute ElasTest in Windows or Mac with Docker Toolbox it is necessary to obtain the virtual machine IP with the command `docker-machine ip default` and pass a new parameter  `--server-address=192.168.99.100` to execute `start` command.
 
 ## How to stop ElasTest
 
-ElasTest can be stopped using `Ctrl+C` in the shell where it has been started. Another way to stop the platform is using the `stop` command:
+ElasTest can be stopped using `Ctrl+C` in the shell where `start` command has been executed. Another way to stop the platform is opening a new shell and executing the `stop` command:
 ```
 docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop
 ```
 
 ## Wait for ElasTest is ready to be used
 
-The `start` command print a log when ElasTest is ready to be used. But for automation scripts, it is not easy to read the output log. For that reason, the `wait` command can be executed. These command will be running until the platform is available. In other words, when the `wait` command ends the ElasTest platform will be ready. Is possible that ElasTest can not be started. In that case, the command will end in ten minutes with 1 as exit code.
-The `wait` command is
+The `start` command outputs an informative message when ElasTest is ready to be used. That is ideal for users to know when open the ElasTest URL in the browser. When ElasTest is started within a script, is better to start it with the docker option `-d` that start ElasTest in background. In that cases, the `wait` command can be used. These command will be running until the platform is available. The `wait` command ends when ElasTest platform is ready to be used. The `wait` command is executed:
 ```
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform wait
 ```
+Is possible that ElasTest can not be started (for some error) or that the timeout is reached. In that cases, the command will end in ten minutes with 1 as exit code.
 
 ## ElasTest URL and other information
 
-Once ElasTest Platform is started, it is important to know what is the URL to reach ElasTest. By default, the URL is `http://localhost:37006`. But it can change in the future. It is better to avoid depending on the usual URL and executing `inspect` command. 
+Once ElasTest is started, it is important to know what is the URL to reach it. By default, the URL is `http://localhost:37006`. But it can change in the future, so is better to query the URL executing the `inspect` command with `--api` parameter: 
 
 ```
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform inspect --api
 ```
-It ElasTest is not started, the command will return 1 as exit code.
-
+It ElasTest is not started, the command will return 1 as exit code. It is planned that `inspect` command can return more information about running ElasTest.
 
 ## Command help
 
