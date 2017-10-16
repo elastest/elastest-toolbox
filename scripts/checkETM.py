@@ -70,6 +70,8 @@ def containerIP():
 	return ip
 
 def getEtmUrl():
+	# Insert platform into network
+	insertPlatformIntoNetwork()
 	try:
 		ip = getETMIp()
 		url = 'http://' + ip + ':' + etmPort
@@ -113,7 +115,6 @@ def insertPlatformIntoNetwork():
 		if(result > 0):
 			etprint('Error: Unable to register Platform on the network')
 			exit (1)
-		etprint('Platform inserted into network succesfully')
 	except subprocess.CalledProcessError:
 		pass
 	except KeyboardInterrupt: # Hide error on SIGINT
@@ -136,9 +137,6 @@ def runCheckETM(params=[], printEnabled=True):
 
 	etprint('')
 	etprint('Container created with IP: ' + etmIP)
-
-	# Insert platform into network
-	insertPlatformIntoNetwork()
 
 	# Check if service is started and running
 	try:
