@@ -6,6 +6,7 @@ import shlex
 import subprocess
 import argparse
 import os
+import threading
 from checkETM import *
 from setEnv import *
 
@@ -137,6 +138,10 @@ def runPlatform(params):
 				result = subprocess.call(shlex.split(dockerCommand), stderr=FNULL)
 				if(result == 0 and mode == 'start'):
 					print 'Services has been created'
+					# Run check ETM in bg
+					check_thread = threading.Thread(target=runCheckETM)
+					check_thread.daemon = True
+					check_thread.start()
 			return 0
 		except KeyboardInterrupt: # Hide error on SIGINT
 			pass

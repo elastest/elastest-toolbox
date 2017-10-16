@@ -136,7 +136,7 @@ def runCheckETM(params=[], printEnabled=True):
 	etmIP = containerIP()
 
 	etprint('')
-	etprint('Container created with IP: ' + etmIP)
+	etprint('ETM container created with IP: ' + etmIP)
 
 	# Check if service is started and running
 	try:
@@ -165,7 +165,7 @@ def runCheckETM(params=[], printEnabled=True):
 				wait = False
 
 	if (working):
-		etprint('ETM is ready in ' + url)
+		etprint('ETM is now ready in ' + url)
 		return 0
 	else:
 		etprint('ERROR: ElasTest ETM not started correctly')

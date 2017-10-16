@@ -130,6 +130,27 @@ optional arguments:
   --api, -a   Return current status of ElasTest API
 ```
 
+### Wait command
+
+```
+docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform wait -h
+```
+
+The output is:
+
+```
+usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform wait [-h] [--container CONTAINER] [--running RUNNING]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --container CONTAINER, -c CONTAINER
+                        Sets timeout in seconds for wait to the ETM container
+                        creation. Usage: --container=240
+  --running RUNNING, -r RUNNING
+                        Sets timeout in seconds for wait to ETM is running.
+                        Usage: --running=290
+```
+
 ## Development instructions
 
 ElasTest consists of multiple components. Every component has their own GitHub repository. In this repository (ElasTest Toolbox) is implemented the ElasTest Platform container, the docker container that starts the whole platform. 
