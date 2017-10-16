@@ -82,16 +82,14 @@ elif(args.instruction == 'stop'):
 	print 'Sending stop signal...'
 	print ''
 
-	nProcessCommand = 'echo $(docker ps | grep elastest/platform | wc -l)'
-	nproc = subprocess.check_output(shlex.split(nProcessCommand))
+	nProcessCommand = ['docker ps | grep "elastest/platform " | wc -l | cat'] # Space after elastest/platform is necessary
+	nproc = int(subprocess.check_output(nProcessCommand, shell=True))
 
 	signalComannd = 'sh -c \'docker ps -q --filter ancestor="elastest/platform" | xargs -r docker kill --signal=SIGTERM\''
-	result = subprocess.call(shlex.split(signalComannd))
-
-	# If container is stopped, run stop just in case there are running containers
-	if(result > 0 or nproc < 2): # 2 containers: started container and this container (stop)
-		print ''
-		print 'trying again...'
+	result = subprocess.check_output(shlex.split(signalComannd))
+	# If Platform container is stopped, run stop just in case there are running containers
+	if(result == '' or nproc < 2): # 2 containers: started container and this container (stop)
+		print 'The Plaftorm container not exist. Forcing stop...'
 		print ''
 		result = runPlatform(['stop'])
 
