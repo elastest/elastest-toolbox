@@ -53,8 +53,22 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform s
 
 ElasTest can be stopped using `Ctrl+C` in the shell where `start` command has been executed. Another way to stop the platform is opening a new shell and execute the `stop` command:
 ```
-docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform stop
 ```
+
+## ElasTest versions
+
+ElasTest is in active development. There is no stable version yet. For the moment, the `start` command will execute the last development version available. That is, the version generated from latest commit of the master branch. It is idel for development, but latest development version can be broken from time to time. 
+
+>> **NOTE**: New images are not downloaded automatically when updated in the server. To update your local ElasTest images to the latest ones first update the `elastest/platform` with `docker pull elastest/platform` and then execute ElasTest with `--pullcore` option. 
+
+Every day the current version is tagged as the nightly version of that day. In that way, you can execute the code available in a specifc day. This is specially useful when latest version is broken. Te command to execute a nightly version is:
+
+```
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform:<date> start
+```
+Where `date` has the format `YYYYMMDD`. Not all dates are available. Take a look to [elastest/platform in DockerHub](https://hub.docker.com/r/elastest/platform/tags/) to see what tags can be used. 
+
 ## Tips for troubleshooting development issues
 
 ElasTest is composed by several components. Some components are started on startup, the core components. Other components can be executed on demand or associated to the execution of TJobs. That components are Test Engines and Test Support Services. ElasTest components are executed as one or several docker containers. Some containers are started on startup and others on demand. 
@@ -87,7 +101,7 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform i
 ```
 If ElasTest is not started, the command will return 1 as exit code. It is planned that `inspect` command can return more information about running ElasTest.
 
-In summary, to strart and manage ElasTest in a bash script, the following commands can be used:
+In summary, to start and manage ElasTest in a bash script, the following commands can be used:
 
 ```
 docker run -d --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --lite
