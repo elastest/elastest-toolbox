@@ -38,10 +38,13 @@ def etprint(msg):
 
 def getETMIp():
 	command = "docker inspect --format=\"{{.NetworkSettings.Networks." + projectName + "_elastest.IPAddress}}\" "+ containerName
-	ip = subprocess.check_output(shlex.split(command), stderr=subprocess.PIPE)
-	# remove /n
-	ip = ip.rstrip()
-	return ip
+	try:
+		ip = subprocess.check_output(shlex.split(command), stderr=subprocess.PIPE)
+		# remove /n
+		ip = ip.rstrip()
+		return ip
+	except subprocess.CalledProcessError:	
+	        raise Exception('Could not get the ip')
 
 def containerIP():
 	ip = ''
@@ -59,6 +62,9 @@ def containerIP():
 			pass
 		except KeyboardInterrupt: # Hide error on SIGINT
 			exit(0)
+		except Exception as error:
+			pass
+
 		if((time.time() - start_time) >= timeout):
 			etprint('Timeout: container ' + containerName + ' not created')
 			exit(1)
@@ -73,6 +79,8 @@ def getEtmUrl():
 		pass
 	except KeyboardInterrupt: # Hide error on SIGINT
 		pass
+	except Exception as error:
+	        raise Exception('Could not get the url')
 	return ''
 
 def checkWorking(url):
@@ -134,7 +142,11 @@ def runCheckETM(params=[], printEnabled=True):
 	insertPlatformIntoNetwork()
 
 	# Check if service is started and running
-	url = getEtmUrl()
+	try:
+		url = getEtmUrl()
+	except Exception as error:
+		print(error)
+		exit(1)
 	wait = True
 	working = False
 	message_counter=1

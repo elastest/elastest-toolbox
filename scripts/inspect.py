@@ -27,12 +27,13 @@ def inspectPlatform(params):
 	args = getArgs(params)
 	if(args.api):
 		try:
-			ip = getETMIp()
 			apiUrl = getEtmUrl()
 			checkWorking(apiUrl)
-			print apiUrl
+			print(apiUrl)
 			exit(0)
 		except subprocess.CalledProcessError:
 			exit(1)
 		except KeyboardInterrupt:
+			exit(1)
+		except Exception as error:
 			exit(1)
