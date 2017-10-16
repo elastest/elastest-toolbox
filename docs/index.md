@@ -40,7 +40,7 @@ That command will block the shell until ElasTest is stopped using `Ctrl+C` (see 
 
 `docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --lite --server-address=192.168.99.100`
 
-# How to execute ElasTest in a server
+## How to execute ElasTest in a server
 
 To execute ElasTest in a server for remote usage, it is necessary to include the parameter `--server-adress` with the public IP or the FQDN of the server. It is necessary to configure it because ElasTest needs to know how to create public URLs to their own services:
 
@@ -48,6 +48,7 @@ The command will be the following one:
 ```
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --server-address=<public_ip_or_host>`
 ```
+ElasTest main GUI and REST API is accessible in localhost on port 37006. Other ports are needed during execution because new services can be started in new ports. We plan to implement a way to control the port range, but at the moment, any port in range [32768 to 61000] can be used and thus should be open to public in the firewall or proxy.
 
 ## How to stop ElasTest
 
