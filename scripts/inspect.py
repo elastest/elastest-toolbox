@@ -12,7 +12,7 @@ def getArgs(params):
 
 	# Custom usage message
 	usage = parser.format_usage()
-	usage = usage.replace("usage: inspect.py", "docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform inspect")
+	usage = usage.replace("usage: main.py", "docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform inspect")
 	parser.usage = usage
 
 	# If there aren't args, show help and exit
@@ -30,6 +30,8 @@ def inspectPlatform(params):
 			ip = getETMIp()
 			apiUrl = getEtmUrl()
 			checkWorking(apiUrl)
+			print apiUrl
+			exit(0)
 		except subprocess.CalledProcessError:
 			exit(1)
 		except KeyboardInterrupt:

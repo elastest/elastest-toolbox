@@ -96,7 +96,7 @@ elif(args.instruction == 'stop'):
 		result = runPlatform(['stop'])
 
 elif(args.instruction == 'wait'):
-	checkResult = runCheckETM()
+	checkResult = runCheckETM(params)
 	exit(checkResult)
 elif(args.instruction == 'inspect'):
 	inspectPlatform(params)

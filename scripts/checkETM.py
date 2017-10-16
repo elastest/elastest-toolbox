@@ -4,12 +4,32 @@ import shlex, subprocess
 import time
 import urllib2
 import socket
+import sys
+import argparse
 
 projectName = 'elastest'
 component = 'etm'
 containerName = projectName + '_' + component + '_1'
 etmPort = '8091'
+
 etprintEnabled=True
+args=[]
+
+# Input Arguments
+def getArgs(params):
+	# Define arguments
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--container', '-c', help='Sets timeout in seconds for wait to the ETM container creation. Usage: --container=240', required=False, action='store_true')
+	parser.add_argument('--running', '-r', help='Sets timeout in seconds for wait to ETM is running. Usage: --running=290', required=False)
+
+	# Custom usage message
+	usage = parser.format_usage()
+	usage = usage.replace("usage: main.py", "docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform wait")
+	parser.usage = usage
+
+	args = parser.parse_args(params)
+	return args
+
 
 # Custom print function
 def etprint(msg):
@@ -26,9 +46,12 @@ def getETMIp():
 def containerIP():
 	ip = ''
 	wait = True
-	counterDefault = 120
-	counter = counterDefault
-	while (wait and counter > 0):
+	timeout = 240 #seconds
+	if(args.container):
+		timeout=args.container
+	start_time = time.time()
+	# your code
+	while (wait):
 		try:
 			ip = getETMIp()
 			wait = False
@@ -36,12 +59,9 @@ def containerIP():
 			pass
 		except KeyboardInterrupt: # Hide error on SIGINT
 			exit(0)
-		counter-=1
-		time.sleep(2)
-
-	if (counter == 0):
-		etprint('Timeout: container ' + containerName + ' not created')
-		exit(1)
+		if((time.time() - start_time) >= timeout):
+			etprint('Timeout: container ' + containerName + ' not created')
+			exit(1)
 	return ip
 
 def getEtmUrl():
@@ -52,8 +72,7 @@ def getEtmUrl():
 	except subprocess.CalledProcessError:	
 		pass
 	except KeyboardInterrupt: # Hide error on SIGINT
-		exit(0)
-	print 'container not created'
+		pass
 	return ''
 
 def checkWorking(url):
@@ -95,9 +114,13 @@ def insertPlatformIntoNetwork():
 
 
 # Main function
-def runCheckETM(printEnabled=True):
+def runCheckETM(params=[], printEnabled=True):
+	global args
+	args = getArgs(params)
 	global etprintEnabled
 	etprintEnabled = printEnabled
+
+
         etprint('')
         etprint('Waiting for ETM...')
 
@@ -111,33 +134,31 @@ def runCheckETM(printEnabled=True):
 	insertPlatformIntoNetwork()
 
 	# Check if service is started and running
-	counterDefault = 145
-	counter = counterDefault
-
 	url = getEtmUrl()
 	wait = True
 	working = False
+	message_counter=1
 
-	while (wait and counter > 0):
+	timeout = 290 #seconds
+	if(args.running):
+		timeout=args.running
+	start_time = time.time()
+	while (wait):
 		working = checkWorking(url)
 		if (working):
 			wait = False
 		else:
-			if (counter == counterDefault or counter == (counterDefault / 2)):
+			if (message_counter == 1):
 				etprint('ETM is not ready. Please wait...')
+				message_counter = 0
+			if((time.time() - start_time) >= timeout):
+				etprint('Timeout: container ' + containerName + ' not started')
+				wait = False
 
-			counter-=1
-			time.sleep(2)
-
-
-	if (counter == 0):
-		etprint('Timeout: container ' + containerName + ' not started')
-		return 1
+	if (working):
+		etprint('ETM is ready in ' + url)
+		return 0
 	else:
-		if (working):
-			etprint('ETM is ready in ' + url)
-			return 0
-		else:
-			etprint('ERROR: ElasTest ETM not started correctly')
-			return 1
+		etprint('ERROR: ElasTest ETM not started correctly')
+		return 1
 
