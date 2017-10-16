@@ -120,7 +120,10 @@ def runPlatform(params):
 			elif(args.pullcore):
 				print 'Pulling necessary images...'
 				print ''
-				subprocess.call(shlex.split(dockerCommand + ' pull'))
+				try:
+					subprocess.call(shlex.split(dockerCommand + ' pull'))
+				except KeyboardInterrupt: # Hide error on SIGINT
+					exit(1)
 
 		dockerCommand = dockerCommand + instruction
 		print ''
@@ -138,10 +141,11 @@ def runPlatform(params):
 				result = subprocess.call(shlex.split(dockerCommand), stderr=FNULL)
 				if(result == 0 and mode == 'start'):
 					print 'Services has been created'
-					# Run check ETM in bg
-					check_thread = threading.Thread(target=runCheckETM)
-					check_thread.daemon = True
-					check_thread.start()
+					if(not etm_dev):
+						# Run check ETM in bg
+						check_thread = threading.Thread(target=runCheckETM)
+						check_thread.daemon = True
+						check_thread.start()
 			return 0
 		except KeyboardInterrupt: # Hide error on SIGINT
 			pass
