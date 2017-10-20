@@ -255,4 +255,5 @@ To stop platform execute:
 python main.py stop --lite
 ```
 
-
+# Troubleshooting
+In case of you have problems starting, try running platform with --logs (or -l) parameter to view more information of process
