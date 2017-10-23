@@ -54,8 +54,6 @@ def runPlatform(params):
 		files_list.append('/deploy/docker-compose-main.yml')
 		files_list.append('/docker/docker-compose-main.yml')
 		replaceEnvVarValue('ET_SHARED_FOLDER', args.shared_folder, files_list)
-		print 'ET_SHARED_FOLDER='
-		print args.shared_folder
 		
 	if(args.logs == True):
 		FNULL = subprocess.STDOUT

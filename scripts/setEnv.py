@@ -26,7 +26,7 @@ def replaceEnvVarValue(var_name, value, files_paths):
 	etm_dir = '../etm'
 	env_var_name = var_name
 	env_var = env_var_name + '=' + value
-	default = env_var_name + '=shared-data'
+	default = env_var_name + '=/shared-data/'
 	
 	try:
 		for file_path in files_paths:
