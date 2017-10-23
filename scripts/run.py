@@ -23,6 +23,7 @@ def getArgs(params):
 	parser.add_argument('--noports', '-np', help='Unbind all ports. Usage: --noports', required=False, action='store_true')
 	parser.add_argument('--logs', '-l', help='Show logs of all containers. Usage: --logs', required=False, action='store_true')
 	parser.add_argument('--server-address', '-sa', help='Set server address Env Var. Usage: --server-address=XXXXXX', required=False)
+	parser.add_argument('--shared-folder', '-sf', help='Set the folder used to share files between ElasTest Components. Usage: --shared-folder=shared-data/', required=False)
 
 	# Custom usage message
 	usage = parser.format_usage()
@@ -47,7 +48,15 @@ def runPlatform(params):
 
 	if(args.server_address):
 		setServerAddress(args.server_address)
-
+	
+	if(args.shared_folder):
+		files_list = []
+		files_list.append('/deploy/docker-compose-main.yml')
+		files_list.append('/docker/docker-compose-main.yml')
+		replaceEnvVarValue('ET_SHARED_FOLDER', args.shared_folder, files_list)
+		print 'ET_SHARED_FOLDER='
+		print args.shared_folder
+		
 	if(args.logs == True):
 		FNULL = subprocess.STDOUT
 		instruction = ' up'

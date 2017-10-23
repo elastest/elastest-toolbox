@@ -22,3 +22,16 @@ def setServerAddress(address):
 		print 'Error: Environment variable could not be inserted'
 		exit(1)
 
+def replaceEnvVarValue(var_name, value, files_paths):
+	etm_dir = '../etm'
+	env_var_name = var_name
+	env_var = env_var_name + '=' + value
+	default = env_var_name + '=shared-data'
+	
+	try:
+		for file_path in files_paths:
+			searchAndReplace(etm_dir + file_path, default, env_var)		
+	except subprocess.CalledProcessError:	
+		print 'Error: Environment variable could not be inserted'
+		exit(1)
+
