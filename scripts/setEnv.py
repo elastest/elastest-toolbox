@@ -18,7 +18,7 @@ def setServerAddress(address):
 	try:
 		searchAndReplace(etm_dir + '/deploy/docker-compose-main.yml', default, env_var)
 		searchAndReplace(etm_dir + '/docker/docker-compose-main.yml', default, env_var)
-	except subprocess.CalledProcessError:	
+	except IOError:	
 		print 'Error: Environment variable could not be inserted'
 		exit(1)
 
@@ -29,8 +29,8 @@ def replaceEnvVarValue(var_name, new_value, old_value, files_paths):
 	
 	try:
 		for file_path in files_paths:
-			searchAndReplace(file_path, old_env_var, new_env_var)		
-	except subprocess.CalledProcessError:	
+			searchAndReplace(file_path, old_env_var, new_env_var)
+	except IOError:
 		print 'Error: Environment variable could not be inserted'
 		exit(1)
 

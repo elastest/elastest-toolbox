@@ -49,14 +49,14 @@ def runPlatform(params):
 	if(args.server_address):
 		#setServerAddress(args.server_address)
 		files_list = []
-		files_list.append('..etm/deploy/docker-compose-main.yml')
-		files_list.append('..etm/docker/docker-compose-main.yml')
+		files_list.append('../etm/deploy/docker-compose-main.yml')
+		files_list.append('../etm/docker/docker-compose-main.yml')
 		replaceEnvVarValue('ET_PUBLIC_HOST', args.server_address, 'localhost', files_list)
 	
 	if(args.shared_folder):
 		files_list = []
-		files_list.append('..etm/deploy/docker-compose-main.yml')
-		files_list.append('..etm/docker/docker-compose-main.yml')
+		files_list.append('../etm/deploy/docker-compose-main.yml')
+		files_list.append('../etm/docker/docker-compose-main.yml')
 		replaceEnvVarValue('ET_SHARED_FOLDER', args.shared_folder, '/shared-data/', files_list)
 		
 	if(args.logs == True):
