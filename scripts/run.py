@@ -94,8 +94,7 @@ def runPlatform(params):
 
 	# If is NORMAL mode
 	if(lite == False):
-		dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + ' ' + epm + ' ' + emp + ' ' + (etm_proxy if args.with_proxy else '') + ' -p elastest'
-		print 'Command: ' + dockerCommand
+		dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + ' ' + epm + ' ' + emp + ' ' + (etm_proxy if args.with_proxy else '') + ' -p elastest'		
 		message = 'Starting ElasTest Platform in Normal Mode...'
 		submode = 'Normal'
 
@@ -115,8 +114,7 @@ def runPlatform(params):
 		etm = etm_complementary + ' ' + etm_complementary_ports
 		if (not etm_dev):
 			etm = etm + ' ' + etm_main + ' ' + etm_main_ports
-		dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + (etm_proxy if args.with_proxy else '') + ' -p elastest'
-		print 'Command: ' + dockerCommand
+		dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + (etm_proxy if args.with_proxy else '') + ' -p elastest'		
 		message = 'Starting ElasTest Platform in Lite Mode...'
 		submode = 'Lite'
 
