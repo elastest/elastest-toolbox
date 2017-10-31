@@ -24,6 +24,7 @@ def getArgs(params):
 	parser.add_argument('--logs', '-l', help='Show logs of all containers. Usage: --logs', required=False, action='store_true')
 	parser.add_argument('--server-address', '-sa', help='Set server address Env Var. Usage: --server-address=XXXXXX', required=False)
 	parser.add_argument('--shared-folder', '-sf', help='Set the folder used to share files between ElasTest Components. Usage: --shared-folder=shared-data/', required=False)
+	parser.add_argument('--with-proxy', '-wp', help='Start NGINX proxy for ElasTest services. Usage: --with-proxy=true', required=False)
 
 	# Custom usage message
 	usage = parser.format_usage()
@@ -72,6 +73,7 @@ def runPlatform(params):
 
 	message = ''
 
+	etm_proxy = '-f ../etm/docker/docker-compose-proxy.yml'
 	#emp = '-f emp/deploy/docker-compose.yml'
 	emp = ''
 	edm = '-f ../edm/deploy/docker-compose.yml'
@@ -92,7 +94,8 @@ def runPlatform(params):
 
 	# If is NORMAL mode
 	if(lite == False):
-		dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + ' ' + epm + ' ' + emp + ' -p elastest'
+		dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + ' ' + epm + ' ' + emp + ' ' + (etm_proxy if args.with_proxy else '') + ' -p elastest'
+		print 'Command: ' + dockerCommand
 		message = 'Starting ElasTest Platform in Normal Mode...'
 		submode = 'Normal'
 
@@ -112,7 +115,8 @@ def runPlatform(params):
 		etm = etm_complementary + ' ' + etm_complementary_ports
 		if (not etm_dev):
 			etm = etm + ' ' + etm_main + ' ' + etm_main_ports
-		dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' -p elastest'
+		dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + (etm_proxy if args.with_proxy else '') + ' -p elastest'
+		print 'Command: ' + dockerCommand
 		message = 'Starting ElasTest Platform in Lite Mode...'
 		submode = 'Lite'
 
