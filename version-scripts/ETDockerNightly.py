@@ -31,8 +31,7 @@ def createETNightlyImages(default_tag):
     images_list = getElastestImages(True)
     tag = default_tag
     if (default_tag == 'bytime') :
-	tag = getNightlyTag()
-
+        tag = getNightlyTag()
     for image in images_list:
         createETNightlyImage(image, tag)
     print('All images has been pushed')
