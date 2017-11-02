@@ -95,7 +95,7 @@ def runPlatform(params):
 	# If is NORMAL mode
 	if(lite == False):
 		dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + ' ' + epm + ' ' + emp + ' ' + (etm_proxy if args.with_proxy else '') + ' -p elastest'		
-		message = 'Starting ElasTest Platform in Normal Mode...'
+		message = 'Starting ElasTest Platform (Normal Mode)...'
 		submode = 'Normal'
 
 	# If is LITE mode
@@ -115,7 +115,7 @@ def runPlatform(params):
 		if (not etm_dev):
 			etm = etm + ' ' + etm_main + ' ' + etm_main_ports
 		dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + (etm_proxy if args.with_proxy else '') + ' -p elastest'		
-		message = 'Starting ElasTest Platform in Lite Mode...'
+		message = 'Starting ElasTest Platform (Lite Mode)...'
 		submode = 'Lite'
 
 	# If mode=stop
@@ -153,10 +153,15 @@ def runPlatform(params):
 			else:
 				result = subprocess.call(shlex.split(dockerCommand), stderr=FNULL)
 				if(result == 0 and mode == 'start'):
-					print 'Services has been created'
 					if(not etm_dev):
+						check_params = [[], True]
+						if(args.with_proxy):
+							check_params.append(True)
+						if(args.server_address):
+							check_params.append(args.server_address)
+
 						# Run check ETM in bg
-						check_thread = threading.Thread(target=runCheckETM)
+						check_thread = threading.Thread(target=runCheckETM, args=check_params)
 						check_thread.daemon = True
 						check_thread.start()
 			return 0

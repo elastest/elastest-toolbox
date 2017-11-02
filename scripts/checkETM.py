@@ -9,8 +9,11 @@ import argparse
 
 projectName = 'elastest'
 component = 'etm'
-containerName = projectName + '_' + component + '_1'
+etmContainerName = projectName + '_' + component + '_1'
 etmPort = '8091'
+
+proxyContainerName = projectName + '_' + component + '-proxy_1'
+proxyPort = '37000'
 
 etprintEnabled=True
 args=[]
@@ -37,6 +40,18 @@ def etprint(msg):
 		print(msg)
 
 def getETMIp():
+	try:
+		return getContainerIp(etmContainerName)
+	except subprocess.CalledProcessError:	
+	        raise Exception('Could not get the ip')
+
+def getProxyIp():
+	try:
+		return getContainerIp(proxyContainerName)
+	except subprocess.CalledProcessError:	
+	        raise Exception('Could not get the ip')
+
+def getContainerIp(containerName):
 	command = "docker inspect --format=\"{{.NetworkSettings.Networks." + projectName + "_elastest.IPAddress}}\" "+ containerName
 	try:
 		ip = subprocess.check_output(shlex.split(command), stderr=subprocess.PIPE)
@@ -65,7 +80,7 @@ def containerIP():
 		except Exception as error:
 			pass
 		if(float(time.time() - start_time) >= float(timeout)):
-			etprint('Timeout: container ' + containerName + ' not created')
+			etprint('Timeout: container ' + etmContainerName + ' not created')
 			exit(1)
 	return ip
 
@@ -122,28 +137,28 @@ def insertPlatformIntoNetwork():
 
 
 # Main function
-def runCheckETM(params=[], printEnabled=True):
+def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
 	global args
 	args = getArgs(params)
 	global etprintEnabled
 	etprintEnabled = printEnabled
 
-
+        etprint('Please wait a few seconds while we start the ElasTest services, the ElasTest URL will be shown when ready.')
         etprint('')
-        etprint('Waiting for ETM...')
-
+		
 	# Get ETM container IP
 	etmIP = containerIP()
 
-	etprint('')
-	etprint('ETM container created with IP: ' + etmIP)
-
-	# Check if service is started and running
+	# Get ETM Url
 	try:
 		url = getEtmUrl()
 	except Exception as error:
 		print(error)
 		exit(1)
+
+	final_url = url
+
+	# Check if service is started and running
 	wait = True
 	working = False
 	message_counter=1
@@ -158,16 +173,28 @@ def runCheckETM(params=[], printEnabled=True):
 			wait = False
 		else:
 			if (message_counter == 1):
-				etprint('ETM is not ready. Please wait...')
 				message_counter = 0
 			if(float(time.time() - start_time) >= float(timeout)):	
-				etprint('Timeout: container ' + containerName + ' not started')
+				etprint('Timeout: container ' + etmContainerName + ' not started')
 				wait = False
 
 	if (working):
-		etprint('ETM is now ready in ' + url)
+		# Get final ETM URL if is proxy and/or server_address
+		if (server_address != ''):
+			final_url = 'http://' + server_address + ':' + proxyPort
+		elif(proxy):
+			try:
+				#proxy_ip = getProxyIp()
+				proxy_ip = 'localhost'
+				final_url = 'http://' + proxy_ip + ':' + proxyPort
+			except Exception:	
+				etprint('ERROR: Proxy is not started')
+				exit(1)
+
+		etprint('ElasTest Platform is available at ' + final_url)
+		etprint('Press Ctrl+C to stop.')
 		return 0
 	else:
-		etprint('ERROR: ElasTest ETM not started correctly')
+		etprint('ERROR: ElasTest Platform not started correctly')
 		return 1
 
