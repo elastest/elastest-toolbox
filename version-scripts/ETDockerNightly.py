@@ -27,9 +27,11 @@ def createETNightlyImage(image, tag):
 # Main functions
 
 
-def createETNightlyImages():
+def createETNightlyImages(default_tag):
     images_list = getElastestImages(True)
-    tag = getNightlyTag()
+    tag = default_tag
+    if (default_tag == 'bytime') :
+	tag = getNightlyTag()
 
     for image in images_list:
         createETNightlyImage(image, tag)
@@ -37,7 +39,7 @@ def createETNightlyImages():
     return tag
 
 
-def updateFilesToNightly():
-    tag = createETNightlyImages()
+def updateFilesToNightly(default_tag):
+    tag = createETNightlyImages(default_tag)
     updateFilesImagesWithTag(tag)
     return tag

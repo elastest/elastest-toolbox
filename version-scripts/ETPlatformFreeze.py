@@ -30,8 +30,13 @@ def buildPlatform(tag):
     return image
 
 
+if (len (sys.argv) > 1) :
+    tag = sys.argv[1]
+else:
+    tag = 'bytime'
+
 print('Reading ET components files to modify images tags...')
-tag = updateFilesToNightly()
+tag = updateFilesToNightly(tag)
 
 # Build and push Platform Services Image
 print('Building Platform Services Image')
