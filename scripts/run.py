@@ -24,6 +24,8 @@ def getArgs(params):
 	parser.add_argument('--logs', '-l', help='Show logs of all containers. Usage: --logs', required=False, action='store_true')
 	parser.add_argument('--server-address', '-sa', help='Set server address Env Var. Usage: --server-address=XXXXXX', required=False)
 	parser.add_argument('--shared-folder', '-sf', help='Set the folder used to share files between ElasTest Components. Usage: --shared-folder=shared-data/', required=False)
+	parser.add_argument('--elastest-user', '-es', help='Change the default user ID to access ElasTestSet. The default value is elastest. Usage: --elastest-user=testuser', required=False)
+	parser.add_argument('--elastest-pass', '-ep', help='Change the default user PASS to access ElasTestSet. The default value is elastest. Usage: --elastest-pass=passuser', required=False)
 	parser.add_argument('--with-proxy', '-wp', help='Start NGINX proxy for ElasTest services. Usage: --with-proxy=true', required=False)
 
 	# Custom usage message
@@ -59,6 +61,16 @@ def runPlatform(params):
 		files_list.append('../etm/deploy/docker-compose-main.yml')
 		files_list.append('../etm/docker/docker-compose-main.yml')
 		replaceEnvVarValue('ET_SHARED_FOLDER', args.shared_folder, '/shared-data/', files_list)
+	
+	if(args.elastest_user):
+		files_list = []
+		files_list.append('../etm/docker/docker-compose-proxy.yml')		
+		replaceEnvVarValue('ET_USER', args.elastest_user, 'elastest', files_list)
+
+	if(args.elastset_pass):
+		files_list = []
+		files_list.append('../etm/docker/docker-compose-proxy.yml')		
+		replaceEnvVarValue('ET_PASS', args.elastset_pass, 'elastest', files_list)
 		
 	if(args.logs == True):
 		FNULL = subprocess.STDOUT
