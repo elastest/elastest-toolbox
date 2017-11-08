@@ -67,10 +67,10 @@ def runPlatform(params):
 		files_list.append('../etm/docker/docker-compose-proxy.yml')		
 		replaceEnvVarValue('ET_USER', args.elastest_user, 'elastest', files_list)
 
-	if(args.elastset_pass):
+	if(args.elastest_pass):
 		files_list = []
 		files_list.append('../etm/docker/docker-compose-proxy.yml')		
-		replaceEnvVarValue('ET_PASS', args.elastset_pass, 'elastest', files_list)
+		replaceEnvVarValue('ET_PASS', args.elastest_pass, 'elastest', files_list)
 		
 	if(args.logs == True):
 		FNULL = subprocess.STDOUT
