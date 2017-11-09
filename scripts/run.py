@@ -44,6 +44,7 @@ def getArgs(params):
 def runPlatform(params):
 	args = getArgs(params)
 	dockerCommand = []
+	with_security = False
 
 	mode = args.mode  # start or stop
 	lite = args.lite
@@ -60,15 +61,12 @@ def runPlatform(params):
 		files_list.append('../etm/deploy/docker-compose-main.yml')
 		files_list.append('../etm/docker/docker-compose-main.yml')
 		replaceEnvVarValue('ET_SHARED_FOLDER', args.shared_folder, '/shared-data/', files_list)
-	
-	if(args.elastest_user):
-		files_list = []
-		files_list.append('../etm/docker/docker-compose-proxy.yml')		
-		replaceEnvVarValue('ET_USER', args.elastest_user, 'elastest', files_list)
 
-	if(args.elastest_pass):
+	if (args.elastest_user and args.elastest_pass):
+		with_security = True
 		files_list = []
-		files_list.append('../etm/docker/docker-compose-proxy.yml')		
+		files_list.append('../etm/docker/docker-compose-proxy-env.yml')		
+		replaceEnvVarValue('ET_USER', args.elastest_user, 'elastest', files_list)
 		replaceEnvVarValue('ET_PASS', args.elastest_pass, 'elastest', files_list)
 		
 	if(args.logs == True):
@@ -85,6 +83,7 @@ def runPlatform(params):
 	message = ''
 
 	etm_proxy = '-f ../etm/docker/docker-compose-proxy.yml'
+	etm_proxy_env = '-f ../etm/docker/docker-compose-proxy-env.yml'
 	#emp = '-f emp/deploy/docker-compose.yml'
 	emp = ''
 	edm = '-f ../edm/deploy/docker-compose.yml'
@@ -105,7 +104,7 @@ def runPlatform(params):
 
 	# If is NORMAL mode
 	if(lite == False):
-		dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + ' ' + epm + ' ' + emp + ' ' + etm_proxy + ' -p elastest'		
+		dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + ' ' + epm + ' ' + emp + ' ' + etm_proxy + ' ' + (etm_proxy_env if with_security else '') + ' -p elastest'		
 		message = 'Starting ElasTest Platform (Normal Mode)...'
 		submode = 'Normal'
 
@@ -125,7 +124,7 @@ def runPlatform(params):
 		etm = etm_complementary + ' ' + etm_complementary_ports
 		if (not etm_dev):
 			etm = etm + ' ' + etm_main + ' ' + etm_main_ports
-		dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + etm_proxy + ' -p elastest'		
+		dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + etm_proxy + ' ' + (etm_proxy_env if with_security else '') + ' -p elastest'		
 		message = 'Starting ElasTest Platform (Lite Mode)...'
 		submode = 'Lite'
 
