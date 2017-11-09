@@ -15,6 +15,8 @@ etm_main_normal = '../etm/deploy/docker-compose-main.yml'
 etm_complementary_lite = '../etm/docker/docker-compose-complementary.yml'
 etm_main_lite = '../etm/docker/docker-compose-main.yml'
 
+etm_proxy = '../etm/docker/docker-compose-proxy.yml'
+
 # ET TSS JSON FILES (EUS, EBS, ESS, EDS, EMS)
 eus = '../eus/elastestservice.json'
 ebs = '../ebs/elastestservice.json'
@@ -29,7 +31,7 @@ ere = '../etm/elastest-torm/src/main/resources/test_engines/ere.yml'
 
 def getCoreList():
     core_list = [emp, edm, esm, eim, epm, etm_complementary_normal,
-                 etm_main_normal, etm_complementary_lite, etm_main_lite]
+                 etm_main_normal, etm_complementary_lite, etm_main_lite, etm_proxy]
     return core_list
 
 
