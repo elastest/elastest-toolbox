@@ -26,8 +26,7 @@ def getArgs(params):
 	parser.add_argument('--shared-folder', '-sf', help='Set the folder used to share files between ElasTest Components. Usage: --shared-folder=shared-data/', required=False)
 	parser.add_argument('--elastest-user', '-es', help='Change the default user ID to access ElasTestSet. The default value is elastest. Usage: --elastest-user=testuser', required=False)
 	parser.add_argument('--elastest-pass', '-ep', help='Change the default user PASS to access ElasTestSet. The default value is elastest. Usage: --elastest-pass=passuser', required=False)
-	parser.add_argument('--with-proxy', '-wp', help='Start NGINX proxy for ElasTest services. Usage: --with-proxy=true', required=False)
-
+	
 	# Custom usage message
 	usage = parser.format_usage()
 	usage = usage.replace("usage: main.py", "docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start")
@@ -106,7 +105,7 @@ def runPlatform(params):
 
 	# If is NORMAL mode
 	if(lite == False):
-		dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + ' ' + epm + ' ' + emp + ' ' + (etm_proxy if args.with_proxy else '') + ' -p elastest'		
+		dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + ' ' + epm + ' ' + emp + ' ' + etm_proxy + ' -p elastest'		
 		message = 'Starting ElasTest Platform (Normal Mode)...'
 		submode = 'Normal'
 
@@ -126,7 +125,7 @@ def runPlatform(params):
 		etm = etm_complementary + ' ' + etm_complementary_ports
 		if (not etm_dev):
 			etm = etm + ' ' + etm_main + ' ' + etm_main_ports
-		dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + (etm_proxy if args.with_proxy else '') + ' -p elastest'		
+		dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + etm_proxy + ' -p elastest'		
 		message = 'Starting ElasTest Platform (Lite Mode)...'
 		submode = 'Lite'
 
