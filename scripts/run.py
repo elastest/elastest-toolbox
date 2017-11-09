@@ -24,7 +24,7 @@ def getArgs(params):
 	parser.add_argument('--logs', '-l', help='Show logs of all containers. Usage: --logs', required=False, action='store_true')
 	parser.add_argument('--server-address', '-sa', help='Set server address Env Var. Usage: --server-address=XXXXXX', required=False)
 	parser.add_argument('--shared-folder', '-sf', help='Set the folder used to share files between ElasTest Components. Usage: --shared-folder=shared-data/', required=False)
-	parser.add_argument('--elastest-user', '-es', help='Change the default user ID to access ElasTestSet. The default value is elastest. Usage: --elastest-user=testuser', required=False)
+	parser.add_argument('--elastest-user', '-eu', help='Change the default user ID to access ElasTestSet. The default value is elastest. Usage: --elastest-user=testuser', required=False)
 	parser.add_argument('--elastest-pass', '-ep', help='Change the default user PASS to access ElasTestSet. The default value is elastest. Usage: --elastest-pass=passuser', required=False)
 	
 	# Custom usage message
