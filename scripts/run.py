@@ -166,8 +166,6 @@ def runPlatform(params):
 				if(result == 0 and mode == 'start'):
 					if(not etm_dev):
 						check_params = [[], True]
-						if(args.with_proxy):
-							check_params.append(True)
 						if(args.server_address):
 							check_params.append(args.server_address)
 
