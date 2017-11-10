@@ -4,9 +4,16 @@ This repository contains the needed tools to install and execute ElasTest Platfo
 
 ## System Requirements
 
-To install and execute ElasTest you can use any mayor operating systema (linux, windows or mac) with Docker installed. No additional configuration is necessary.
+To install and execute ElasTest you can use any mayor operating systema (linux, windows or mac) with Docker installed. To install Docker CE (Community Edition), please follow the [official installation instructions](https://docs.docker.com/engine/installation/).
 
-To install Docker CE (Community Edition), please follow the [official installation instructions](https://docs.docker.com/engine/installation/).
+For good performance, we recommend that you install ElasTest on a machine with the following minimum configuration:
+
+- Processor: 1GHz or faster processor
+- RAM: 8GB
+- SWAP: 4GB (if RAM < 16GB)
+- Hard Disk: 30GB
+
+> **Note:** In Linux OS you can use the command `free -m` to know if your machine has SWAP memory enabled.
 
 ## ElasTest execution modes
 
@@ -48,7 +55,15 @@ The command will be the following one:
 ```
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --server-address=<public_ip_or_host>`
 ```
-ElasTest main GUI and REST API is accessible in localhost on port 37006. Other ports are needed during execution because new services can be started in new ports. We plan to implement a way to control the port range, but at the moment, any port in range [32768 to 61000] can be used and thus should be open to public in the firewall or proxy.
+ElasTest main GUI and REST API is accessible in the server IP on port 37000. Other ports are needed during execution because new services can be started in new ports. We plan to implement a way to control the port range, but at the moment, any port in range [32768 to 61000] can be used and thus should be open to public in the firewall or proxy.
+
+# How to execute ElasTest with basic authentication
+ElasTest can be started with basic authentication enabled. For this it is necessary to include the parameters `--user` and `--password` to set the user and password to access to ElasTest:
+
+```
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --user=<user_login> --password=<user_pass>
+```
+
 
 ## How to stop ElasTest
 
@@ -153,7 +168,8 @@ The output is:
 
 ```
 usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start [-h] [--lite] [--dev DEV] [--pullall] [--pullcore] [--noports]
-               [--logs] [--server-address SERVER_ADDRESS]
+               [--logs] [--server-address SERVER_ADDRESS] [--user USER]
+               [--password PASSWORD]
                {start,stop}
 
 positional arguments:
@@ -170,6 +186,11 @@ optional arguments:
   --server-address SERVER_ADDRESS, -sa SERVER_ADDRESS
                         Set server address Env Var. Usage: --server-
                         address=XXXXXX
+  --user USER, -u USER  Set the user to access ElasTest. Use together
+                        --password. Usage: --user=testuser
+  --password PASSWORD, -p PASSWORD
+                        Set the user password to access ElasTest. Use together
+                        --user. Usage: --password=passuser
 ```
 
 ### Inspect command
