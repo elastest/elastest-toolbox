@@ -23,21 +23,28 @@ def getArgs(params):
 	parser.add_argument('--noports', '-np', help='Unbind all ports. Usage: --noports', required=False, action='store_true')
 	parser.add_argument('--logs', '-l', help='Show logs of all containers. Usage: --logs', required=False, action='store_true')
 	parser.add_argument('--server-address', '-sa', help='Set server address Env Var. Usage: --server-address=XXXXXX', required=False)
-	parser.add_argument('--shared-folder', '-sf', help='Set the folder used to share files between ElasTest Components. Usage: --shared-folder=shared-data/', required=False)
-	parser.add_argument('--elastest-user', '-eu', help='Change the default user ID to access ElasTestSet. The default value is elastest. Usage: --elastest-user=testuser', required=False)
-	parser.add_argument('--elastest-pass', '-ep', help='Change the default user PASS to access ElasTestSet. The default value is elastest. Usage: --elastest-pass=passuser', required=False)
+	parser.add_argument('--shared-folder', '-sf', required=False, help=argparse.SUPPRESS)
+	parser.add_argument('--user', '-u', help='Set the user to access ElasTest. Use together --password. Usage: --user=testuser', required=False)
+	parser.add_argument('--password', '-p', help='Set the user password to access ElasTest. Use together --user. Usage: --password=passuser', required=False)
 	
 	# Custom usage message
 	usage = parser.format_usage()
 	usage = usage.replace("usage: main.py", "docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start")
 	parser.usage = usage
 
+	args = parser.parse_args(params)
+
 	# If there aren't args, show help and exit
 	if len(params) == 0:
         	parser.print_help()
         	sys.exit(1)
-
-	args = parser.parse_args(params)
+	
+	if ((args.user and not args.password) or (not args.user and args.password)):
+		print 'To enable basic authentication you must specify user and password'
+		print ''
+		parser.print_help()
+		os._exit(1)
+	
 	return args
 
 
@@ -62,12 +69,12 @@ def runPlatform(params):
 		files_list.append('../etm/docker/docker-compose-main.yml')
 		replaceEnvVarValue('ET_SHARED_FOLDER', args.shared_folder, '/shared-data/', files_list)
 
-	if (args.elastest_user and args.elastest_pass):
+	if (args.user and args.password):
 		with_security = True
 		files_list = []
 		files_list.append('../etm/docker/docker-compose-proxy-env.yml')		
-		replaceEnvVarValue('ET_USER', args.elastest_user, 'elastest', files_list)
-		replaceEnvVarValue('ET_PASS', args.elastest_pass, 'elastest', files_list)
+		replaceEnvVarValue('ET_USER', args.user, 'elastest', files_list)
+		replaceEnvVarValue('ET_PASS', args.password, 'elastest', files_list)
 		
 	if(args.logs == True):
 		FNULL = subprocess.STDOUT
