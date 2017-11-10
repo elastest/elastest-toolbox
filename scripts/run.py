@@ -17,7 +17,7 @@ def getArgs(params):
 	parser = argparse.ArgumentParser()
 	parser.add_argument('mode', help='Mode to execute: start or stop', type=str, choices=set(('start','stop')))
 	parser.add_argument('--lite', '-lt', help='Run in Lite mode', required=False, action='store_true')
-	parser.add_argument('--dev', '-d', help='ETM dev mode. Usage: --dev=etm', required=False)
+	parser.add_argument('--dev', '-d', help=argparse.SUPPRESS, required=False)
 	parser.add_argument('--pullall', '-pa', help='Force pull of all images. Usage: --pullall', required=False, action='store_true')
 	parser.add_argument('--pullcore', '-pc', help='Force pull of only necessary images. Usage: --pullcore', required=False, action='store_true')
 	parser.add_argument('--noports', '-np', help='Unbind all ports. Usage: --noports', required=False, action='store_true')
