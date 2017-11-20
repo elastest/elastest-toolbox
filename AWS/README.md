@@ -5,13 +5,13 @@ AWS CloudFormation Template
 
 ## Introduction
 
-This repos includes all the necessary to easy deploy Elastest on AWS.
+This repo includes all the necessary to easy deploy Elastest on AWS.
 
 ## How to use it
 
-First of all you'll need an AWS account. To achive that follow those [steps](http://docs.aws.amazon.com/AmazonSimpleDB/latest/DeveloperGuide/AboutAWSAccounts.html).
+First of all you'll need an AWS account. To achive that, follow those [steps](http://docs.aws.amazon.com/AmazonSimpleDB/latest/DeveloperGuide/AboutAWSAccounts.html).
 
-Then, you can go to [AWS CloudFormation Pane](https://eu-west-1.console.aws.amazon.com/cloudformation/) and create a **new stack**. You will need the **json** include on this repo to complete the task. The form you'll see on the second step have to be filled with the following information:
+Then, you can go to [AWS CloudFormation Pane](https://eu-west-1.console.aws.amazon.com/cloudformation/) and create a **new stack**. You will need the **json** included on this repo to complete the task. The form you'll see on the second step have to be filled with the following information:
 
 | Parameter | Value | Details | Ready? |
 | --- | --- | --- | --- |
@@ -28,7 +28,7 @@ Then, you can go to [AWS CloudFormation Pane](https://eu-west-1.console.aws.amaz
 | OwnCertKEY | Block | The private key | no |
 | SwapSize | 4 | The amount of swap memory in GB | yes |
 
-When the stack finish the deployment, you can check *output* tag to see the URL to access your application.
+When the stack finished the deployment, you can check *output* tab to see the URL to access your application.
 
 **Elastest! Happy Testing!**
 
