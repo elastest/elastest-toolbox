@@ -1,0 +1,10 @@
+#!/bin/bash
+
+TARGETS=$(docker ps --format "table {{ .ID }}" | tail --lines +2)
+
+for CONTAINER in $TARGETS
+do
+  docker stop $CONTAINER
+  docker rm -f $CONTAINER
+done
+

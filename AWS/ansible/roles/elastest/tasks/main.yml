@@ -1,0 +1,38 @@
+---
+- name: setting sysctl (see https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
+  sysctl:
+    name: vm.max_map_count
+    value: "{{ elastest_max_map_count }}"
+    state: present
+
+- name: crating systemd stanza
+  copy:
+    src: "docker-elastest.service"
+    dest: "/etc/systemd/system"
+
+- name: copying elastest evacuate script
+  copy:
+    src: "docker-evacuate"
+    dest: "/usr/local/bin"
+    mode: "0755"
+
+- name: copying elastest startup script
+  template:
+    src: "docker-elastest-up"
+    dest: "/usr/local/bin"
+    mode: "0755"
+
+- name: copying script for aws signal
+  copy:
+    src: "check_app_ready.sh"
+    dest: "/usr/local/bin"
+    mode: "0755"
+  when: elastest_run_ec2
+
+- name: enabling elastest service
+  systemd:
+    state: started
+    name: "docker-elastest"
+    daemon_reload: yes
+    enabled: True
+

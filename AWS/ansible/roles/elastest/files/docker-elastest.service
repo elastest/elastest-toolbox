@@ -1,0 +1,14 @@
+[Unit]
+Description=Elastest Platform
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStop=/usr/local/bin/docker-evacuate
+ExecStart=/usr/local/bin/docker-elastest-up
+
+[Install]
+WantedBy=multi-user.target
+

@@ -1,0 +1,313 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "AWS CloudFormation ELASTEST.\n",
+  "Parameters": {
+    "KeyName": {
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Description": "Specifies the name of an existing Amazon EC2 key pair to enable SSH access to the EC2 instances in your cluster.\n",
+      "ConstraintDescription": "Must be the name of an existing EC2 KeyPair.",
+      "Default": "nordri-aws-urjc"
+    },
+    "ElastestUsername": {
+    	"Type": "String",
+    	"Description": "A valid username to access Elastest Platform",
+    	"Default": "elastest"
+    },
+    "ElastestPassword": {
+    	"Type": "String",
+    	"Description": "A valid password for Elastest User",
+    	"Default": "elastest"
+    },
+    "ElastestCertificateType": {
+    	"Description": "You can choose from the list below which certificate to use",
+    	"Type": "String",
+    	"Default": "selfsigned",
+    	"AllowedValues": [
+    		"selfsigned",
+    		"letsencrypt",
+    		"owncert"
+      ]
+    },
+    "LetsEncryptEmail": {
+      "Description": "Email necesary for Let's Encrypt notifications",
+      "Type": "String"
+    },
+    "OwnCertCRT": {
+      "Description" : "CRT File",
+      "Type": "String"
+    },
+    "OwnCertKEY": {
+      "Description": "KEY File",
+      "Type": "String"
+    },
+    "ElastestVersion": {
+    	"Type": "String",
+    	"Description": "Elastest version to deploy",
+    	"Default": "latest"
+    },
+    "InstanceType": {
+    	"Description": "Elastest Machine - EC2 instance type",
+    	"Type": "String",
+    	"Default": "m4.large",
+    	"AllowedValues": [
+	    	"t1.micro",
+	        "t2.nano",
+	        "t2.micro",
+	        "t2.small",
+	        "t2.medium",
+	        "t2.large",
+	        "m1.small",
+	        "m1.medium",
+	        "m1.large",
+	        "m1.xlarge",
+	        "m2.xlarge",
+	        "m2.2xlarge",
+	        "m2.4xlarge",
+	        "m3.medium",
+	        "m3.large",
+	        "m3.xlarge",
+	        "m3.2xlarge",
+	        "m4.large",
+	        "m4.xlarge",
+	        "m4.2xlarge",
+	        "m4.4xlarge",
+	        "m4.10xlarge",
+	        "c1.medium",
+	        "c1.xlarge",
+	        "c3.large",
+	        "c3.xlarge",
+	        "c3.2xlarge",
+	        "c3.4xlarge",
+	        "c3.8xlarge",
+	        "c4.large",
+	        "c4.xlarge",
+	        "c4.2xlarge",
+	        "c4.4xlarge",
+	        "c4.8xlarge",
+	        "g2.2xlarge",
+	        "g2.8xlarge",
+	        "r3.large",
+	        "r3.xlarge",
+	        "r3.2xlarge",
+	        "r3.4xlarge",
+	        "r3.8xlarge",
+	        "i2.xlarge",
+	        "i2.2xlarge",
+	        "i2.4xlarge",
+	        "i2.8xlarge",
+	        "d2.xlarge",
+	        "d2.2xlarge",
+	        "d2.4xlarge",
+	        "d2.8xlarge",
+	        "hi1.4xlarge",
+	        "hs1.8xlarge",
+	        "cr1.8xlarge",
+	        "cc2.8xlarge",
+	        "cg1.4xlarge"
+	    ],
+	    "ConstraintDescription": "must be a valid EC2 instance type."
+    },
+    "SwapSize": {
+    	"Type": "String",
+    	"Description": "It's known that ElasticSearch needs some swap space. This CloudFormation will try to attach a volume to the instance to be used as swap space. Please set the size",
+    	"Default": "4"
+    },
+    "ElastestExecutionMode": {
+    	"Type": "String",
+    	"Description": "Launch mode for Elastest",
+    	"Default": "lite",
+    	"AllowedValues": [
+    		"lite",
+    		"full"
+    	]
+    }
+  },
+  "Mappings": {
+    "RegionMap": {
+        "us-east-1": {
+            "AMI1": "ami-da05a4a0"
+        }, 
+        "us-west-1": {
+            "AMI1": "ami-1c1d217c"
+        }, 
+        "ap-northeast-2": {
+            "AMI1": "ami-7b1cb915"
+        }, 
+        "ap-northeast-1": {
+            "AMI1": "ami-15872773"
+        }, 
+        "sa-east-1": {
+            "AMI1": "ami-466b132a"
+        }, 
+        "ap-southeast-1": {
+            "AMI1": "ami-67a6e604"
+        }, 
+        "ca-central-1": {
+            "AMI1": "ami-8a71c9ee"
+        }, 
+        "ap-southeast-2": {
+            "AMI1": "ami-41c12e23"
+        }, 
+        "us-west-2": {
+            "AMI1": "ami-0a00ce72"
+        }, 
+        "us-east-2": {
+            "AMI1": "ami-336b4456"
+        }, 
+        "ap-south-1": {
+            "AMI1": "ami-bc0d40d3"
+        }, 
+        "eu-central-1": {
+            "AMI1": "ami-97e953f8"
+        }, 
+        "eu-west-1": {
+            "AMI1": "ami-add175d4"
+        }, 
+        "eu-west-2": {
+            "AMI1": "ami-ecbea388"
+        }
+    }
+	},
+	"Resources": {
+		"ElastestEC2Instance": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"ImageId": {
+					"Fn::FindInMap": [
+						"RegionMap", {"Ref": "AWS::Region"  }, "AMI1" ]
+        		},
+        		"InstanceType": {
+        			"Ref": "InstanceType"
+        		},
+        		"SecurityGroups": [
+        			{
+        				"Ref": "ElastestSecurityGroup"
+        			}
+        		],
+        		"KeyName": {
+        			"Ref": "KeyName"
+        		},
+        		"Tags": [
+        			{
+        				"Key": "Name",
+        				"Value": {
+        					"Ref": "AWS::StackName"
+        				}
+        			}
+        		],
+        		"UserData": {
+        			"Fn::Base64": {
+        				"Fn::Join": [
+        					"",
+        					[
+        						"#!/bin/bash -x\n",
+                                "source /home/ubuntu/.bashrc\n",
+                                "export HOME=/home/ubuntu\n",
+                                "apt-add-repository --yes ppa:ansible/ansible\n",
+        						"apt-get update\n",
+        						"apt-get install -y git ansible python-pip\n",
+                                "pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
+                                "/usr/local/bin/cfn-init -v --stack ", { "Ref": "AWS::StackName" }, " --resource ElastestEC2Instance --region ", { "Ref": "AWS::Region" }, "\n",
+        						"fallocate -l", { "Ref": "SwapSize" }, "G /swapfile\n",
+        						"chmod 600 /swapfile\n",
+        						"mkswap /swapfile\n",
+        						"swapon /swapfile\n",
+        						"echo '/swapfile none swap sw 0 0' >>/etc/fstab\n",
+                                "git clone https://github.com/nordri/cf-elastest.git /opt/workdir\n",
+                                "pushd /opt/workdir/ansible\n",
+                                "ansible-galaxy install geerlingguy.docker\n",
+                                "PIP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)\n",
+                                "sed -i \"s/ELASTEST_PUBLIC_IP/$PIP/\" roles/elastest/vars/main.yml\n", 
+                                "sed -i \"s/ELASTEST_RUN_MODE/", { "Ref": "ElastestExecutionMode" }, "/\" roles/elastest/vars/main.yml\n", 
+                                "sed -i \"s/ELASTEST_VERSION/", { "Ref": "ElastestVersion" }, "/\" roles/elastest/vars/main.yml\n", 
+                                "sed -i \"s/elastest_run_ec2: false/elastest_run_ec2: true/\" roles/elastest/vars/main.yml\n", 
+                                "ansible-playbook -i \"localhost,\" -c local play.yml\n",
+                                "popd\n",
+                                "/usr/local/bin/check_app_ready.sh\n",
+                                "/usr/local/bin/cfn-signal -e $? --stack ", { "Ref": "AWS::StackName" }, " --resource WaitCondition --region ", { "Ref": "AWS::Region" }, "\n"
+        					]
+        				]
+        			}
+        		},
+                "BlockDeviceMappings" : [
+                    {
+                        "DeviceName" : "/dev/sda1",
+                        "Ebs" : {
+                            "VolumeType" : "io1",
+                            "Iops" : "200",
+                            "DeleteOnTermination" : "true",
+                            "VolumeSize" : "50"
+                        }
+                    }
+                ]
+			}
+		},
+        "WaitCondition" : {
+            "Type" : "AWS::CloudFormation::WaitCondition",
+            "CreationPolicy" : {
+                "ResourceSignal" : {
+                    "Timeout" : "PT15M",
+                    "Count" : "1"
+                }
+            }
+        },
+		"ElastestSecurityGroup": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription": "Elastest Security Group",
+				"SecurityGroupIngress" : [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "32768",
+                        "ToPort": "61000",
+                        "CidrIp": "0.0.0.0/0"
+                    },
+					{
+						"IpProtocol": "tcp",
+						"FromPort": "22",
+						"ToPort": "22",
+						"CidrIp": "0.0.0.0/0"
+					}
+				]
+			}
+		}
+	},
+	"Outputs": {
+        "ElastestIP": {
+          "Description": "Alternatively, you can access througt this IP",
+          "Value": {
+            "Fn::Join": [
+                "",
+                [
+                    "http://",
+                    {
+                        "Fn::GetAtt": [
+                            "ElastestEC2Instance",
+                            "PublicIp"
+                        ]
+                    },
+                    ":37000"
+                ]
+            ]
+          }
+        },
+		"ElastestURL": {
+			"Description": "Use this URL to access the Elastest Platform",
+			"Value": {
+				"Fn::Join": [
+					"",
+					[
+						"http://",
+						{
+							"Fn::GetAtt": [
+								"ElastestEC2Instance",
+								"PublicDnsName"
+							]
+						},
+                        ":37000"
+					]
+				]
+			}
+		}
+	}
+}
