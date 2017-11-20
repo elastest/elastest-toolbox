@@ -5,8 +5,7 @@
     "KeyName": {
       "Type": "AWS::EC2::KeyPair::KeyName",
       "Description": "Specifies the name of an existing Amazon EC2 key pair to enable SSH access to the EC2 instances in your cluster.\n",
-      "ConstraintDescription": "Must be the name of an existing EC2 KeyPair.",
-      "Default": "nordri-aws-urjc"
+      "ConstraintDescription": "Must be the name of an existing EC2 KeyPair."
     },
     "ElastestUsername": {
     	"Type": "String",
@@ -109,7 +108,7 @@
     },
     "SwapSize": {
     	"Type": "String",
-    	"Description": "It's known that ElasticSearch needs some swap space. This CloudFormation will try to attach a volume to the instance to be used as swap space. Please set the size",
+    	"Description": "It's known that ElasticSearch needs some swap space. This CloudFormation will create a swapfile in the instance to be used as swap space. Please set the size",
     	"Default": "4"
     },
     "ElastestExecutionMode": {
@@ -213,8 +212,8 @@
         						"mkswap /swapfile\n",
         						"swapon /swapfile\n",
         						"echo '/swapfile none swap sw 0 0' >>/etc/fstab\n",
-                                "git clone https://github.com/nordri/cf-elastest.git /opt/workdir\n",
-                                "pushd /opt/workdir/ansible\n",
+                                "git clone https://github.com/elastest/elastest-toolbox.git /opt/workdir\n",
+                                "pushd /opt/workdir/AWS/ansible\n",
                                 "ansible-galaxy install geerlingguy.docker\n",
                                 "PIP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)\n",
                                 "sed -i \"s/ELASTEST_PUBLIC_IP/$PIP/\" roles/elastest/vars/main.yml\n", 
