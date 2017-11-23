@@ -15,8 +15,8 @@ from setEnv import *
 def getArgs(params):
 	# Define arguments
 	parser = argparse.ArgumentParser()
-	parser.add_argument('mode', help='Mode to execute: start or stop', type=str, choices=set(('start','stop')))
-	parser.add_argument('--lite', '-lt', help='Run in Lite mode', required=False, action='store_true')
+	parser.add_argument('command', help='Platform command to execute: start or stop', type=str, choices=set(('start','stop')))	
+	parser.add_argument('--mode', '-m', help='Set ElasTest execution mode.', type=str, choices=set(('normal', 'experimental-lite', 'experimental')), default='normal')
 	parser.add_argument('--dev', '-d', help=argparse.SUPPRESS, required=False)
 	parser.add_argument('--pullall', '-pa', help='Force pull of all images. Usage: --pullall', required=False, action='store_true')
 	parser.add_argument('--pullcore', '-pc', help='Force pull of only necessary images. Usage: --pullcore', required=False, action='store_true')
@@ -53,9 +53,9 @@ def runPlatform(params):
 	dockerCommand = []
 	with_security = False
 
-	mode = args.mode  # start or stop
-	lite = args.lite
-
+	command = args.command  # start or stop
+	mode = args.mode
+	
 	if(args.server_address):
 		#setServerAddress(args.server_address)
 		files_list = []
@@ -110,13 +110,18 @@ def runPlatform(params):
 		etm_dev = True
 
 	# If is NORMAL mode
-	if(lite == False):
+	if(mode == 'experimental' ):
 		dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + ' ' + epm + ' ' + emp + ' ' + etm_proxy + ' ' + (etm_proxy_env if with_security else '') + ' -p elastest'		
-		message = 'Starting ElasTest Platform (Normal Mode)...'
-		submode = 'Normal'
+		message = 'Starting ElasTest Platform (' + mode + ' Experimental Mode)...'		
 
-	# If is LITE mode
+	# If is a Experimental mode
 	else:
+		#Change the default execution mode
+		files_list = []
+		files_list.append('../etm/deploy/docker-compose-main.yml')
+		files_list.append('../etm/docker/docker-compose-main.yml')
+		replaceEnvVarValue('EXEC_MODE', args.mode, 'normal', files_list)
+
 		# etm root path docker-compose files:
 		etm_complementary = '-f ../etm/docker/docker-compose-complementary.yml'
 		etm_complementary_ports = '-f ../etm/docker/docker-compose-complementary-ports.yml'
@@ -132,17 +137,16 @@ def runPlatform(params):
 		if (not etm_dev):
 			etm = etm + ' ' + etm_main + ' ' + etm_main_ports
 		dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + etm_proxy + ' ' + (etm_proxy_env if with_security else '') + ' -p elastest'		
-		message = 'Starting ElasTest Platform (Lite Mode)...'
-		submode = 'Lite'
-
-	# If mode=stop
-	if(mode == 'stop'):
+		message = 'Starting ElasTest Platform (' + mode + ' mode)...'
+		
+	# If command=stop
+	if(command == 'stop'):
 		instruction = ' down'
-		message = 'Stopping ElasTest Platform (' + submode + ' mode)...'
+		message = 'Stopping ElasTest Platform (' + mode + ' mode)...'
 
 	if(len(dockerCommand) > 0):
 		# If Force pull or pull necessary images, do pull for each image
-		if(mode != 'stop'):
+		if(command != 'stop'):
 			if(args.pullall):
 				print 'Forcing pull...'
 				print ''
@@ -164,12 +168,12 @@ def runPlatform(params):
 
 		# Run docker-compose up/down
 		try:
-		    	if(args.logs and mode == 'start'):
+		    	if(args.logs and command == 'start'):
 			# If print logs, run in bg
 				subprocess.Popen(shlex.split(dockerCommand), stderr=FNULL)
 			else:
 				result = subprocess.call(shlex.split(dockerCommand), stderr=FNULL)
-				if(result == 0 and mode == 'start'):
+				if(result == 0 and command == 'start'):
 					if(not etm_dev):
 						check_params = [[], True]
 						# Set proxy value to True
