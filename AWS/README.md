@@ -17,7 +17,7 @@ Then, you can go to [AWS CloudFormation Pane](https://eu-west-1.console.aws.amaz
 | --- | --- | --- | --- |
 | Stack name | The name of the stack | Elastest is OK | yes |
 | ElastestCertificateType | selfsigned or own cert | You can choose which type of certificate use with elastest | no |
-| ElastestExecutionMode | lite or full | Choose if you want to use Elastest with all the features or just a few one | yes |
+| ElastestExecutionMode | normal, experimental-lite or experimental | Choose Elastest' execution mode | yes |
 | ElastestPassword | elastest | Password to access the platform | no |
 | ElastestUsername | elastest | Username to access the platform | no |
 | ElastestVersion | latest | which version of elastest do you want to launch | yes |

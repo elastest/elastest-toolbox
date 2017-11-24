@@ -116,8 +116,9 @@
     	"Description": "Launch mode for Elastest",
     	"Default": "lite",
     	"AllowedValues": [
-    		"lite",
-    		"full"
+    		"normal",
+    		"experimental-lite",
+		"experimental"
     	]
     }
   },
