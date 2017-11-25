@@ -17,9 +17,12 @@ For good performance, we recommend that you install ElasTest on a machine with t
 
 ## ElasTest execution modes
 
-ElasTest can be executed in two modes:
-* **full**: ElasTest is executed with all components. It is ideal to execute in a server with high computing resources. It can take several minutes to start all services included.
-* **lite**: This mode is designed to be lighter than `full` mode. It executes a basic persistence (no redundancy) and doesn't execute the monitoring platform. It is ideal to execute ElasTest in the development laptop as it consume less resources and starts in less time.
+ElasTest has three operating modes:
+* **normal**: This mode is the lightest of the three and is the default operating mode. In this mode, you can only use the EUS (ElasTest User Emulator Service) as a TSS (Test Support Services) and you can not enable the TE (Test Enginges). It is ideal if you only need execute test (JUnit, E2E,...) without additional functionalities.
+
+* **experimental-lite**: This mode is designed to be lighter than `experimental` mode and provides more functionalities than `normal` mode, such as the posibility to add the functionalities of the TSS  or TE to your test execution. It executes a basic persistence (no redundancy) and doesn't execute the monitoring platform. It is ideal to execute ElasTest in the development laptop as it consume less resources and starts in less time.
+
+* **experimental**: ElasTest is executed with all components. It is ideal to execute in a server with high computing resources. It can take several minutes to start all services included.
 
 Test Support Services and Engines are started on demand by the user when needed to improve startup time and save some resources if that components are not used.
 
@@ -29,14 +32,19 @@ ElasTest can be executed in the developer machine with linux, windows or mac ope
 
 When ElasTest is started the first time it is downloaded. There is no "installation" step. 
 
-ElasTest is executed in `full` mode with the following command:
+ElasTest is executed in `normal` mode with the following command:
 ```
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start
 ```
 
-To execute ElasTest in `lite` mode the command is: 
+To execute ElasTest in `experimental-lite` mode the command is: 
 ```
-docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --lite
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --mode=experimental-lite
+```
+
+To execute ElasTest in `experimental` mode the command is: 
+```
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --mode=experimental
 ```
 
 The `start` command outputs an informative message when ElasTest is ready to be used. That is ideal for users to know when open the ElasTest URL in the browser. 
@@ -45,7 +53,7 @@ That command will block the shell until ElasTest is stopped using `Ctrl+C` (see 
 
 > **NOTE**: To execute ElasTest in Windows or Mac with "Docker Toolbox" it is necessary to obtain the docker virtual machine IP with the command `docker-machine ip default` and specify it in the parameter `server-address` of the start command. For example, if IP is 192.168.99.100, then the command will look like:
 
-`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --lite --server-address=192.168.99.100`
+`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --server-address=192.168.99.100`
 
 ## How to execute ElasTest in a server
 
@@ -64,7 +72,6 @@ ElasTest can be started with basic authentication enabled. For this it is necess
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --user=<user_login> --password=<user_pass>
 ```
 
-
 ## How to stop ElasTest
 
 ElasTest can be stopped using `Ctrl+C` in the shell where `start` command has been executed. Another way to stop the platform is opening a new shell and execute the `stop` command:
@@ -76,7 +83,7 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform s
 
 ElasTest is in active development. There is no stable version yet. For the moment, the `start` command will execute the last development version available. That is, the version generated from latest commit of the master branch. It is idel for development, but latest development version can be broken from time to time. 
 
->> **NOTE**: New images are not downloaded automatically when updated in the server. To update your local ElasTest images to the latest ones first update the `elastest/platform` with `docker pull elastest/platform` and then execute ElasTest with `--pullcore` option. 
+> **NOTE**: New images are not downloaded automatically when updated in the server. To update your local ElasTest images to the latest ones first update the `elastest/platform` with `docker pull elastest/platform` and then execute ElasTest with `--pullcore` option. 
 
 Every day the current version is tagged as the nightly version of that day. In that way, you can execute the code available in a specifc day. This is specially useful when latest version is broken. Te command to execute a nightly version is:
 
@@ -101,7 +108,7 @@ ElasTest `start` command by default blocks the shell until ElasTest is stopped. 
 
 When `start` command is executed with `-d` docker option (detached), the command shows the container id just created and returns immediatelly. ElasTest is executed in background:
 ```
-docker run -d --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --lite
+docker run -d --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start
 ```
 
 To wait wait until ElasTest is ready the command `wait` can be used:
@@ -120,7 +127,7 @@ If ElasTest is not started, the command will return 1 as exit code. It is planne
 In summary, to start and manage ElasTest in a bash script, the following commands can be used:
 
 ```
-docker run -d --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --lite
+docker run -d --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform wait
 ELASTEST_GUI_URL=$(sudo docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform inspect --api)
 echo "ElasTest GUI URL: $ELASTEST_GUI_URL"
@@ -167,18 +174,20 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform s
 The output is:
 
 ```
-usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start [-h] [--lite] [--dev DEV] [--pullall] [--pullcore] [--noports]
-               [--logs] [--server-address SERVER_ADDRESS] [--user USER]
+usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start [-h] [--mode {experimental,experimental-lite,normal}]
+               [--pullall] [--pullcore] [--noports] [--logs]
+               [--server-address SERVER_ADDRESS] [--user USER]
                [--password PASSWORD]
                {start,stop}
 
 positional arguments:
-  {start,stop}          Mode to execute: start or stop
+  {start,stop}          Platform command to execute: start or stop
 
 optional arguments:
   -h, --help            show this help message and exit
-  --lite, -lt           Run in Lite mode
-  --dev DEV, -d DEV     ETM dev mode. Usage: --dev=etm
+  --mode {experimental,experimental-lite,normal}, -m {experimental,experimental-lite,normal}
+                        Set ElasTest execution mode. Usage:
+                        --mode=experimental
   --pullall, -pa        Force pull of all images. Usage: --pullall
   --pullcore, -pc       Force pull of only necessary images. Usage: --pullcore
   --noports, -np        Unbind all ports. Usage: --noports
@@ -190,7 +199,7 @@ optional arguments:
                         --password. Usage: --user=testuser
   --password PASSWORD, -p PASSWORD
                         Set the user password to access ElasTest. Use together
-                        --user. Usage: --password=passuser
+                        --user. Usage: --password=passuserge: --password=passuser
 ```
 
 ### Inspect command
@@ -266,14 +275,14 @@ To stop platform execute:
 python main.py stop normal
 ```
 
-To start ElasTest platform in `lite` mode with the `main.py` script execute:
+To start ElasTest platform in `experimental-lite` mode with the `main.py` script execute:
 
 ```
-python main.py start --lite
+python main.py start --experimental-lite
 ```
 To stop platform execute:
 ```
-python main.py stop --lite
+python main.py stop --experimental-lite
 ```
 
 # Troubleshooting

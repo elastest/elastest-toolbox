@@ -16,7 +16,7 @@ def getArgs(params):
 	# Define arguments
 	parser = argparse.ArgumentParser()
 	parser.add_argument('command', help='Platform command to execute: start or stop', type=str, choices=set(('start','stop')))	
-	parser.add_argument('--mode', '-m', help='Set ElasTest execution mode.', type=str, choices=set(('normal', 'experimental-lite', 'experimental')), default='normal')
+	parser.add_argument('--mode', '-m', help='Set ElasTest execution mode. Usage: --mode=experimental', type=str, choices=set(('normal', 'experimental-lite', 'experimental')), default='normal')
 	parser.add_argument('--dev', '-d', help=argparse.SUPPRESS, required=False)
 	parser.add_argument('--pullall', '-pa', help='Force pull of all images. Usage: --pullall', required=False, action='store_true')
 	parser.add_argument('--pullcore', '-pc', help='Force pull of only necessary images. Usage: --pullcore', required=False, action='store_true')
