@@ -1,10 +1,10 @@
 #!/bin/bash
 
-TARGETS=$(docker ps --format "table {{ .ID }}" | tail --lines +2)
+# Delete all containers
+docker rm -f $(docker ps -a -q)
 
-for CONTAINER in $TARGETS
+for volume in $(docker volume ls | grep -v mysql | tail -n +2 | awk '{print $2}')
 do
-  docker stop $CONTAINER
-  docker rm -f $CONTAINER
+  docker volume rm $volume
 done
 
