@@ -114,7 +114,7 @@
     "ElastestExecutionMode": {
     	"Type": "String",
     	"Description": "Launch mode for Elastest",
-    	"Default": "lite",
+    	"Default": "normal",
     	"AllowedValues": [
     		"normal",
     		"experimental-lite",
