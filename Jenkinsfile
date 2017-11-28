@@ -56,7 +56,7 @@ node('docker'){
               "Create platform docker image"
             
                 echo ("Creating elastest/platform image..")                
-                sh 'docker build -t elastest/platform .'
+                sh 'docker build -t elastest/platform:dev .'
     
             stage "IT Test ETM is running"
 	         sh 'cd scripts; chmod 755 it.sh; ./it.sh'
