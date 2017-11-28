@@ -64,7 +64,7 @@ node('docker'){
             stage "Publish Platform docker image"
     
                 echo ("Publish elastest/platform image")
-                def platformimage = docker.image('elastest/platform')
+                def platformimage = docker.image('elastest/platform:dev')
                 //this is work arround as withDockerRegistry is not working properly 
                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'elastestci-dockerhub',
                     usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {

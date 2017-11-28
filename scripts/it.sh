@@ -2,15 +2,15 @@
 
 # Start
 echo 'Running Platform...'
-docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start --pullcore --noports
+docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform:dev start --pullcore --noports
 
 # Check if is started
 echo 'Checking if ETM is working...'
-docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform wait
+docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform:dev wait
 responseCheck=$?
 
 echo 'Stopping ET Platform...'
-docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform stop
+docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform:dev stop
 echo ''
 
 if [ $responseCheck -gt 0 ] ; then
