@@ -2,5 +2,5 @@
 
 PIP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
 
-/usr/bin/docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform:{{ elastest_version }} start --server-address=$PIP --mode={{ elastest_run_mode }} --pullcore --user={{ elastest_user }} --password={{ elastest_password }}
+/usr/bin/docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform:{{ elastest_version }} start --server-address=$PIP --mode={{ elastest_run_mode }} --user={{ elastest_user }} --password={{ elastest_password }}
 
