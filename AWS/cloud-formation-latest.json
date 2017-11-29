@@ -276,7 +276,7 @@
 	},
 	"Outputs": {
         "ElastestIP": {
-          "Description": "Alternatively, you can access througt this IP",
+          "Description": "Elastest Endpoint",
           "Value": {
             "Fn::Join": [
                 "",
@@ -292,24 +292,6 @@
                 ]
             ]
           }
-        },
-		"ElastestURL": {
-			"Description": "Use this URL to access the Elastest Platform",
-			"Value": {
-				"Fn::Join": [
-					"",
-					[
-						"http://",
-						{
-							"Fn::GetAtt": [
-								"ElastestEC2Instance",
-								"PublicDnsName"
-							]
-						},
-                        ":37000"
-					]
-				]
-			}
-		}
+        }
 	}
 }
