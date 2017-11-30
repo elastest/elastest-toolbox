@@ -17,28 +17,6 @@
     	"Description": "A valid password for Elastest User",
     	"Default": "elastest"
     },
-    "ElastestCertificateType": {
-    	"Description": "You can choose from the list below which certificate to use",
-    	"Type": "String",
-    	"Default": "selfsigned",
-    	"AllowedValues": [
-    		"selfsigned",
-    		"letsencrypt",
-    		"owncert"
-      ]
-    },
-    "LetsEncryptEmail": {
-      "Description": "Email necesary for Let's Encrypt notifications",
-      "Type": "String"
-    },
-    "OwnCertCRT": {
-      "Description" : "CRT File",
-      "Type": "String"
-    },
-    "OwnCertKEY": {
-      "Description": "KEY File",
-      "Type": "String"
-    },
     "ElastestVersion": {
     	"Type": "String",
     	"Description": "Elastest version to deploy",
