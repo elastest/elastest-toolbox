@@ -72,8 +72,8 @@ def getImagesFromJsonFilesList(files_list):
     return files_images
 
 def getImageFromJsonFile(service_name):
-    image = None
-    file_path = getFilePathByServiceName(service_name)
+    image = None    
+    file_path = getFilePathByImage(service_name)    
     image = getImagesList(getYmlFromETServicesJsonPath(file_path))
     return image
 
@@ -97,8 +97,7 @@ def getImageByServiceName(service_name):
     return image
 
 def getBrowserImage(browser):
-    properties = {}
-    #properties = getProperties('browsers')
+    properties = {}    
     properties = getPropertiesFromFile(getFilePathByImage('eusBrowsers'))
     latest_version = 0
     browser_image = None    
@@ -120,8 +119,7 @@ def getBrowsersImages():
     
 def getImageFromFileProperties(image_key, properties_type):
     image = None
-    properties = {}
-    #properties = getProperties(properties_type)
+    properties = {}    
     properties = getPropertiesFromFile(getFilePathByImage(properties_type))
     image = properties.get(image_key, None)
     
@@ -232,7 +230,7 @@ def getPreloadedImages():
     images_list = []
     images_list = images_list + getBrowsersImages()
     
-    images_list = images_list + getImageByServiceName('EUS')
+    images_list = images_list + getImageByServiceName('eus')
 
     image_aux = getImageFromFileProperties(novnc_image_property,'eusNovnc')    
     if image_aux:
