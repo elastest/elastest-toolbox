@@ -144,15 +144,19 @@ def runPlatform(params):
 		instruction = ' down'
 		message = 'Stopping ElasTest Platform (' + mode + ' mode)...'
 
-	if(len(dockerCommand) > 0):
+	if(len(dockerCommand) > 0):		
 		# If Force pull or pull necessary images, do pull for each image
 		if(command != 'stop'):
+			print 'Pulling some necessary images...'
+			print ''
+			pullPreloadImages()
+
 			if(args.pullall):
-				print 'Forcing pull...'
+				print 'Pulling the ElasTest images...'
 				print ''
 				pullAllImages()
 			elif(args.pullcore):
-				print 'Pulling necessary images...'
+				print 'Pulling the ElasTest core images...'
 				print ''
 				try:
 					subprocess.call(shlex.split(dockerCommand + ' pull'))

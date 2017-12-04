@@ -28,6 +28,20 @@ ems = '../ems/elastestservice.json'
 ece = '../etm/elastest-torm/src/main/resources/test_engines/ece.yml'
 ere = '../etm/elastest-torm/src/main/resources/test_engines/ere.yml'
 
+# EUS Browsers file
+eus_browsers = '../eus/browsers/docker-browser.properties'
+eus_properties = '../eus/application.properties'
+etm_properties = '../etm/application.properties'
+
+eus_browsers_properties_file = '../eus/browsers/docker-browser.properties'
+eus_properties_file = '../eus/application.properties'
+etm_properties_file = '../etm/application.properties'
+
+# Images to pull at the start
+imagesFilesToPrePull = {'eusBrowsers': eus_browsers_properties_file, 
+'eusNovnc': eus_properties_file, 'etmSocat': etm_properties_file,
+'eus': eus}
+
 
 def getCoreList():
     core_list = [emp, edm, esm, eim, epm, etm_complementary_normal,
@@ -44,6 +58,15 @@ def getEnginesList():
     engines_list = [ece, ere]
     return engines_list
 
+def getBrowsers():
+    return eus_browsers
+
+def getFilePathByServiceName(service_name):
+    path = ''
+    if service_name == 'EUS':        
+        path = eus
+    return path
+    
 
 # Yaml
 def getYml(path):
@@ -73,3 +96,32 @@ def saveJson(path, json_file):
         # json.dump(json_file, outfile)
         json.dump(json_file, outfile, sort_keys=True,
                   indent=4, separators=(',', ': '))
+
+def getFilePathByImage(imageToPull):
+    return imagesFilesToPrePull[imageToPull]    
+
+# Properties
+def getProperties(properties_type):    
+    properties = {}
+    if properties_type == 'browsers':
+        properties = getPropertiesFromFile(eus_browsers)
+    elif properties_type == 'novnc':
+        properties = getPropertiesFromFile(eus_properties)
+    elif properties_type == 'socat':
+        properties = getPropertiesFromFile(etm_properties)
+    else:
+        print 'There are not properties for the ' + properties + ' key.'
+    
+    return properties
+
+def getPropertiesFromFile(path):    
+    separator = "="
+    keys = {}
+    
+    with open(path) as f:
+        for line in f:
+            if separator in line:                
+                name, value = line.split(separator, 1)
+                keys[name.strip()] = value.strip()
+        
+    return keys;

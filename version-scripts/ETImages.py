@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import yaml
 import json
+import re
 from ETFiles import *
 from DockerUtils import *
 
@@ -8,6 +9,12 @@ core_list = []
 tss_list = []
 engines_list = []
 et_image_name_prefix = 'elastest/'
+preloaded_images = ['']
+
+novnc_image_property = 'novnc.image.id'
+socat_image_property = 'et.socat.image'
+chrome_browser = 'chrome'
+firefox_browser = 'firefox'
 
 ##################################    Getters    ##################################
 
@@ -24,7 +31,7 @@ def getValuesListOfKey(d, key):
     return values_list
 
 
-def getImagesList(d):
+def getImagesList(d):    
     return getValuesListOfKey(d, 'image')
 
 
@@ -39,6 +46,15 @@ def getYmlFromETServicesJsonFile(json):
     except KeyError:
         return yaml.load('')
 
+def getPropertiesFromFile(path):    
+    separator = "="
+    keys = {}    
+    with open(path) as f:
+        for line in f:
+            if separator in line:                
+                name, value = line.split(separator, 1)
+                keys[name.strip()] = value.strip()        
+    return keys;
 
 #*** Images Lists Getters By File Type ***#
 
@@ -48,13 +64,18 @@ def getImagesFromYmlFilesList(files_list):
         files_images = files_images + getImagesList(getYml(path))
     return files_images
 
-
 def getImagesFromJsonFilesList(files_list):
     files_images = []
     for path in files_list:
         files_images = files_images + \
             getImagesList(getYmlFromETServicesJsonPath(path))
     return files_images
+
+def getImageFromJsonFile(service_name):
+    image = None
+    file_path = getFilePathByServiceName(service_name)
+    image = getImagesList(getYmlFromETServicesJsonPath(file_path))
+    return image
 
 
 #*** Images Lists Getters By Component Type ***#
@@ -70,6 +91,42 @@ def getTSSImages():
 def getEnginesImages():
     return getImagesFromYmlFilesList(engines_list)
 
+def getImageByServiceName(service_name):
+    image = None
+    image = getImageFromJsonFile(service_name)
+    return image
+
+def getBrowserImage(browser):
+    properties = {}
+    #properties = getProperties('browsers')
+    properties = getPropertiesFromFile(getFilePathByImage('eusBrowsers'))
+    latest_version = 0
+    browser_image = None    
+    
+    for key, value in properties.iteritems():        
+        if browser in key:
+            if re.findall('\d+', key)[0] > latest_version:
+                latest_version = re.findall('\d+', key)[0]
+                browser_image = value                
+    
+    return browser_image
+
+
+def getBrowsersImages():    
+    browser_images = []    
+    browser_images.append(getBrowserImage(chrome_browser))
+    browser_images.append(getBrowserImage(firefox_browser))    
+    return browser_images
+    
+def getImageFromFileProperties(image_key, properties_type):
+    image = None
+    properties = {}
+    #properties = getProperties(properties_type)
+    properties = getPropertiesFromFile(getFilePathByImage(properties_type))
+    image = properties.get(image_key, None)
+    
+    return image
+    
 
 ##################################    Updaters    ##################################
 
@@ -171,6 +228,23 @@ def getElastestImages(without_tag):
                 elastest_images.append(image)
     return elastest_images
 
+def getPreloadedImages():    
+    images_list = []
+    images_list = images_list + getBrowsersImages()
+    
+    images_list = images_list + getImageByServiceName('EUS')
+
+    image_aux = getImageFromFileProperties(novnc_image_property,'eusNovnc')    
+    if image_aux:
+        images_list.append(image_aux)
+        image_aux = None
+
+    image_aux = getImageFromFileProperties(novnc_image_property,'etmSocat')
+    if image_aux:
+        images_list.append(image_aux)
+        image_aux = None
+
+    return images_list
 
 def updateFilesImagesWithTag(tag):
     loadETLists()
@@ -182,4 +256,9 @@ def updateFilesImagesWithTag(tag):
 def pullAllImages():
     images_list = getAllImages()
     for image in images_list:
+        pullImage(image)
+
+def pullPreloadImages():
+    images_list = getPreloadedImages()
+    for image in images_list:       
         pullImage(image)
