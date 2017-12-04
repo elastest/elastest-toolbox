@@ -237,7 +237,7 @@ def getPreloadedImages():
         images_list.append(image_aux)
         image_aux = None
 
-    image_aux = getImageFromFileProperties(novnc_image_property,'etmSocat')
+    image_aux = getImageFromFileProperties(socat_image_property,'etmSocat')
     if image_aux:
         images_list.append(image_aux)
         image_aux = None
