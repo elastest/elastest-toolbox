@@ -43,15 +43,21 @@ COPY eus/eus/src/main/resources/application.properties /elastest-toolbox/eus/app
 # Copy ETM properties file
 COPY etm/elastest-torm/src/main/resources/application.properties /elastest-toolbox/etm/application.properties
 
-
 # Copy Test Engines files
-
 COPY etm/elastest-torm/src/main/resources/test_engines /elastest-toolbox/etm/elastest-torm/src/main/resources/test_engines
 
 # Copy platform-services
-
 COPY platform-services /elastest-toolbox/platform-services
 
+# Set labels
+ARG GIT_COMMIT=unspecified
+LABEL git_commit=$GIT_COMMIT
+
+ARG COMMIT_DATE=unspecified
+LABEL commit_date=$COMMIT_DATE
+
+ARG VERSION=unspecified
+LABEL version=$VERSION
 
 RUN cd /elastest-toolbox/scripts
 
