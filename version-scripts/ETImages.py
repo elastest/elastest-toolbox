@@ -212,6 +212,22 @@ def getAllImages():
     images_list = images_list + getEnginesImages()
     return images_list
 
+def getAllImagesByExecMode(mode):
+    images_list = []
+    global core_list
+    core_list = getCoreListByExecMode(mode)
+    images_list = images_list + list(set(getCoreImages()))
+    if (mode == 'experimental' or mode == 'experimental-lite'):
+        global tss_list
+        tss_list = getTSSList()
+        global engines_list
+        engines_list = getEnginesList()        
+        #images_list = images_list + getTSSImages()
+        #images_list = images_list + getEnginesImages()
+    else:
+        images_list = images_list + getPreloadedImages()
+    
+    return images_list
 
 def getElastestImages(without_tag):
     images_list = getAllImages()
@@ -225,6 +241,24 @@ def getElastestImages(without_tag):
             else:
                 elastest_images.append(image)
     return elastest_images
+
+def getElastestImages(mode, without_tag):
+    images_list = getAllImagesByExecMode(mode)
+
+    elastest_images = []
+    for image in images_list:
+        if(image.startswith(et_image_name_prefix)):
+            if(without_tag):
+                image_splited = image.split(':')
+                elastest_images.append(image_splited[0])
+            else:
+                elastest_images.append(image)
+    return elastest_images
+
+def getElasTestImagesAsString(mode):
+    images_list = getElastestImages(mode, False)    
+    return ",".join(map(str,images_list))
+
 
 def getPreloadedImages():    
     images_list = []

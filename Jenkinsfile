@@ -56,7 +56,7 @@ node('docker'){
               "Create platform docker image"
             
                 echo ("Creating elastest/platform image..")                
-                sh 'docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg COMMIT_DATE=$(git log -1 --format=%cd --date=format:%Y-%m-%d) -t elastest/platform:dev .'
+                sh 'docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg COMMIT_DATE=$(git log -1 --format=%cd --date=format:%Y-%m-%dT%H:%M:%S) -t elastest/platform:dev .'
     
             stage "IT Test ETM is running"
 	         sh 'cd scripts; chmod 755 it.sh; ./it.sh'

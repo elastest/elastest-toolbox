@@ -9,8 +9,8 @@ esm = '../esm/deploy/docker-compose.yml'
 eim = '../eim/deploy/docker-compose.yml'
 epm = '../epm/deploy/docker-compose.yml'
 
-etm_complementary_normal = '../etm/deploy/docker-compose-complementary.yml'
-etm_main_normal = '../etm/deploy/docker-compose-main.yml'
+etm_complementary_experimental = '../etm/deploy/docker-compose-complementary.yml'
+etm_main_experimental = '../etm/deploy/docker-compose-main.yml'
 
 etm_complementary_lite = '../etm/docker/docker-compose-complementary.yml'
 etm_main_lite = '../etm/docker/docker-compose-main.yml'
@@ -34,14 +34,23 @@ eus_properties_file = '../eus/application.properties'
 etm_properties_file = '../etm/application.properties'
 
 # Images to pull at the start
-imagesFilesToPrePull = {'eusBrowsers': eus_browsers_properties_file, 
-'eusNovnc': eus_properties_file, 'etmSocat': etm_properties_file,
-'eus': eus}
+imagesFilesToPrePull = {'eusBrowsers': eus_browsers_properties_file,
+                        'eusNovnc': eus_properties_file, 'etmSocat': etm_properties_file,
+                        'eus': eus}
 
 
 def getCoreList():
-    core_list = [emp, edm, esm, eim, epm, etm_complementary_normal,
-                 etm_main_normal, etm_complementary_lite, etm_main_lite, etm_proxy]
+    core_list = [emp, edm, esm, eim, epm, etm_complementary_experimental,
+                 etm_main_experimental, etm_complementary_lite, etm_main_lite, etm_proxy]
+    return core_list
+
+
+def getCoreListByExecMode(mode):
+    if (mode == 'normal' or mode == 'experimental-lite'):
+        core_list = [esm, etm_complementary_lite, etm_main_lite, etm_proxy]
+    else:
+        core_list = [emp, edm, esm, eim, epm, etm_complementary_experimental,
+                     etm_main_experimental, etm_proxy]
     return core_list
 
 
@@ -54,10 +63,13 @@ def getEnginesList():
     engines_list = [ece, ere]
     return engines_list
 
+
 def getFilePathByImage(imageToPull):
     return imagesFilesToPrePull[imageToPull]
 
 # Yaml
+
+
 def getYml(path):
     with open(path, 'r') as stream:
         try:
@@ -85,5 +97,3 @@ def saveJson(path, json_file):
         # json.dump(json_file, outfile)
         json.dump(json_file, outfile, sort_keys=True,
                   indent=4, separators=(',', ': '))
-
- 
