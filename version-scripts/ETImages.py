@@ -227,6 +227,8 @@ def getAllImagesByExecMode(mode):
     else:
         images_list = images_list + getPreloadedImages()
     
+    images_list.append(getContainerImage())
+    
     return images_list
 
 def getElastestImages(without_tag):
@@ -242,7 +244,7 @@ def getElastestImages(without_tag):
                 elastest_images.append(image)
     return elastest_images
 
-def getElastestImages(mode, without_tag):
+def getElastestImagesByExecMode(mode, without_tag):
     images_list = getAllImagesByExecMode(mode)
 
     elastest_images = []
@@ -256,7 +258,7 @@ def getElastestImages(mode, without_tag):
     return elastest_images
 
 def getElasTestImagesAsString(mode):
-    images_list = getElastestImages(mode, False)    
+    images_list = getElastestImagesByExecMode(mode, False)    
     return ",".join(map(str,images_list))
 
 

@@ -3,6 +3,7 @@ import subprocess
 import shlex
 import time
 import sys
+import os
 
 def pullImage(image):
     pull = 'docker pull '
@@ -31,3 +32,8 @@ def pushImage(image):
     if(push_result > 0):
         print('Error on push image ' + image)
         exit(1)
+
+def getContainerImage():
+    command = 'docker inspect --format "{{ index .Config.Image }}" ' + os.environ['HOSTNAME']    
+    image = subprocess.check_output(shlex.split(command))    
+    return image
