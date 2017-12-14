@@ -16,6 +16,13 @@ socat_image_property = 'et.socat.image'
 chrome_browser = 'chrome'
 firefox_browser = 'firefox'
 
+class MyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, (bytes, bytearray)):
+            return obj.decode("ASCII") # <- or any other encoding of your choice
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
+
 ##################################    Getters    ##################################
 
 
@@ -158,7 +165,7 @@ def updateImagesTagOfJsonFile(path, tag):
     json_file = getJson(path)
     yml = getYmlFromETServicesJsonFile(json_file)
     new_yml = updateImagesTagOfReadYml(yml, tag)
-    json_file['manifest']['manifest_content'] = yaml.dump(new_yml, encoding=('utf-8'), default_flow_style=False)    
+    json_file['manifest']['manifest_content'] = json.dumps(yaml.dump(new_yml, encoding=('utf-8'), default_flow_style=False), cls=MyEncoder)
 
     # Save new json file with images tag updated
     saveJson(path, json_file)
