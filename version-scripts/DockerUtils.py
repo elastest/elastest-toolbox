@@ -5,6 +5,7 @@ import time
 import sys
 import os
 
+
 def pullImage(image):
     pull = 'docker pull '
     pull_result = subprocess.call(shlex.split(pull + image))
@@ -33,7 +34,25 @@ def pushImage(image):
         print('Error on push image ' + image)
         exit(1)
 
+
 def getContainerImage():
-    command = 'docker inspect --format "{{ index .Config.Image }}" ' + os.environ['HOSTNAME']    
-    image = subprocess.check_output(shlex.split(command))    
+    command = 'docker inspect --format "{{ index .Config.Image }}" ' + \
+        os.environ['HOSTNAME']
+    image = subprocess.check_output(shlex.split(command))
     return image
+
+
+def deleteVolume(name):
+    command = 'docker volume rm ' + name
+    try:
+        subprocess.call(shlex.split(command))        
+    except ValueError:
+        print 'The volume ' + name + 'does not exists'
+
+
+def executePlatformCommand(image, command):
+    command_line = 'docker run -v /var/run/docker.sock:/var/run/docker.sock ' + \
+        image + ' ' + command
+    print ''
+    print 'Command: ' + command_line
+    subprocess.check_output(shlex.split(command_line))

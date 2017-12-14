@@ -12,6 +12,7 @@ from checkETM import *
 from run import *
 from inspect import *
 from update import *
+from pull import *
 
 FNULL = open(os.devnull, 'w')
 
@@ -20,7 +21,7 @@ def getArgs():
     # Define arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('instruction', help='Instruction to execute', type=str, choices=set(
-        ('start', 'stop', 'wait', 'inspect', 'update', 'pull')))
+        ('start', 'stop', 'wait', 'inspect', 'update', 'pull-images')))
 
     # Custom usage message
     usage = parser.format_usage()
@@ -106,3 +107,5 @@ elif(args.instruction == 'inspect'):
     inspectPlatform(params)
 elif(args.instruction == 'update'):
     updatePlatform(params)
+elif(args.instruction == 'pull-images'):
+    pullETImages(params, 'normal')
