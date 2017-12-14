@@ -158,7 +158,7 @@ def updateImagesTagOfJsonFile(path, tag):
     json_file = getJson(path)
     yml = getYmlFromETServicesJsonFile(json_file)
     new_yml = updateImagesTagOfReadYml(yml, tag)
-    json_file['manifest']['manifest_content'] = new_yml
+    json_file['manifest']['manifest_content'] = yaml.dump(new_yml, encoding=('utf-8'), default_flow_style=False)    
 
     # Save new json file with images tag updated
     saveJson(path, json_file)

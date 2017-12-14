@@ -94,6 +94,4 @@ def getJson(path):
 
 def saveJson(path, json_file):
     with open(path, 'w') as outfile:
-        # json.dump(json_file, outfile)
-        json.dump(json_file, outfile, sort_keys=True,
-                  indent=4, separators=(',', ': '))
+        json.dump(json_file, outfile, indent=4, separators=(',', ': '))
