@@ -7,6 +7,9 @@ import os
 from DockerUtils import *
 
 dev_tag = 'dev'
+eps_volume = 'elastest_platform-services'
+pull_command = 'pull-images'
+
 def getArgs(params):
     # Define arguments
     parser = argparse.ArgumentParser()
@@ -29,9 +32,14 @@ def getArgs(params):
 def updatePlatform(params):
     global args
     args = getArgs(params)
+    deleteVolume(eps_volume)
         
     image = getContainerImage()
     if (dev_tag not in image):
         image_parts = image.split(':')
         image = image_parts[0]        
+    
     pullImage(image)
+    executePlatformCommand(image, pull_command)
+
+
