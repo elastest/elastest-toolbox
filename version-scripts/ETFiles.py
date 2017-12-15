@@ -11,6 +11,7 @@ epm = '../epm/deploy/docker-compose.yml'
 
 etm_complementary_experimental = '../etm/deploy/docker-compose-complementary.yml'
 etm_main_experimental = '../etm/deploy/docker-compose-main.yml'
+platform_services = '../platform-services/docker-compose.yml'
 
 etm_complementary_lite = '../etm/docker/docker-compose-complementary.yml'
 etm_main_lite = '../etm/docker/docker-compose-main.yml'
@@ -47,10 +48,10 @@ def getCoreList():
 
 def getCoreListByExecMode(mode):
     if (mode == 'normal' or mode == 'experimental-lite'):
-        core_list = [esm, etm_complementary_lite, etm_main_lite, etm_proxy]
+        core_list = [esm, etm_complementary_lite, etm_main_lite, etm_proxy, platform_services]
     else:
         core_list = [emp, edm, esm, eim, epm, etm_complementary_experimental,
-                     etm_main_experimental, etm_proxy]
+                     etm_main_experimental, etm_proxy, platform_services]
     return core_list
 
 
