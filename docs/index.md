@@ -30,7 +30,8 @@ ElasTest can be executed in the developer machine with linux, windows or mac ope
 
 ## How to execute ElasTest in the developer machine
 
-When ElasTest is started the first time it is downloaded. There is no "installation" step. 
+When ElasTest is started the first time it is downloaded. There is no "installation" step.
+>**Note:** If this is not the first time you use ElasTest and you want to have the latest version, execute the `update` command (`docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform update`) .
 
 ElasTest is executed in `normal` mode with the following command:
 ```
@@ -52,7 +53,6 @@ The `start` command outputs an informative message when ElasTest is ready to be 
 That command will block the shell until ElasTest is stopped using `Ctrl+C` (see bellow other ways to stop it).
 
 > **NOTE**: To execute ElasTest in Windows or Mac with "Docker Toolbox" it is necessary to obtain the docker virtual machine IP with the command `docker-machine ip default` and specify it in the parameter `server-address` of the start command. For example, if IP is 192.168.99.100, then the command will look like:
-
 `docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --server-address=192.168.99.100`
 
 ## How to execute ElasTest in a server
@@ -152,10 +152,10 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform -
 The output is:
 
 ```
-usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform [-h] {start,inspect,stop,wait}
+usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform [-h] {pull-images,inspect,stop,update,start,wait}
 
 positional arguments:
-  {start,inspect,stop,wait}
+  {pull-images,inspect,stop,update,start,wait}
                         Instruction to execute
 
 optional arguments:
@@ -237,6 +237,21 @@ optional arguments:
   --running RUNNING, -r RUNNING
                         Sets timeout in seconds for wait to ETM is running.
                         Usage: --running=290
+```
+
+### Update command
+
+```
+docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform update -h
+```
+
+The output is:
+
+```
+usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform update [-h]
+
+optional arguments:
+  -h, --help  show this help message and exit
 ```
 
 ## Development instructions
