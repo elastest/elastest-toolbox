@@ -30,9 +30,9 @@ ece = '../etm/elastest-torm/src/main/resources/test_engines/ece.yml'
 ere = '../etm/elastest-torm/src/main/resources/test_engines/ere.yml'
 
 # EUS Browsers file
-eus_browsers_properties_file = '../eus/eus/src/main/resources/docker-browser.properties'
-eus_properties_file = '../eus/eus/src/main/resources/application.properties'
-etm_properties_file = '../etm/elastest-torm/src/main/resources/application.properties'
+eus_browsers_properties_file = '../eus/browsers/docker-browser.properties'
+eus_properties_file = '../eus/application.properties'
+etm_properties_file = '../etm/application.properties'
 
 # Images to pull at the start
 imagesFilesToPrePull = {'eusBrowsers': eus_browsers_properties_file,
