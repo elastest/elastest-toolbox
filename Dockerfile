@@ -37,11 +37,11 @@ COPY ess/elastestservice.json /elastest-toolbox/ess/elastestservice.json
 COPY eus/elastestservice.json /elastest-toolbox/eus/elastestservice.json
 
 # Copy EUS properties files
-COPY eus/eus/src/main/resources/docker-browser.properties /elastest-toolbox/eus/browsers/docker-browser.properties
-COPY eus/eus/src/main/resources/application.properties /elastest-toolbox/eus/application.properties
+COPY eus/eus/src/main/resources/docker-browser.properties /elastest-toolbox/eus/eus/src/main/resources/docker-browser.properties
+COPY eus/eus/src/main/resources/application.properties /elastest-toolbox/eus/eus/src/main/resources/application.properties
 
 # Copy ETM properties file
-COPY etm/elastest-torm/src/main/resources/application.properties /elastest-toolbox/etm/application.properties
+COPY etm/elastest-torm/src/main/resources/application.properties /elastest-toolbox/etm/elastest-torm/src/main/resources/application.properties
 
 # Copy Test Engines files
 COPY etm/elastest-torm/src/main/resources/test_engines /elastest-toolbox/etm/elastest-torm/src/main/resources/test_engines
