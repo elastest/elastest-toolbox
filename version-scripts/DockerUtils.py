@@ -5,6 +5,7 @@ import time
 import sys
 import os
 
+pull_command = 'pull-images'
 
 def pullImage(image):
     pull = 'docker pull '
@@ -44,15 +45,15 @@ def getContainerImage():
 
 def deleteVolume(name):
     command = 'docker volume rm ' + name
-    try:
-        subprocess.call(shlex.split(command))        
-    except ValueError:
-        print 'The volume ' + name + 'does not exists'
+    subprocess.call(shlex.split(command))        
 
-
+    
 def executePlatformCommand(image, command):
-    command_line = 'docker run -v /var/run/docker.sock:/var/run/docker.sock ' + \
+    if (command == pull_command):
+        print ''
+        print 'Pulling the images of ElasTest components ....'
+        command_line = 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ' + \
         image + ' ' + command
-    print ''
-    print 'Command: ' + command_line
+        print 'The pulling has finished.'
+    
     subprocess.check_output(shlex.split(command_line))

@@ -8,7 +8,9 @@ from DockerUtils import *
 
 dev_tag = 'dev'
 eps_volume = 'elastest_platform-services'
+eps_image = 'elastest/platform-services'
 pull_command = 'pull-images'
+
 
 def getArgs(params):
     # Define arguments
@@ -29,17 +31,24 @@ def getArgs(params):
     return args
 
 
-def updatePlatform(params):
+def updatePlatform(params, mode):
     global args
     args = getArgs(params)
     deleteVolume(eps_volume)
-        
+
+    #Update platform image
     image = getContainerImage()
-    if (dev_tag not in image):
-        image_parts = image.split(':')
-        image = image_parts[0]        
-    
-    pullImage(image)
+    updateImage(image)
+
+    #Update platform-services image
+    updateImage(eps_image)
+
+    #Download/update the images of the ElasTest components
     executePlatformCommand(image, pull_command)
 
 
+def updateImage(image):
+    if (dev_tag not in image):
+        image_parts = image.split(':')
+        image = image_parts[0]
+    pullImage(image)

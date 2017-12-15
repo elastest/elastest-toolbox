@@ -106,6 +106,6 @@ elif(args.instruction == 'wait'):
 elif(args.instruction == 'inspect'):
     inspectPlatform(params)
 elif(args.instruction == 'update'):
-    updatePlatform(params)
+    updatePlatform(params, 'normal')
 elif(args.instruction == 'pull-images'):
     pullETImages(params, 'normal')
