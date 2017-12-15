@@ -50,10 +50,10 @@ def deleteVolume(name):
     
 def executePlatformCommand(image, command):
     if (command == pull_command):
-        print ''
-        print 'Pulling the images of ElasTest components ....'
+        print ('')
+        print ('Pulling the images of ElasTest components ....')
         command_line = 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ' + \
         image + ' ' + command
-        print 'The pulling has finished.'
+        print ('The pulling has finished.')
     
     subprocess.check_output(shlex.split(command_line))
