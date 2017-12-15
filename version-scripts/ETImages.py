@@ -231,7 +231,8 @@ def getAllImages():
     images_list = images_list + getCoreImages()
     images_list = images_list + getTSSImages()
     images_list = images_list + getEnginesImages()
-    return images_list
+    images_list = images_list + getPreloadedImages()
+    return list(set(images_list))
 
 def getAllImagesByExecMode(mode):
     images_list = []
@@ -286,10 +287,9 @@ def getElasTestImagesAsString(mode):
 def getPreloadedImages():    
     images_list = []
     images_list = images_list + getBrowsersImages()
-    
     images_list = images_list + getImageByServiceName('eus')
 
-    image_aux = getImageFromFileProperties(novnc_image_property,'eusNovnc')    
+    image_aux = getImageFromFileProperties(novnc_image_property,'eusNovnc')
     if image_aux:
         images_list.append(image_aux)
         image_aux = None
