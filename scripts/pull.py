@@ -30,8 +30,12 @@ def getArgs(params):
 def pullETImages(params, mode):
     global args
     args = getArgs(params)
-        
+
+    print ('')
+    print ('Pulling ElasTest images...')
     images_list = getElastestImagesByExecMode(mode, False)
     for image in images_list:
-        print "Image to update: " + image
+        print ('')
+        print ('Image to update: ') + image
+        print ('')
         pullImage(image)

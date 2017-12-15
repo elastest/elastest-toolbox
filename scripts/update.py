@@ -31,23 +31,32 @@ def getArgs(params):
     return args
 
 
-def updatePlatform(params, mode):
+def updatePlatform(params, mode):    
     global args
     args = getArgs(params)
-    deleteVolume(eps_volume)
 
-    #Update platform image
+    print ('')
+    print (' Preparing the environment...')    
+    deleteVolume(eps_volume)
+    print ('')
+    print (' Upating ElasTest...')
+    print ('')
+    #Update platform image    
     image = getContainerImage()
     updateImage(image)
 
+    print ('')
     #Update platform-services image
     updateImage(eps_image)
 
     #Download/update the images of the ElasTest components
     executePlatformCommand(image, pull_command)
+    print ('')
+    print ('Update finished successfully.')    
 
 
-def updateImage(image):
+def updateImage(image):    
+    print (' Updating ' + image)
     if (dev_tag not in image):
         image_parts = image.split(':')
         image = image_parts[0]

@@ -44,6 +44,8 @@ def getContainerImage():
 
 
 def deleteVolume(name):
+    print ('')
+    print (' Deleting some volumes....')
     command = 'docker volume rm ' + name
     subprocess.call(shlex.split(command))        
 
@@ -51,9 +53,9 @@ def deleteVolume(name):
 def executePlatformCommand(image, command):
     if (command == pull_command):
         print ('')
-        print ('Pulling the images of ElasTest components ....')
+        print (' Updating ElasTest components....')
+        print ('')
         command_line = 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ' + \
-        image + ' ' + command
-        print ('The pulling has finished.')
+        image + ' ' + command        
     
     subprocess.check_output(shlex.split(command_line))
