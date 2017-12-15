@@ -8,7 +8,7 @@ from DockerUtils import *
 def buildImageFromToolbox(tag, image, dockerfile):
     if(not dockerfile):
         dockerfile = ''
-    docker_command = 'docker build -t ' + image + ' . ' + dockerfile
+    docker_command = 'docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg COMMIT_DATE=$(git log -1 --format=%cd --date=format:%Y-%m-%dT%H:%M:%S) -t ' + image + ' . ' + dockerfile
     command = 'sh -c "cd ..; ' + docker_command + '"'  # Note: cd only in this call
     build_result = subprocess.call(shlex.split(command))
 
