@@ -31,7 +31,12 @@ class MyEncoder(json.JSONEncoder):
 def getValuesListOfKey(d, key):
     values_list = []
     if key in d:
-        return [d[key]]
+        try:
+            return [d[key]]
+        except TypeError:
+            print ('dict modified: ' + yaml.dump(d, stream=None, default_flow_style=True))
+            dm = yaml.dump(d, stream=None, default_flow_style=True)
+            return [dm[key]]
     for k in d:
         if isinstance(d[k], dict):
             values_list = values_list + getValuesListOfKey(d[k], key)
@@ -143,11 +148,20 @@ def modifyImageTag(image, tag):
 
 def updateImagesTagOfReadYml(d, tag):
     key = 'image'
+    #print ('dict: ' + str(d))
     if key in d:
         # If is ElasTest Image, set image tag
-        if(d[key].startswith(et_image_name_prefix)):
-            d[key] = modifyImageTag(d[key], tag)
-        return d
+        try:
+            if(d[key].startswith(et_image_name_prefix)):
+                d[key] = modifyImageTag(d[key], tag)
+                return d
+        except TypeError:
+            print ('dict modified: ' + yaml.dump(d, default_flow_style=False))
+            dm = yaml.dump(d, stream=None, default_flow_style=True)
+            if(dm[key].startswith(et_image_name_prefix)):
+                dm[key] = modifyImageTag(dm[key], tag)
+                return dm
+            return dm
     for k in d:
         if isinstance(d[k], dict):
             d[k] = updateImagesTagOfReadYml(d[k], tag)
@@ -164,9 +178,9 @@ def updateImagesTagOfYmlFile(path, tag):
 def updateImagesTagOfJsonFile(path, tag):
     json_file = getJson(path)
     yml = getYmlFromETServicesJsonFile(json_file)
-    new_yml = updateImagesTagOfReadYml(yml, tag)
-    json_file['manifest']['manifest_content'] = json.dumps(yaml.dump(new_yml, encoding=('utf-8'), default_flow_style=False), cls=MyEncoder)
-
+    new_yml = updateImagesTagOfReadYml(yml, tag)    
+    json_file['manifest']['manifest_content'] = json.loads(json.dumps(yaml.dump(new_yml, encoding=('utf-8'), default_flow_style=False), cls=MyEncoder))
+    
     # Save new json file with images tag updated
     saveJson(path, json_file)
 
