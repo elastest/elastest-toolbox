@@ -13,6 +13,7 @@ from run import *
 from inspect import *
 from update import *
 from pull import *
+from DockerUtils import *
 
 FNULL = open(os.devnull, 'w')
 
@@ -88,12 +89,14 @@ elif(args.instruction == 'stop'):
     print 'Sending stop signal...'
     print ''
 
+    platformImage = getContainerImage()    
     # Space after elastest/platform is necessary
-    nProcessCommand = ['docker ps | grep "elastest/platform " | wc -l | cat']
-    nproc = int(subprocess.check_output(nProcessCommand, shell=True))
+    nProcessCommand = ['docker ps | grep "' + platformImage + ' " | wc -l | cat']
+    nproc = int(subprocess.check_output(nProcessCommand, shell=True))    
 
-    signalComannd = 'sh -c \'docker ps -q --filter ancestor="elastest/platform" | xargs -r docker kill --signal=SIGTERM\''
+    signalComannd = 'sh -c \'docker ps -q --filter ancestor="' + platformImage + '" | xargs -r docker kill --signal=SIGTERM\''
     result = subprocess.check_output(shlex.split(signalComannd))
+    
     # If Platform container is stopped, run stop just in case there are running containers
     if(result == '' or nproc < 2):  # 2 containers: started container and this container (stop)
         print 'The Plaftorm container not exist. Forcing stop...'
