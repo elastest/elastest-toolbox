@@ -13,18 +13,34 @@ First of all you'll need an AWS account. To achive that, follow those [steps](ht
 
 Then, you can go to [AWS CloudFormation Pane](https://eu-west-1.console.aws.amazon.com/cloudformation/) and create a **new stack**. You will need the **json** included on this repo to complete the task. The form you'll see on the second step have to be filled with the following information:
 
-| Parameter | Value | Details | Ready? |
+| Parameter | Value | Details | 
 | --- | --- | --- | --- |
-| Stack name | The name of the stack | Elastest is OK | yes |
-| ElastestExecutionMode | normal, experimental-lite or experimental | Choose Elastest' execution mode | yes |
-| ElastestPassword | elastest | Password to access the platform | yes |
-| ElastestUsername | elastest | Username to access the platform | yes |
-| ElastestVersion | latest | which version of elastest do you want to launch | yes |
-| InstanceType | m4.large | Elastest needs resources to run, please be genereous | yes |
-| KeyName |  | RSA key to access the instance through SSH | yes |
-| SwapSize | 4 | The amount of swap memory in GB | yes |
+| Stack name | The name of the stack | Elastest is OK | 
+| ElastestPassword | elastest | Password to access the platform | 
+| ElastestUsername | elastest | Username to access the platform | 
+| ElastestVersion | latest | which version of elastest do you want to launch | 
+| InstanceType | m4.large | Elastest needs resources to run, please be genereous | 
+| KeyName |  | RSA key to access the instance through SSH | 
+| SwapSize | 4 | The amount of swap memory in GB | 
 
 When the stack finished the deployment, you can check *output* tab to see the URL to access your application.
+
+## Updating Elastest
+
+In order to update Elastest, run this command first:
+
+```
+# docker run --rm -v /var/run/docker.sock:/var/run/docker.sock elastest/platform update
+```
+
+Then restart Elastest.
+
+```
+# systemctl stop docker-elastest
+# systemctl start docker-elastest
+```
+
+And just wait a few second to start.
 
 **Elastest! Happy Testing!**
 
