@@ -37,7 +37,7 @@ node('docker'){
               "Create platform-services docker image"
             
                 echo ("Creating elastest/platform-services image..")                
-                sh 'docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg COMMIT_DATE=$(git log -1 --format=%cd --date=format:%Y-%m-%d) -t elastest/platform-services . -f platform-services/Dockerfile'
+                sh 'docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg COMMIT_DATE=$(git log -1 --format=%cd --date=format:%Y-%m-%d) --build-arg VERSION=dev -t elastest/platform-services . -f platform-services/Dockerfile'
     
             stage "Publish Platform-Services docker image"
     
@@ -56,7 +56,7 @@ node('docker'){
               "Create platform docker image"
             
                 echo ("Creating elastest/platform image..")                
-                sh 'docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg COMMIT_DATE=$(git log -1 --format=%cd --date=format:%Y-%m-%dT%H:%M:%S) -t elastest/platform:dev .'
+                sh 'docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg COMMIT_DATE=$(git log -1 --format=%cd --date=format:%Y-%m-%dT%H:%M:%S) --build-arg VERSION=dev -t elastest/platform:dev .'
     
             stage "IT Test ETM is running"
 	         sh 'cd scripts; chmod 755 it.sh; ./it.sh'
