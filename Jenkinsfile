@@ -37,7 +37,7 @@ node('docker'){
               "Create platform-services docker image"
             
                 echo ("Creating elastest/platform-services image..")                
-                sh 'docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg COMMIT_DATE=$(git log -1 --format=%cd --date=format:%Y-%m-%d) --build-arg VERSION=dev -t elastest/platform-services . -f platform-services/Dockerfile'
+                sh 'docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg COMMIT_DATE=$(git log -1 --format=%cd --date=format:%Y-%m-%d) --build-arg VERSION=dev -t elastest/platform-services:dev . -f platform-services/Dockerfile'
     
             stage "Publish Platform-Services docker image"
     
