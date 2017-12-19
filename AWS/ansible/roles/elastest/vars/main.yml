@@ -1,7 +1,6 @@
 ---
 elastest_max_map_count: 262144
 elastest_public_ip: ELASTEST_PUBLIC_IP
-elastest_run_mode: ELASTEST_RUN_MODE
 elastest_version: ELASTEST_VERSION
 elastest_run_ec2: false
 elastest_user: elastest
