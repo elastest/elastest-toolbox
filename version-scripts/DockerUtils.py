@@ -43,6 +43,13 @@ def getContainerImage():
     return image
 
 
+def getVersionFromHostContainer():
+    command = 'docker inspect --format "{{ index .Config.Labels.version }}" ' + \
+        os.environ['HOSTNAME']
+    version = subprocess.check_output(shlex.split(command))    
+    return version
+
+
 def deleteVolume(name):
     print ('')
     print (' Deleting some volumes....')

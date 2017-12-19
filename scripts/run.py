@@ -9,6 +9,7 @@ import os
 import threading
 from checkETM import *
 from setEnv import *
+from DockerUtils import *
 
 
 def getArgs(params):
@@ -65,6 +66,8 @@ def runPlatform(params):
 
     command = args.command  # start or stop
     mode = args.mode
+
+    platform_version = getVersionFromHostContainer()
 
     if(args.server_address):
         #setServerAddress(args.server_address)
@@ -127,7 +130,7 @@ def runPlatform(params):
         dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + \
                         ' ' + epm + ' ' + emp + ' ' + etm_proxy + ' ' + \
                         (etm_proxy_env if with_security else '') + ' -p elastest'
-        message = 'Starting ElasTest Platform (' + mode + ' Experimental Mode)...'
+        message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' Experimental Mode)...'
 
     # If is Experimental-lite or Normal mode
     else:
@@ -151,7 +154,7 @@ def runPlatform(params):
             etm = etm + ' ' + etm_main + ' ' + etm_main_ports
         dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + \
             etm_proxy + ' ' + (etm_proxy_env if with_security else '') + ' -p elastest'
-        message = 'Starting ElasTest Platform (' + mode + ' mode)...'
+        message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' mode)...'
 
     replaceEnvVarValue('ET_IMAGES', getElasTestImagesAsString(mode),
                        'elastest/platform', files_list)
