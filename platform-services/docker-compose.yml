@@ -1,7 +1,7 @@
 version: '3'
 services:
     platform-services:
-        image: elastest/platform-services
+        image: elastest/platform-services:dev
         volumes:
             - platform-services:/platform-services
         networks:
