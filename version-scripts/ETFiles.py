@@ -41,7 +41,7 @@ imagesFilesToPrePull = {'eusBrowsers': eus_browsers_properties_file,
 
 
 def getCoreList():
-    core_list = [emp, edm, esm, eim, epm, etm_complementary_experimental, platform_services
+    core_list = [emp, edm, esm, eim, epm, etm_complementary_experimental, platform_services,
                  etm_main_experimental, etm_complementary_lite, etm_main_lite, etm_proxy]
     return core_list
 
