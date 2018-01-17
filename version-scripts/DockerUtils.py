@@ -83,8 +83,8 @@ def deleteImages(images):
 
 def deleteDanglingImages():
     command = 'docker rmi $(docker images -f "dangling=true" -q)'
-    print ('Deleting dangling images: ' +
-           str(subprocess.check_output(shlex.split(command))))
+    print ('Deleting dangling images')
+    subprocess.check_output(shlex.split(command))
 
 
 def killContainer(container, signal):
@@ -108,8 +108,7 @@ def executePlatformCommand(image, command, args):
     subprocess.check_output(shlex.split(command_line))
 
 
-def existsLocalImage(image):
-    print ('Image to check: ' + image)
+def existsLocalImage(image):    
     if(':' not in image):
         image + ':latest'
     return True if image in getRepoTag(image) else False
