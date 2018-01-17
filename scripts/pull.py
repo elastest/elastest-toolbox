@@ -40,7 +40,7 @@ def pullETImages(params, mode):
         print ('')
         pullImage(image)
     print ('Images as strintg: ' + os.environ(['ET_OLD_IMAGES']))
-    deleteOldImages(str(os.environ(['ET_OLD_IMAGES'])).split(','), images_list)
+    deleteOldImages(str(os.environ['ET_OLD_IMAGES']).split(','), images_list)
 
 
 def deleteOldImages(oldImages, newImages):
