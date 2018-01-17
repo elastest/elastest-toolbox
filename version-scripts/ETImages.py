@@ -316,4 +316,5 @@ def pullAllImages():
 def pullPreloadImages():
     images_list = getPreloadedImages()
     for image in images_list:       
-        pullImage(image)
+        if (not existsLocalImage(image)):            
+            pullImage(image)

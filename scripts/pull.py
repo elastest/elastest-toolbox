@@ -51,3 +51,4 @@ def deleteOldImages(oldImages, newImages):
             print (' Image to remove: ' + oldImage)
             imagesToRemove = imagesToRemove + oldImage + ' '
     deleteImages(imagesToRemove)
+    deleteDanglingImages()

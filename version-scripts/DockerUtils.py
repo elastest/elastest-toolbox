@@ -7,6 +7,7 @@ import os
 
 pull_command = 'pull-images'
 
+
 def pullImage(image):
     pull = 'docker pull '
     pull_result = subprocess.call(shlex.split(pull + image))
@@ -54,6 +55,19 @@ def getVersionFromHostContainer():
     return version
 
 
+def getRepoTag(imageTag):
+    command = 'docker inspect %s --format "{{index .RepoTags}}"' % (imageTag)
+    repoTag = ''
+    try:
+        repoTag = ''.join(subprocess.check_output(shlex.split(command)))
+    except TypeError:
+        repoTag = 'imageNotExists'
+    except subprocess.CalledProcessError:
+        repoTag = 'imageNotExists'
+
+    return repoTag
+
+
 def deleteVolume(name):
     print ('')
     print (' Deleting some volumes....')
@@ -61,27 +75,41 @@ def deleteVolume(name):
     subprocess.call(shlex.split(command))
 
 
-def deleteImages(images):    
-    if (images):        
+def deleteImages(images):
+    if (images):
         command = 'docker rmi -f ' + images
         subprocess.call(shlex.split(command))
 
 
+def deleteDanglingImages():
+    command = 'docker rmi $(docker images -f "dangling=true" -q)'
+    print ('Deleting dangling images: ' +
+           str(subprocess.check_output(shlex.split(command))))
+
+
 def killContainer(container, signal):
     if (signal is None or signal == ''):
-        command = 'docker kill %s '%(container)
+        command = 'docker kill %s ' % (container)
     else:
-        command = 'docker kill --signal=%s %s '%(signal, container)
-        
-    p = subprocess.check_output(shlex.split(command))    
+        command = 'docker kill --signal=%s %s ' % (signal, container)
+
+    p = subprocess.check_output(shlex.split(command))
     return p
-    
+
+
 def executePlatformCommand(image, command, args):
     if (command == pull_command):
         print ('')
         print (' Updating ElasTest components....')
         print ('')
-        command_line = ('docker run %s --rm -v /var/run/docker.sock:/var/run/docker.sock ' + \
-        image + ' ' + command)%(args)        
-    
+        command_line = ('docker run %s --rm -v /var/run/docker.sock:/var/run/docker.sock ' +
+                        image + ' ' + command) % (args)
+
     subprocess.check_output(shlex.split(command_line))
+
+
+def existsLocalImage(image):
+    print ('Image to check: ' + image)
+    if(':' not in image):
+        image + ':latest'
+    return True if image in getRepoTag(image) else False
