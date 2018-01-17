@@ -39,10 +39,11 @@ def pullETImages(params, mode):
         print ('Image to update: ') + image
         print ('')
         pullImage(image)
+    print ('Images as strintg: ' + os.environ(['ET_OLD_IMAGES'])    
     deleteOldImages(str(os.environ(['ET_OLD_IMAGES'])).split(','), images_list)
 
 
-def deletOldImages(oldImages, newImages):
+def deleteOldImages(oldImages, newImages):
     print (' Removing old images...')
     imagesToRemove = ''
     for oldImage in oldImages:
