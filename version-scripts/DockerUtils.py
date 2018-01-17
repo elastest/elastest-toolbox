@@ -82,7 +82,9 @@ def deleteImages(images):
 
 
 def deleteDanglingImages():
-    command = 'docker rmi $(docker images -f "dangling=true" -q)'
+    subcommand = 'docker images -f "dangling=true" -q'
+    result = subprocess.check_output(shlex.split(subcommand))    
+    command = 'docker rmi ' + result
     print ('Deleting dangling images')
     subprocess.check_output(shlex.split(command))
 
