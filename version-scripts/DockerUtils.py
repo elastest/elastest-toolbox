@@ -39,14 +39,18 @@ def pushImage(image):
 def getContainerImage():
     command = 'docker inspect --format "{{ index .Config.Image }}" ' + \
         os.environ['HOSTNAME']
-    image = subprocess.check_output(shlex.split(command))
+    image = str(subprocess.check_output(shlex.split(command))).rstrip('\n')
     return image
+
+
+def getContainerId():
+    return os.environ['HOSTNAME']
 
 
 def getVersionFromHostContainer():
     command = 'docker inspect --format "{{ index .Config.Labels.version }}" ' + \
         os.environ['HOSTNAME']
-    version = subprocess.check_output(shlex.split(command))    
+    version = str(subprocess.check_output(shlex.split(command))).rstrip('\n')
     return version
 
 
@@ -54,15 +58,31 @@ def deleteVolume(name):
     print ('')
     print (' Deleting some volumes....')
     command = 'docker volume rm ' + name
-    subprocess.call(shlex.split(command))        
+    subprocess.call(shlex.split(command))
 
+
+def deleteImages(images):
+    print (' Deleting images: ' + images)
+    command = 'docker rmi -f ' + images
+    subprocess.call(shlex.split(command))
+
+
+def killContainer(container, signal):
+    if (signal is None or signal == ''):
+        command = 'docker kill %s '%(container)
+    else:
+        command = 'docker kill --signal=%s %s '%(signal, container)
+        
+    p = subprocess.check_output(shlex.split(command))    
+    return p
     
-def executePlatformCommand(image, command):
+def executePlatformCommand(image, command, args):
     if (command == pull_command):
         print ('')
         print (' Updating ElasTest components....')
         print ('')
-        command_line = 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock ' + \
-        image + ' ' + command        
+        command_line = ('docker run %s --rm -v /var/run/docker.sock:/var/run/docker.sock ' + \
+        image + ' ' + command)%(args)
+        print ('Docker run command: ' + command_line)
     
     subprocess.check_output(shlex.split(command_line))
