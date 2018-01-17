@@ -33,7 +33,7 @@ def pullETImages(params, mode):
 
     print ('')
     print ('Pulling ElasTest images...')
-    images_list = getElastestImagesByExecMode(mode, False, '')
+    images_list = getElastestImagesByExecMode(mode, False)
     for image in images_list:
         print ('')
         print ('Image to update: ') + image
