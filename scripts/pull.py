@@ -15,7 +15,7 @@ def getArgs(params):
     # Custom usage message
     usage = parser.format_usage()
     usage = usage.replace(
-        "usage: main.py", "docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform pull")
+        "usage: main.py", "docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform pull-images")
     parser.usage = usage
 
     # If there aren't args, show help and exit
@@ -39,10 +39,10 @@ def pullETImages(params, mode):
         print ('Image to update: ') + image
         print ('')
         pullImage(image)
-    deleteOldImages(str(os.environ(['ET_OLD_IMAGES'])).split(), images_list)
+    deleteOldImages(str(os.environ(['ET_OLD_IMAGES'])).split(','), images_list)
 
 
-def deleteOldImages(oldImages, newImages):
+def deletOldImages(oldImages, newImages):
     print (' Removing old images...')
     imagesToRemove = ''
     for oldImage in oldImages:
