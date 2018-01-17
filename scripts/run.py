@@ -11,6 +11,7 @@ from checkETM import *
 from setEnv import *
 from DockerUtils import *
 from update import *
+from pull import *
 
 outputMessages={'update': 'Updating ElasTest Platform version ', 'pull-images': 'Pulling the ElasTest Platform Images '}
 def getArgs(params):
