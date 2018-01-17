@@ -61,10 +61,10 @@ def deleteVolume(name):
     subprocess.call(shlex.split(command))
 
 
-def deleteImages(images):
-    print (' Deleting images: ' + images)
-    command = 'docker rmi -f ' + images
-    subprocess.call(shlex.split(command))
+def deleteImages(images):    
+    if (images):        
+        command = 'docker rmi -f ' + images
+        subprocess.call(shlex.split(command))
 
 
 def killContainer(container, signal):
