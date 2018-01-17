@@ -82,7 +82,6 @@ def executePlatformCommand(image, command, args):
         print (' Updating ElasTest components....')
         print ('')
         command_line = ('docker run %s --rm -v /var/run/docker.sock:/var/run/docker.sock ' + \
-        image + ' ' + command)%(args)
-        print ('Docker run command: ' + command_line)
+        image + ' ' + command)%(args)        
     
     subprocess.check_output(shlex.split(command_line))
