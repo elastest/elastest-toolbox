@@ -20,7 +20,6 @@ def getArgs(params):
     parser.add_argument('--mode', '-m', help='Set ElasTest execution mode. Usage: --mode=experimental',
                         type=str, choices=set(('normal', 'experimental-lite', 'experimental')), default='normal')
 
-
     # Custom usage message
     usage = parser.format_usage()
     usage = usage.replace(
@@ -36,26 +35,27 @@ def getArgs(params):
     return args
 
 
-def updatePlatform(params):    
+def updatePlatform(params):
     global args
     args = getArgs(params)
     mode = args.mode
     continueUpdate = True
 
-    confirmMessage1 = 'You are going to update the ElasTest version ' + getVersionFromHostContainer() + '. Continue?'
-    #Confirm that you want to update this ElasTest version    
+    confirmMessage1 = 'You are going to update the ElasTest version ' + \
+        getVersionFromHostContainer() + '. Continue?'
+    #Confirm that you want to update this ElasTest version
     if(yes_or_no(confirmMessage1)):
         elasTestRunning = elasTestIsRunning()
-        if(elasTestRunning):            
-            confirmMessage2 = 'The version of ElasTest that you want to update is already running and it is necessary to stop it. Continue?'            
+        if(elasTestRunning):
+            confirmMessage2 = 'The version of ElasTest that you want to update is already running and it is necessary to stop it. Continue?'
             if(not yes_or_no(confirmMessage2)):
                 continueUpdate = False
-            
+
         if(continueUpdate):
             print ('')
-            print (' Preparing the environment...')    
+            print (' Preparing the environment...')
             if(elasTestRunning):
-                sys.stdout.write (' Stopping ElasTest...')
+                sys.stdout.write(' Stopping ElasTest...')
                 stopRunningElasTest()
                 while (elasTestIsRunning()):
                     time.sleep(1)
@@ -65,7 +65,7 @@ def updatePlatform(params):
             print ('')
             print (' Upating ElasTest...')
             print ('')
-            #Update platform image    
+            #Update platform image
             image = getContainerImage()
             updateImage(image)
 
@@ -73,12 +73,14 @@ def updatePlatform(params):
             #Update platform-services image
             updateImage(eps_image)
 
-            #Get images list to update            
-            dockerArgs = '-e ET_OLD_IMAGES="%s"'%(getElasTestImagesAsString(mode))
-            commandArgs = '-m=%s'%(mode)
-           
+            #Get images list to update
+            dockerArgs = '-e ET_OLD_IMAGES="%s"' % (
+                getElasTestImagesAsString(mode))
+            commandArgs = '-m=%s' % (mode)
+
             #Download/update the images of the ElasTest components
-            executePlatformCommand(image, pull_command, dockerArgs, commandArgs)
+            executePlatformCommand(image, pull_command,
+                                   dockerArgs, commandArgs)
             print ('')
             print ('Update finished successfully.')
         else:
@@ -87,8 +89,7 @@ def updatePlatform(params):
         exit(0)
 
 
-
-def updateImage(image):    
+def updateImage(image):
     print (' Updating ' + image)
     if (dev_tag not in image):
         image_parts = image.split(':')
@@ -96,14 +97,14 @@ def updateImage(image):
     pullImage(image)
 
 
-def elasTestIsRunning():    
-    platformImage = getContainerImage()    
-    nProcessCommandStr =  "docker ps | grep %s | wc -l | cat"%(platformImage)
-    nProcessCommand = [nProcessCommandStr]    
+def elasTestIsRunning():
+    platformImage = getContainerImage()
+    nProcessCommandStr = "docker ps | grep %s | wc -l | cat" % (platformImage)
+    nProcessCommand = [nProcessCommandStr]
     nproc = int(subprocess.check_output(nProcessCommand, shell=True))
-    if(nproc > 1):        
+    if(nproc > 1):
         return True
-    else:        
+    else:
         return False
 
 
