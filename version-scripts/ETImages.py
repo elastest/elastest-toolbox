@@ -243,8 +243,8 @@ def getAllImagesByExecMode(mode):
         tss_list = getTSSList()
         global engines_list
         engines_list = getEnginesList()        
-        #images_list = images_list + getTSSImages()
-        #images_list = images_list + getEnginesImages()
+        images_list = images_list + getTSSImages()
+        images_list = images_list + getEnginesImages()
     else:
         images_list = images_list + getPreloadedImages()
     

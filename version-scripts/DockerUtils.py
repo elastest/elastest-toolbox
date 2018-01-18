@@ -90,7 +90,7 @@ def deleteDanglingImages():
         try:
             subprocess.check_output(shlex.split(command))
         except subprocess.CalledProcessError:
-            print (' Unable to delete dangling.')
+            print (' Unable to delete dangling images.')
 
 
 def killContainer(container, signal):
@@ -103,13 +103,12 @@ def killContainer(container, signal):
     return p
 
 
-def executePlatformCommand(image, command, args):
+def executePlatformCommand(image, command, dockerArgs, commandArgs):
     if (command == pull_command):
         print ('')
         print (' Updating ElasTest components....')
         print ('')
-        command_line = ('docker run %s --rm -v /var/run/docker.sock:/var/run/docker.sock ' +
-                        image + ' ' + command) % (args)
+        command_line = ('docker run %s --rm -v /var/run/docker.sock:/var/run/docker.sock %s %s %s')%(dockerArgs,image,command,commandArgs)
 
     subprocess.check_output(shlex.split(command_line))
 

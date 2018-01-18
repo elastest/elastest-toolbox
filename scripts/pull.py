@@ -11,6 +11,8 @@ dev_tag = 'dev'
 def getArgs(params):
     # Define arguments
     parser = argparse.ArgumentParser()
+    parser.add_argument('--mode', '-m', help='Set ElasTest execution mode. Usage: --mode=experimental',
+                        type=str, choices=set(('normal', 'experimental-lite', 'experimental')), default='normal')
 
     # Custom usage message
     usage = parser.format_usage()
@@ -19,7 +21,7 @@ def getArgs(params):
     parser.usage = usage
 
     # If there aren't args, show help and exit
-    if len(params) > 0:
+    if len(params) > 1:
         parser.print_help()
         sys.exit(1)
 
@@ -27,9 +29,10 @@ def getArgs(params):
     return args
 
 
-def pullETImages(params, mode):
+def pullETImages(params):
     global args
     args = getArgs(params)
+    mode = args.mode
 
     print ('')
     print ('Pulling ElasTest images...')
@@ -38,7 +41,8 @@ def pullETImages(params, mode):
         print ('')
         print ('Image to update: ') + image
         print ('')
-        pullImage(image)
+        if (existsLocalImage(image)):
+            pullImage(image)
 
     deleteOldImages(os.environ['ET_OLD_IMAGES'].split(','), images_list)
 

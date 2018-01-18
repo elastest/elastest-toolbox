@@ -17,6 +17,9 @@ pull_command = 'pull-images'
 def getArgs(params):
     # Define arguments
     parser = argparse.ArgumentParser()
+    parser.add_argument('--mode', '-m', help='Set ElasTest execution mode. Usage: --mode=experimental',
+                        type=str, choices=set(('normal', 'experimental-lite', 'experimental')), default='normal')
+
 
     # Custom usage message
     usage = parser.format_usage()
@@ -25,7 +28,7 @@ def getArgs(params):
     parser.usage = usage
 
     # If there aren't args, show help and exit
-    if len(params) > 0:
+    if len(params) > 1:
         parser.print_help()
         sys.exit(1)
 
@@ -33,9 +36,10 @@ def getArgs(params):
     return args
 
 
-def updatePlatform(params, mode):    
+def updatePlatform(params):    
     global args
     args = getArgs(params)
+    mode = args.mode
     continueUpdate = True
 
     confirmMessage1 = 'You are going to update the ElasTest version ' + getVersionFromHostContainer() + '. Continue?'
@@ -70,10 +74,11 @@ def updatePlatform(params, mode):
             updateImage(eps_image)
 
             #Get images list to update            
-            dockeArgs = '-e ET_OLD_IMAGES="%s"'%(getElasTestImagesAsString(mode))
-
+            dockerArgs = '-e ET_OLD_IMAGES="%s"'%(getElasTestImagesAsString(mode))
+            commandArgs = '-m=%s'%(mode)
+           
             #Download/update the images of the ElasTest components
-            executePlatformCommand(image, pull_command, dockeArgs)
+            executePlatformCommand(image, pull_command, dockerArgs, commandArgs)
             print ('')
             print ('Update finished successfully.')
         else:

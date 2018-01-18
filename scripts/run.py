@@ -75,9 +75,9 @@ def runPlatform(params):
         print message
 
         if(command == 'update'):            
-            updatePlatform(params[1:], mode)
+            updatePlatform(params[1:])
         if(command == 'pull-images'):
-            pullETImages(params[1:], mode)
+            pullETImages(params[1:])
 
     else:
         if(args.server_address):
