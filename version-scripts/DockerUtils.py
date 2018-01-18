@@ -83,14 +83,14 @@ def deleteImages(images):
 
 def deleteDanglingImages():
     subcommand = 'docker images -f "dangling=true" -q'
-    result = str(subprocess.check_output(shlex.split(subcommand))).split('\n')   
-    command = 'docker rmi -f ' + ' '.join(result)
-    print ('command ' + command)
-    print ('Deleting dangling images')
-    try:
-        subprocess.check_output(shlex.split(command))
-    except subprocess.CalledProcessError:
-        print (' Unable to delete dangling.')
+    result = str(subprocess.check_output(shlex.split(subcommand))).split('\n')
+    if (''.join(result)):
+        command = 'docker rmi -f ' + ' '.join(result)
+        print ('Deleting dangling images')
+        try:
+            subprocess.check_output(shlex.split(command))
+        except subprocess.CalledProcessError:
+            print (' Unable to delete dangling.')
 
 
 def killContainer(container, signal):
