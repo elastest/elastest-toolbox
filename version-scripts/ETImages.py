@@ -243,8 +243,8 @@ def getAllImagesByExecMode(mode):
         tss_list = getTSSList()
         global engines_list
         engines_list = getEnginesList()        
-        #images_list = images_list + getTSSImages()
-        #images_list = images_list + getEnginesImages()
+        images_list = images_list + getTSSImages()
+        images_list = images_list + getEnginesImages()
     else:
         images_list = images_list + getPreloadedImages()
     
@@ -289,7 +289,7 @@ def getPreloadedImages():
     
     images_list = images_list + getImageByServiceName('eus')
 
-    image_aux = getImageFromFileProperties(novnc_image_property,'eusNovnc')    
+    image_aux = getImageFromFileProperties(novnc_image_property,'eusNovnc')
     if image_aux:
         images_list.append(image_aux)
         image_aux = None
@@ -316,4 +316,5 @@ def pullAllImages():
 def pullPreloadImages():
     images_list = getPreloadedImages()
     for image in images_list:       
-        pullImage(image)
+        if (not existsLocalImage(image)):            
+            pullImage(image)

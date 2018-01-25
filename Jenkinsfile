@@ -37,12 +37,12 @@ node('docker'){
               "Create platform-services docker image"
             
                 echo ("Creating elastest/platform-services image..")                
-                sh 'docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg COMMIT_DATE=$(git log -1 --format=%cd --date=format:%Y-%m-%d) --build-arg VERSION=dev -t elastest/platform-services . -f platform-services/Dockerfile'
+                sh 'docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg COMMIT_DATE=$(git log -1 --format=%cd --date=format:%Y-%m-%d) --build-arg VERSION=dev -t elastest/platform-services:dev . -f platform-services/Dockerfile'
     
             stage "Publish Platform-Services docker image"
     
                 echo ("Publish elastest/platform-services image")
-                def platformservicesimage = docker.image('elastest/platform-services')
+                def platformservicesimage = docker.image('elastest/platform-services:dev')
                 //this is work arround as withDockerRegistry is not working properly 
                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'elastestci-dockerhub',
                     usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {

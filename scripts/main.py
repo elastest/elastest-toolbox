@@ -63,6 +63,12 @@ def stop(params, signal, frame):
     sys.exit(result)
 
 
+def stopUpdate(expresion, signal, frame):
+    print ('')
+    print (' Stop updating.')
+    sys.exit(0)
+
+
 #########################################################################################
 
 # Main
@@ -109,6 +115,8 @@ elif(args.instruction == 'wait'):
 elif(args.instruction == 'inspect'):
     inspectPlatform(params)
 elif(args.instruction == 'update'):
-    updatePlatform(params, 'normal')
+    signal.signal(signal.SIGINT, partial(stopUpdate, expresion))
+    signal.signal(signal.SIGTERM, partial(stopUpdate, expresion))
+    runPlatform(expresion)
 elif(args.instruction == 'pull-images'):
-    pullETImages(params, 'normal')
+    runPlatform(expresion)

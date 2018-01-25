@@ -4,7 +4,9 @@ import shlex
 import subprocess
 import argparse
 import os
+import time
 from DockerUtils import *
+from ETImages import *
 
 dev_tag = 'dev'
 eps_volume = 'elastest_platform-services'
@@ -15,6 +17,8 @@ pull_command = 'pull-images'
 def getArgs(params):
     # Define arguments
     parser = argparse.ArgumentParser()
+    parser.add_argument('--mode', '-m', help='Set ElasTest execution mode. Usage: --mode=experimental',
+                        type=str, choices=set(('normal', 'experimental-lite', 'experimental')), default='normal')
 
     # Custom usage message
     usage = parser.format_usage()
@@ -23,7 +27,7 @@ def getArgs(params):
     parser.usage = usage
 
     # If there aren't args, show help and exit
-    if len(params) > 0:
+    if len(params) > 1:
         parser.print_help()
         sys.exit(1)
 
@@ -31,33 +35,110 @@ def getArgs(params):
     return args
 
 
-def updatePlatform(params, mode):    
+def updatePlatform(params):
     global args
     args = getArgs(params)
+    mode = args.mode
+    continueUpdate = True
 
-    print ('')
-    print (' Preparing the environment...')    
-    deleteVolume(eps_volume)
-    print ('')
-    print (' Upating ElasTest...')
-    print ('')
-    #Update platform image    
-    image = getContainerImage()
-    updateImage(image)
+    confirmMessage1 = 'You are going to update the ElasTest version ' + \
+        getVersionFromHostContainer() + '. Continue?'
+    #Confirm that you want to update this ElasTest version
+    if(yes_or_no(confirmMessage1)):
+        elasTestRunning = elasTestIsRunning()
+        if(elasTestRunning):
+            confirmMessage2 = 'The version of ElasTest that you want to update is already running and it is necessary to stop it. Continue?'
+            if(not yes_or_no(confirmMessage2)):
+                continueUpdate = False
 
-    print ('')
-    #Update platform-services image
-    updateImage(eps_image)
+        if(continueUpdate):
+            print ('')
+            print (' Preparing the environment...')
+            if(elasTestRunning):
+                sys.stdout.write(' Stopping ElasTest...')
+                stopRunningElasTest()
+                while (elasTestIsRunning()):
+                    time.sleep(1)
+                    sys.stdout.write('.')
+                print ('')
+            deleteVolume(eps_volume)
+            print ('')
+            print (' Upating ElasTest...')
+            print ('')
+            #Update platform image
+            image = getContainerImage()
+            updateImage(image)
 
-    #Download/update the images of the ElasTest components
-    executePlatformCommand(image, pull_command)
-    print ('')
-    print ('Update finished successfully.')    
+            print ('')
+            #Update platform-services image
+            updateImage(eps_image)
+
+            #Get images list to update
+            dockerArgs = '-e ET_OLD_IMAGES="%s"' % (
+                getElasTestImagesAsString(mode))
+            commandArgs = '-m=%s' % (mode)
+
+            #Download/update the images of the ElasTest components
+            executePlatformCommand(image, pull_command,
+                                   dockerArgs, commandArgs)
+            print ('')
+            print ('Update finished successfully.')
+        else:
+            exit(0)
+    else:
+        exit(0)
 
 
-def updateImage(image):    
+def updateImage(image):
     print (' Updating ' + image)
     if (dev_tag not in image):
         image_parts = image.split(':')
         image = image_parts[0]
     pullImage(image)
+
+
+def elasTestIsRunning():
+    platformImage = getContainerImage()
+    nProcessCommandStr = "docker ps | grep %s | wc -l | cat" % (platformImage)
+    nProcessCommand = [nProcessCommandStr]
+    nproc = int(subprocess.check_output(nProcessCommand, shell=True))
+    if(nproc > 1):
+        return True
+    else:
+        return False
+
+
+def stopRunningElasTest():    
+    platformImage = getContainerImage()
+    getContainersCommand = ['docker ps -q --filter ancestor=' + platformImage]
+    platformContainers = str(subprocess.check_output(getContainersCommand, shell=True)).split()
+    platformContainers.remove(getContainerId())
+    for containerId in platformContainers:        
+        killContainer(containerId, 'SIGTERM')
+    
+
+def yes_or_no(question, default="yes"):
+    valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
+    
+    if default == None:
+        prompt = " [y/n] "
+    elif default == "yes":
+        prompt = " [Y/n] "
+    elif default == "no":
+        prompt = " [y/N] "
+    else:
+        raise ValueError("invalid default answer: '%s'" % default)
+
+    while True:
+        #sys.stdout.write(question + prompt)
+        choice = raw_input(question + prompt).lower().strip()
+        if default is not None and choice == '':
+            return valid[default]
+        elif choice in valid:
+            return valid[choice]
+        else:
+            sys.stdout.write("Please respond with 'yes' or 'no' "\
+                             "(or 'y' or 'n').\n")
+                            
+
+    
