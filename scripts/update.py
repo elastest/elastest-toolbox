@@ -63,7 +63,7 @@ def updatePlatform(params):
                 print ('')
             deleteVolume(eps_volume)
             print ('')
-            print (' Upating ElasTest...')
+            print (' Updating ElasTest...')
             print ('')
             #Update platform image
             image = getContainerImage()
