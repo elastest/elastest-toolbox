@@ -177,10 +177,20 @@ def updateImagesTagOfYmlFile(path, tag):
 
 def updateImagesTagOfJsonFile(path, tag):
     json_file = getJson(path)
+        
+    # Update images version in the docker-compose files
     yml = getYmlFromETServicesJsonFile(json_file)
     new_yml = updateImagesTagOfReadYml(yml, tag)    
     json_file['manifest']['manifest_content'] = json.loads(json.dumps(yaml.dump(new_yml, encoding=('utf-8'), default_flow_style=False), cls=MyEncoder))
-    
+
+    # Update versions of the dynamic iamges used by TSS
+    endpoints = json_file['manifest']['endpoints']
+    for endpoint in endpoints:
+        if ( 'dynamic_images' in json_file['manifest']['endpoints'][endpoint]):
+            for image in json_file['manifest']['endpoints'][endpoint]['dynamic_images']:
+                image['version'] = tag
+                print image['version']       
+
     # Save new json file with images tag updated
     saveJson(path, json_file)
 
@@ -285,7 +295,8 @@ def getElasTestImagesAsString(mode):
 
 def getPreloadedImages():    
     images_list = []
-    images_list = images_list + getBrowsersImages()
+    #Now, the browser images do not store in a local file
+    #images_list = images_list + getBrowsersImages()
     
     images_list = images_list + getImageByServiceName('eus')
 
