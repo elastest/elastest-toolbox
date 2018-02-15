@@ -17,6 +17,9 @@ socat_image_property = 'et.socat.image'
 chrome_browser = 'chrome'
 firefox_browser = 'firefox'
 
+images_to_pre_pulling = ['elastest/eus-novnc', 'et.docker.img.socat', 'elastest/eus', 'elastest/etm-dockbeat']
+tss_images_in_normal_mode = ['eus']
+
 class MyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, (bytes, bytearray)):
@@ -96,7 +99,7 @@ def getImagesFromYmlFilesList(files_list):
 
 def getImagesFromJsonFilesList(files_list):
     files_images = []
-    for path in files_list:
+    for path in files_list:        
         files_images = files_images + \
             getImagesList(getYmlFromETServicesJsonPath(path))
         files_images = files_images + \
@@ -276,6 +279,16 @@ def getAllImages():
     images_list = images_list + getEnginesImages()
     return images_list
 
+
+def getTSSImagesByServices(tss_list):
+    image_list = []
+    image_file_list = []
+    for tss in tss_list:
+        image_file_list.append(getTSSFile(tss))
+    image_list = getImagesFromJsonFilesList(image_file_list)
+    return image_list
+
+
 def getAllImagesByExecMode(mode):
     images_list = []
     global core_list
@@ -289,7 +302,7 @@ def getAllImagesByExecMode(mode):
         images_list = images_list + getTSSImages()
         images_list = images_list + getEnginesImages()
     else:
-        images_list = images_list + getPreloadedImages()
+        images_list = images_list + getTSSImagesByServices(tss_images_in_normal_mode)
     
     images_list.append(getContainerImage())
     
@@ -322,26 +335,18 @@ def getElastestImagesByExecMode(mode, without_tag):
     return elastest_images
 
 def getElasTestImagesAsString(mode):
-    images_list = getElastestImagesByExecMode(mode, False)    
+    images_list = getElastestImagesByExecMode(mode, False)
+    print ('Images: ' + ",".join(map(str,images_list)))
     return ",".join(map(str,images_list))
 
 
-def getPreloadedImages():    
+def getPreloadedImages(elastest_images):    
     images_list = []
-    #Now, the browser images do not store in a local file
-    #images_list = images_list + getBrowsersImages()
-    
-    images_list = images_list + getImageByServiceName('eus')
-
-    image_aux = getImageFromFileProperties(novnc_image_property,'eusNovnc')
-    if image_aux:
-        images_list.append(image_aux)
-        image_aux = None
-
-    image_aux = getImageFromFileProperties(socat_image_property,'etmSocat')
-    if image_aux:
-        images_list.append(image_aux)
-        image_aux = None
+    for image_to_pulling in images_to_pre_pulling:
+        for et_image in elastest_images:
+            if image_to_pulling in et_image:
+                images_list.append(et_image)
+                break
 
     return images_list
 
@@ -357,8 +362,8 @@ def pullAllImages():
     for image in images_list:
         pullImage(image)
 
-def pullPreloadImages():
-    images_list = getPreloadedImages()
+def pullPreloadImages(elastest_images):
+    images_list = getPreloadedImages(elastest_images)
     for image in images_list:       
         if (not existsLocalImage(image)):            
             pullImage(image)

@@ -167,7 +167,8 @@ def runPlatform(params):
                 etm_proxy + ' ' + (etm_proxy_env if with_security else '') + ' -p elastest'
             message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' mode)...'
 
-        replaceEnvVarValue('ET_IMAGES', getElasTestImagesAsString(mode),
+        elastest_images = getElasTestImagesAsString(mode)
+        replaceEnvVarValue('ET_IMAGES', elastest_images,
                         'elastest/platform', files_list)
         # If command=stop
         if(command == 'stop'):
@@ -179,7 +180,7 @@ def runPlatform(params):
             if(command != 'stop'):
                 print 'Pulling some necessary images...'
                 print ''
-                pullPreloadImages()
+                pullPreloadImages(elastest_images)
 
                 if(args.pullall):
                     print 'Pulling the ElasTest images...'

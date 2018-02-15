@@ -39,6 +39,8 @@ imagesFilesToPrePull = {'eusBrowsers': eus_browsers_properties_file,
                         'eusNovnc': eus_properties_file, 'etmSocat': etm_properties_file,
                         'eus': eus}
 
+tss_images_files = {'eus': eus, 'ebs': ebs, 'ess': ess, 'eds': eds, 'ems': ems}
+
 
 def getCoreList():
     core_list = [emp, edm, esm, eim, epm, etm_complementary_experimental, platform_services,
@@ -54,6 +56,8 @@ def getCoreListByExecMode(mode):
                      etm_main_experimental, etm_proxy, platform_services]
     return core_list
 
+def getTSSFile(tss):
+    return tss_images_files[tss]
 
 def getTSSList():
     tss_list = [eus, ebs, ess, eds, ems]
