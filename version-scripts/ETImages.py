@@ -9,6 +9,7 @@ core_list = []
 tss_list = []
 engines_list = []
 et_image_name_prefix = 'elastest/'
+et_docker_image_name_prefix = 'ET_DOCKER_IMAGE'
 preloaded_images = ['']
 
 novnc_image_property = 'novnc.image.id'
@@ -68,6 +69,22 @@ def getPropertiesFromFile(path):
                 keys[name.strip()] = value.strip()        
     return keys;
 
+def getETDockerImagesFromYml(yml):
+    dynamic_images = []
+    environment = 'environment'
+    if environment in yml:
+        for var in yml[environment]:
+            try:
+                if(var.startswith(et_docker_image_name_prefix)):
+                    dynamic_images.append(var.split('=')[1])                    
+            except TypeError:
+                print ('Error getting ET_DOCKER_IMAGES')
+        return dynamic_images
+    for k in yml:
+        if isinstance(yml[k], dict):
+            dynamic_images = dynamic_images + getETDockerImagesFromYml(yml[k])
+    return dynamic_images
+
 #*** Images Lists Getters By File Type ***#
 
 def getImagesFromYmlFilesList(files_list):
@@ -81,6 +98,8 @@ def getImagesFromJsonFilesList(files_list):
     for path in files_list:
         files_images = files_images + \
             getImagesList(getYmlFromETServicesJsonPath(path))
+        files_images = files_images + \
+            getETDockerImagesFromETServiceJsonFile(path)
     return files_images
 
 def getImageFromJsonFile(service_name):
@@ -89,6 +108,10 @@ def getImageFromJsonFile(service_name):
     image = getImagesList(getYmlFromETServicesJsonPath(file_path))
     return image
 
+def getETDockerImagesFromETServiceJsonFile(path):
+    json_file = getJson(path)
+    yml = getYmlFromETServicesJsonFile(json_file)
+    return getETDockerImagesFromYml(yml)
 
 #*** Images Lists Getters By Component Type ***#
 
@@ -175,22 +198,30 @@ def updateImagesTagOfYmlFile(path, tag):
     saveYml(path, new_yml)
 
 
+def updateETDockerImagesTagYml(yml, tag):    
+    environment = 'environment'
+    if environment in yml:
+        for i, var in enumerate(yml[environment]):
+            try:
+                if(var.startswith(et_docker_image_name_prefix)):
+                    yml[environment][i] = modifyImageTag(var, tag)                    
+            except TypeError:
+                print ('Error updating ET_DOCKER_IMAGES')                
+        return yml
+    for k in yml:
+        if isinstance(yml[k], dict):
+            yml[k] = updateETDockerImagesTagYml(yml[k], tag)
+    return yml
+
+
 def updateImagesTagOfJsonFile(path, tag):
-    json_file = getJson(path)
-        
+    json_file = getJson(path)    
+
     # Update images version in the docker-compose files
     yml = getYmlFromETServicesJsonFile(json_file)
     new_yml = updateImagesTagOfReadYml(yml, tag)    
-    json_file['manifest']['manifest_content'] = json.loads(json.dumps(yaml.dump(new_yml, encoding=('utf-8'), default_flow_style=False), cls=MyEncoder))
-
-    # Update versions of the dynamic iamges used by TSS
-    endpoints = json_file['manifest']['endpoints']
-    for endpoint in endpoints:
-        if ( 'dynamic_images' in json_file['manifest']['endpoints'][endpoint]):
-            for image in json_file['manifest']['endpoints'][endpoint]['dynamic_images']:
-                image['version'] = tag
-                print image['version']       
-
+    new_yml = updateETDockerImagesTagYml(new_yml, tag)
+    json_file['manifest']['manifest_content'] = json.loads(json.dumps(yaml.dump(new_yml, encoding=('utf-8'), default_flow_style=False), cls=MyEncoder))    
     # Save new json file with images tag updated
     saveJson(path, json_file)
 
