@@ -9,7 +9,7 @@ core_list = []
 tss_list = []
 engines_list = []
 et_image_name_prefix = 'elastest/'
-et_docker_image_name_prefix = 'ET_DOCKER_IMAGE'
+et_docker_image_name_prefix = 'ET_DOCKER_IMG'
 preloaded_images = ['']
 
 novnc_image_property = 'novnc.image.id'
@@ -91,6 +91,7 @@ def getImagesFromYmlFilesList(files_list):
     files_images = []
     for path in files_list:
         files_images = files_images + getImagesList(getYml(path))
+        files_images = files_images + getETDockerImagesFromYml(getYml(path))
     return files_images
 
 def getImagesFromJsonFilesList(files_list):
@@ -191,13 +192,6 @@ def updateImagesTagOfReadYml(d, tag):
     return d
 
 
-def updateImagesTagOfYmlFile(path, tag):
-    yml_file = getYml(path)
-    new_yml = updateImagesTagOfReadYml(yml_file, tag)
-    # Save new yml file with images tag updated
-    saveYml(path, new_yml)
-
-
 def updateETDockerImagesTagYml(yml, tag):    
     environment = 'environment'
     if environment in yml:
@@ -212,6 +206,14 @@ def updateETDockerImagesTagYml(yml, tag):
         if isinstance(yml[k], dict):
             yml[k] = updateETDockerImagesTagYml(yml[k], tag)
     return yml
+
+
+def updateImagesTagOfYmlFile(path, tag):
+    yml_file = getYml(path)
+    new_yml = updateImagesTagOfReadYml(yml_file, tag)
+    new_yml = updateETDockerImagesTagYml(new_yml, tag)
+    # Save new yml file with images tag updated
+    saveYml(path, new_yml)
 
 
 def updateImagesTagOfJsonFile(path, tag):
