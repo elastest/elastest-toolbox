@@ -38,6 +38,8 @@ def getArgs(params):
         '--user', '-u', help='Set the user to access ElasTest. Use together --password. Usage: --user=testuser', required=False)
     parser.add_argument(
         '--password', '-p', help='Set the user password to access ElasTest. Use together --user. Usage: --password=passuser', required=False)
+    parser.add_argument('--testlink', '-tl', help='Start the TestLink Tool integrated with ElasTest. Usage: --testlink',
+                        required=False, action='store_true')
 
     # Custom usage message
     usage = parser.format_usage()
@@ -122,6 +124,7 @@ def runPlatform(params):
         esm = '-f ../esm/deploy/docker-compose.yml'
         eim = '-f ../eim/deploy/docker-compose.yml'
         epm = '-f ../epm/deploy/docker-compose.yml'
+        etm_tlink = '-f ../etm/docker/docker-compose-testlink.yml'
 
         platform_services = '-f ../platform-services/docker-compose.yml'
 
@@ -140,8 +143,8 @@ def runPlatform(params):
             files_list.append('../etm/deploy/docker-compose-main.yml')
             dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + \
                             ' ' + epm + ' ' + emp + ' ' + etm_proxy + ' ' + \
-                            (etm_proxy_env if with_security else '') + ' -p elastest'
-            message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' Experimental Mode)...'
+                            (etm_proxy_env if with_security else '')
+            message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' Mode)...'
 
         # If is Experimental-lite or Normal mode
         else:
@@ -164,8 +167,21 @@ def runPlatform(params):
             if (not etm_dev):
                 etm = etm + ' ' + etm_main + ' ' + etm_main_ports
             dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + \
-                etm_proxy + ' ' + (etm_proxy_env if with_security else '') + ' -p elastest'
+                etm_proxy + ' ' + (etm_proxy_env if with_security else '')
             message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' mode)...'
+
+        # If the testlink option is used, add the docker-compofile of the Testlink tool
+        if(args.testlink):
+            dockerCommand = dockerCommand + ' ' + etm_tlink
+        else:
+            files_list = []
+            files_list.append('../etm/deploy/docker-compose-main.yml')
+            files_list.append('../etm/docker/docker-compose-main.yml')
+            replaceEnvVarValue('ET_ETM_TESTLINK_HOST', 'none',
+                            'etm-testlink', files_list)
+        
+        # Add the project name to the docker-compose command
+        dockerCommand = dockerCommand + ' -p elastest'
 
         elastest_images = getElasTestImagesAsString(mode)
         replaceEnvVarValue('ET_IMAGES', elastest_images,
@@ -181,6 +197,7 @@ def runPlatform(params):
                 print 'Pulling some necessary images...'
                 print ''
                 pullPreloadImages(elastest_images)
+                print 'Preload images finished.'
 
                 if(args.pullall):
                     print 'Pulling the ElasTest images...'

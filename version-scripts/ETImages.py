@@ -17,7 +17,7 @@ socat_image_property = 'et.socat.image'
 chrome_browser = 'chrome'
 firefox_browser = 'firefox'
 
-images_to_pre_pulling = ['elastest/eus-novnc', 'et.docker.img.socat', 'elastest/eus', 'elastest/etm-dockbeat']
+images_to_pre_pulling = ['elastest/eus-novnc', 'elastest/etm-socat', 'elastest/eus', 'elastest/etm-dockbeat']
 tss_images_in_normal_mode = ['eus']
 
 class MyEncoder(json.JSONEncoder):
@@ -335,8 +335,7 @@ def getElastestImagesByExecMode(mode, without_tag):
     return elastest_images
 
 def getElasTestImagesAsString(mode):
-    images_list = getElastestImagesByExecMode(mode, False)
-    print ('Images: ' + ",".join(map(str,images_list)))
+    images_list = getElastestImagesByExecMode(mode, False)    
     return ",".join(map(str,images_list))
 
 
