@@ -153,19 +153,18 @@ def runPlatform(params):
             replaceEnvVarValue('EXEC_MODE', args.mode, 'normal', files_list)
 
             # etm root path docker-compose files:
-            etm_complementary = '-f ../etm/docker/docker-compose-complementary.yml'
-            etm_complementary_ports = '-f ../etm/docker/docker-compose-complementary-ports.yml'
+            etm_complementary = '-f ../etm/docker/docker-compose-complementary.yml'            
             etm_main = '-f ../etm/docker/docker-compose-main.yml'
-            etm_main_ports = '-f ../etm/docker/docker-compose-main-ports.yml'
+            
             if(args.noports):
                 print ''
                 print 'No binding ports'
                 etm_complementary_ports = ''
                 etm_main_ports = ''
 
-            etm = etm_complementary + ' ' + etm_complementary_ports
+            etm = etm_complementary + ' '
             if (not etm_dev):
-                etm = etm + ' ' + etm_main + ' ' + etm_main_ports
+                etm = etm + ' ' + etm_main + ' '
             dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + \
                 etm_proxy + ' ' + (etm_proxy_env if with_security else '')
             message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' mode)...'
