@@ -155,7 +155,7 @@ def runPlatform(params):
             
             if(args.dev):                
                 print ''
-                print 'Dev options avtived.'
+                print 'Dev options activated.'
                 print 'Binding ports.'
                 etm_complementary_ports = '-f ../etm/docker/docker-compose-complementary-ports.yml'
                 etm_main_ports = '-f ../etm/docker/docker-compose-main-ports.yml'
