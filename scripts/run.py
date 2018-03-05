@@ -21,7 +21,7 @@ def getArgs(params):
                         type=str, choices=set(('start', 'stop', 'update', 'pull-images')))
     parser.add_argument('--mode', '-m', help='Set ElasTest execution mode. Usage: --mode=experimental',
                         type=str, choices=set(('normal', 'experimental-lite', 'experimental')), default='normal')
-    parser.add_argument('--dev', '-d', help=argparse.SUPPRESS, required=False)
+    parser.add_argument('--dev', '-d', help='Configure ElasTest for development.', required=False, action='store_true')
     parser.add_argument('--pullall', '-pa', help='Force pull of all images. Usage: --pullall',
                         required=False, action='store_true')
     parser.add_argument('--pullcore', '-pc', help='Force pull of only necessary images. Usage: --pullcore',
@@ -110,9 +110,7 @@ def runPlatform(params):
         else:
             FNULL = open(os.devnull, 'w')
             instruction = ' up -d'
-
-        # Parameters
-        etm_dev = False
+   
 
         message = ''
 
@@ -132,11 +130,6 @@ def runPlatform(params):
         etm_main = '-f ../etm/deploy/docker-compose-main.yml'
         etm = etm_complementary + ' ' + etm_main
 
-        # If -dev=etm run without ETM
-        if(args.dev == 'etm'):
-            etm = etm_complementary
-            etm_dev = True
-
         # If is Experimental mode
         files_list = []
         if(mode == 'experimental'):
@@ -152,19 +145,22 @@ def runPlatform(params):
             files_list.append('../etm/docker/docker-compose-main.yml')
             replaceEnvVarValue('EXEC_MODE', args.mode, 'normal', files_list)
 
+            #Initially do not bind ports
+            etm_complementary_ports = ''
+            etm_main_ports = ''
+
             # etm root path docker-compose files:
             etm_complementary = '-f ../etm/docker/docker-compose-complementary.yml'            
             etm_main = '-f ../etm/docker/docker-compose-main.yml'
             
-            if(args.noports):
+            if(args.dev):                
                 print ''
-                print 'No binding ports'
-                etm_complementary_ports = ''
-                etm_main_ports = ''
+                print 'Dev options avtived.'
+                print 'Binding ports.'
+                etm_complementary_ports = '-f ../etm/docker/docker-compose-complementary-ports.yml'
+                etm_main_ports = '-f ../etm/docker/docker-compose-main-ports.yml'
 
-            etm = etm_complementary + ' '
-            if (not etm_dev):
-                etm = etm + ' ' + etm_main + ' '
+            etm = etm_complementary + ' ' + etm_complementary_ports + ' ' + etm_main + ' ' + etm_main_ports            
             dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + \
                 etm_proxy + ' ' + (etm_proxy_env if with_security else '')
             message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' mode)...'
@@ -213,8 +209,6 @@ def runPlatform(params):
             dockerCommand = dockerCommand + instruction
             print ''
             print message
-            if(etm_dev):
-                print '(Without ETM)'
             print ''
 
             # Run docker-compose up/down
@@ -225,17 +219,16 @@ def runPlatform(params):
                 else:
                     result = subprocess.call(shlex.split(dockerCommand), stderr=FNULL)
                     if(result == 0 and command == 'start'):
-                        if(not etm_dev):
-                            check_params = [[], True]
-                            # Set proxy value to True
-                            check_params.append(True)
-                            if(args.server_address):
-                                check_params.append(args.server_address)
+                        check_params = [[], True]
+                        # Set proxy value to True
+                        check_params.append(True)
+                        if(args.server_address):
+                            check_params.append(args.server_address)
 
-                            # Run check ETM in bg
-                            check_thread = threading.Thread(target=runCheckETM, args=check_params)
-                            check_thread.daemon = True
-                            check_thread.start()
+                        # Run check ETM in bg
+                        check_thread = threading.Thread(target=runCheckETM, args=check_params)
+                        check_thread.daemon = True
+                        check_thread.start()
                 return 0
             except KeyboardInterrupt:  # Hide error on SIGINT
                 pass
