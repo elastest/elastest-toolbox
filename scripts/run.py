@@ -146,7 +146,7 @@ def runPlatform(params):
             replaceEnvVarValue('EXEC_MODE', args.mode, 'normal', files_list)
 
             #Initially do not bind ports
-            etm_complementary_ports = ''
+            etm_complementary_ports = '-f ../etm/docker/docker-compose-complementary-ports.yml'
             etm_main_ports = ''
 
             # etm root path docker-compose files:
@@ -157,7 +157,7 @@ def runPlatform(params):
                 print ''
                 print 'Dev options activated.'
                 print 'Binding ports.'
-                etm_complementary_ports = '-f ../etm/docker/docker-compose-complementary-ports.yml'
+                etm_complementary_ports = '-f ../etm/docker/docker-compose-complementary-dev-ports.yml'
                 etm_main_ports = '-f ../etm/docker/docker-compose-main-ports.yml'
 
             etm = etm_complementary + ' ' + etm_complementary_ports + ' ' + etm_main + ' ' + etm_main_ports            
