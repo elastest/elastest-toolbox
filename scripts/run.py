@@ -152,6 +152,9 @@ def runPlatform(params):
             # etm root path docker-compose files:
             etm_complementary = '-f ../etm/docker/docker-compose-complementary.yml'            
             etm_main = '-f ../etm/docker/docker-compose-main.yml'
+
+            #add the docker-compofile of the Testlink tool
+            dockerCommand = dockerCommand + ' ' + etm_tlink
             
             if(args.dev):                
                 print ''
@@ -165,15 +168,15 @@ def runPlatform(params):
                 etm_proxy + ' ' + (etm_proxy_env if with_security else '')
             message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' mode)...'
 
-        # If the testlink option is used, add the docker-compofile of the Testlink tool
-        if(args.testlink):
-            dockerCommand = dockerCommand + ' ' + etm_tlink
-        else:
-            files_list = []
-            files_list.append('../etm/deploy/docker-compose-main.yml')
-            files_list.append('../etm/docker/docker-compose-main.yml')
-            replaceEnvVarValue('ET_ETM_TESTLINK_HOST', 'none',
-                            'etm-testlink', files_list)
+            # If the testlink option is used, add the docker-compofile of the Testlink tool
+            if(args.testlink):
+                dockerCommand = dockerCommand + ' ' + etm_tlink
+            else:
+                files_list = []
+                files_list.append('../etm/deploy/docker-compose-main.yml')
+                files_list.append('../etm/docker/docker-compose-main.yml')
+                replaceEnvVarValue('ET_ETM_TESTLINK_HOST', 'none',
+                                'etm-testlink', files_list)
         
         # Add the project name to the docker-compose command
         dockerCommand = dockerCommand + ' -p elastest'
