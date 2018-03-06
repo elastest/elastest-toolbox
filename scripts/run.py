@@ -135,8 +135,9 @@ def runPlatform(params):
         if(mode == 'experimental'):
             files_list.append('../etm/deploy/docker-compose-main.yml')
             dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + \
-                            ' ' + epm + ' ' + emp + ' ' + etm_proxy + ' ' + \
+                            ' ' + epm + ' ' + emp + ' ' + etm_proxy + ' ' + etm_tlink + ' ' + \
                             (etm_proxy_env if with_security else '')
+                        
             message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' Mode)...'
 
         # If is Experimental-lite or Normal mode
@@ -152,9 +153,6 @@ def runPlatform(params):
             # etm root path docker-compose files:
             etm_complementary = '-f ../etm/docker/docker-compose-complementary.yml'            
             etm_main = '-f ../etm/docker/docker-compose-main.yml'
-
-            #add the docker-compofile of the Testlink tool
-            dockerCommand = dockerCommand + ' ' + etm_tlink
             
             if(args.dev):                
                 print ''
