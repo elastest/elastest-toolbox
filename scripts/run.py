@@ -116,8 +116,8 @@ def runPlatform(params):
 
         etm_proxy = '-f ../etm/docker/docker-compose-proxy.yml'
         etm_proxy_env = '-f ../etm/docker/docker-compose-proxy-env.yml'
-        #emp = '-f emp/deploy/docker-compose.yml'
-        emp = ''
+        emp = '-f emp/deploy/docker-compose.yml'
+        #emp = ''
         edm = '-f ../edm/deploy/docker-compose.yml'
         esm = '-f ../esm/deploy/docker-compose.yml'
         eim = '-f ../eim/deploy/docker-compose.yml'
