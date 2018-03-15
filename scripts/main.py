@@ -117,6 +117,6 @@ elif(args.instruction == 'inspect'):
 elif(args.instruction == 'update'):
     signal.signal(signal.SIGINT, partial(stopUpdate, expresion))
     signal.signal(signal.SIGTERM, partial(stopUpdate, expresion))
-    runPlatform(expresion)
+    updatePlatform(params)
 elif(args.instruction == 'pull-images'):
-    runPlatform(expresion)
+    pullETImages(params)

@@ -1,3 +1,7 @@
+outputMessages = {'update': 'Updating ElasTest Platform version ',
+    'pull-images': 'Pulling the ElasTest Platform Images '}
+
+
 def printMsg(key):
 	if(key == 'stop help'):
 		print ''
@@ -12,5 +16,12 @@ def printMsg(key):
 	     print '*  Stopping components  *'
 	     print '*************************'
 	     print ''
-	
+	elif(key == 'update'):
+    	  print ''
+    	  print '' + outputMessages['update']
+          print ''
+	elif(key == 'pull-images'):
+    	   print ''
+    	   print '' + outputMessages['pull-images']
+    	   print ''
 	
