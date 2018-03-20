@@ -97,13 +97,17 @@ def runPlatform(params):
             replaceEnvVarValue('ET_SHARED_FOLDER', args.shared_folder,
                             '/shared-data/', files_list)
 
+        # Proxy env variables       
         if (args.user and args.password):
             with_security = True
             files_list = []
-            files_list.append('../etm/docker/docker-compose-proxy-env.yml')
-            replaceEnvVarValue('ET_USER', args.user, 'elastest', files_list)
-            replaceEnvVarValue('ET_PASS', args.password, 'elastest', files_list)
-
+            files_list.append('../etm/docker/docker-compose-proxy.yml')
+            replaceEnvVarValue('ET_SECURITY', 'true' , 'false', files_list)
+            replaceEnvVarValue('ET_USER', args.user, 'none', files_list)
+            replaceEnvVarValue('ET_PASS', args.password, 'none', files_list)
+            if (mode == 'experimental'):
+                replaceEnvVarValue('LOCATION_RULES', 'nginx-experimental-locations.conf', 'nginx-base-location.conf', files_list)
+      
         if(args.logs == True):
             FNULL = subprocess.STDOUT
             instruction = ' up'
@@ -134,8 +138,7 @@ def runPlatform(params):
         if(mode == 'experimental'):
             files_list.append('../etm/deploy/docker-compose-main.yml')
             dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + \
-                            ' ' + epm + ' ' + emp + ' ' + etm_proxy + ' ' + etm_tlink + ' ' + \
-                            (etm_proxy_env if with_security else '')
+                            ' ' + epm + ' ' + emp + ' ' + etm_proxy + ' ' + etm_tlink + ' ' 
                         
             message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' Mode)...'
 
@@ -162,7 +165,7 @@ def runPlatform(params):
 
             etm = etm_complementary + ' ' + etm_complementary_ports + ' ' + etm_main + ' ' + etm_main_ports            
             dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + \
-                etm_proxy + ' ' + (etm_proxy_env if with_security else '')
+                etm_proxy + ' '
             message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' mode)...'
 
             # If the testlink option is used, add the docker-compofile of the Testlink tool
