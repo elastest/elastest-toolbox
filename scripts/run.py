@@ -162,6 +162,7 @@ def runPlatform(params):
             # etm root path docker-compose files:
             etm_complementary = '-f ../etm/docker/docker-compose-complementary.yml'            
             etm_main = '-f ../etm/docker/docker-compose-main.yml'
+            etm_eim = '-f ../etm/docker/docker-compose-eim.yml'
             
             if(args.dev):                
                 print ''
@@ -170,7 +171,13 @@ def runPlatform(params):
                 etm_complementary_ports = '-f ../etm/docker/docker-compose-complementary-dev-ports.yml'
                 etm_main_ports = '-f ../etm/docker/docker-compose-main-ports.yml'
 
-            etm = etm_complementary + ' ' + etm_complementary_ports + ' ' + etm_main + ' ' + etm_main_ports            
+            etm = etm_complementary + ' ' + etm_complementary_ports + ' ' + etm_main + ' ' + etm_main_ports
+            # Add EIM to Experimental-lite
+            if(mode == 'experimental-lite'):
+                etm = etm + ' ' + etm_eim
+                if(args.dev):
+                    etm = etm + ' -f ../etm/docker/docker-compose-eim-dev-ports.yml'
+                    
             dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + \
                 etm_proxy + ' '
             message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' mode)...'
