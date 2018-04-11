@@ -105,8 +105,9 @@ def runPlatform(params):
             replaceEnvVarValue('ET_SECURITY', 'true' , 'false', files_list)
             replaceEnvVarValue('ET_USER', args.user, 'none', files_list)
             replaceEnvVarValue('ET_PASS', args.password, 'none', files_list)
-            if (mode == 'experimental'):
-                replaceEnvVarValue('LOCATION_RULES', 'nginx-experimental-locations.conf', 'nginx-base-location.conf', files_list)
+        
+        if (mode == 'experimental'):
+            replaceEnvVarValue('LOCATION_RULES', 'nginx-experimental-locations.conf', 'nginx-base-location.conf', files_list)
       
         if(args.logs == True):
             FNULL = subprocess.STDOUT
