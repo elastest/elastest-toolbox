@@ -7,6 +7,8 @@ AWS CloudFormation Template
 
 This repo includes all the necessary to easy deploy Elastest on AWS.
 
+Also contains the recipe to deploy Elastest with Jenkins CI.
+
 ## How to use it
 
 First of all you'll need an AWS account. To achive that, follow those [steps](http://docs.aws.amazon.com/AmazonSimpleDB/latest/DeveloperGuide/AboutAWSAccounts.html).
@@ -14,7 +16,7 @@ First of all you'll need an AWS account. To achive that, follow those [steps](ht
 Then, you can go to [AWS CloudFormation Pane](https://eu-west-1.console.aws.amazon.com/cloudformation/) and create a **new stack**. You will need the **json** included on this repo to complete the task. The form you'll see on the second step have to be filled with the following information:
 
 | Parameter | Value | Details | 
-| --- | --- | --- | --- |
+|-----------|-------|---------|
 | Stack name | The name of the stack | Elastest is OK | 
 | ElastestPassword | elastest | Password to access the platform | 
 | ElastestUsername | elastest | Username to access the platform | 

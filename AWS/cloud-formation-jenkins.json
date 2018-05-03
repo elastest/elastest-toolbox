@@ -1,0 +1,264 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "AWS CloudFormation ELASTEST & Jenkins CI.\n",
+    "Parameters": {
+        "KeyName": {
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "Description": "Specifies the name of an existing Amazon EC2 key pair to enable SSH access to the EC2 instances in your cluster.\n",
+            "ConstraintDescription": "Must be the name of an existing EC2 KeyPair."
+        },
+        "ElastestUsername": {
+            "Type": "String",
+            "Description": "A valid username to access Elastest Platform",
+            "Default": "elastest"
+        },
+        "ElastestPassword": {
+            "Type": "String",
+            "Description": "A valid password for Elastest User",
+            "Default": "elastest"
+        },
+        "ElastestVersion": {
+            "Type": "String",
+            "Description": "Elastest version to deploy",
+            "Default": "latest"
+        },
+        "InstanceType": {
+            "Description": "Elastest Machine - EC2 instance type",
+            "Type": "String",
+            "Default": "m4.xlarge",
+            "AllowedValues": [
+                "t2.large",
+                "t2.xlarge",
+                "t2.2xlarge",
+                "m5.xlarge",
+                "m5.2xlarge",
+                "m5.4xlarge",
+                "m5.12xlarge",
+                "m5.24xlarge",
+                "m4.xlarge",
+                "m4.2xlarge",
+                "m4.4xlarge",
+                "m4.10xlarge",
+                "m4.16xlarge"
+            ],
+            "ConstraintDescription": "must be a valid EC2 instance type."
+        },
+        "SwapSize": {
+            "Type": "String",
+            "Description": "It's known that ElasticSearch needs some swap space. This CloudFormation will create a swapfile in the instance to be used as swap space. Please set the size",
+            "Default": "4"
+        }
+    },
+    "Mappings": {
+        "RegionMap": {
+            "us-east-1": {
+                "AMI1": "ami-da05a4a0"
+            },
+            "us-west-1": {
+                "AMI1": "ami-1c1d217c"
+            },
+            "ap-northeast-2": {
+                "AMI1": "ami-7b1cb915"
+            },
+            "ap-northeast-1": {
+                "AMI1": "ami-15872773"
+            },
+            "sa-east-1": {
+                "AMI1": "ami-466b132a"
+            },
+            "ap-southeast-1": {
+                "AMI1": "ami-67a6e604"
+            },
+            "ca-central-1": {
+                "AMI1": "ami-8a71c9ee"
+            },
+            "ap-southeast-2": {
+                "AMI1": "ami-41c12e23"
+            },
+            "us-west-2": {
+                "AMI1": "ami-0a00ce72"
+            },
+            "us-east-2": {
+                "AMI1": "ami-336b4456"
+            },
+            "ap-south-1": {
+                "AMI1": "ami-bc0d40d3"
+            },
+            "eu-central-1": {
+                "AMI1": "ami-97e953f8"
+            },
+            "eu-west-1": {
+                "AMI1": "ami-add175d4"
+            },
+            "eu-west-2": {
+                "AMI1": "ami-ecbea388"
+            }
+        }
+    },
+    "Resources": {
+        "ElastestEC2Instance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "RegionMap", {
+                            "Ref": "AWS::Region"
+                        }, "AMI1"
+                    ]
+                },
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "SecurityGroups": [{
+                    "Ref": "ElastestSecurityGroup"
+                }],
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "Tags": [{
+                    "Key": "Name",
+                    "Value": {
+                        "Ref": "AWS::StackName"
+                    }
+                }],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "", [
+                                "#!/bin/bash -x\n",
+                                "source /home/ubuntu/.bashrc\n",
+                                "export HOME=/home/ubuntu\n",
+                                "apt-add-repository --yes ppa:ansible/ansible\n",
+                                "apt-get update\n",
+                                "apt-get install -y git ansible python-pip\n",
+                                "pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
+                                "/usr/local/bin/cfn-init -v --stack ", {
+                                    "Ref": "AWS::StackName"
+                                }, " --resource ElastestEC2Instance --region ", {
+                                    "Ref": "AWS::Region"
+                                }, "\n",
+                                "fallocate -l", {
+                                    "Ref": "SwapSize"
+                                }, "G /swapfile\n",
+                                "chmod 600 /swapfile\n",
+                                "mkswap /swapfile\n",
+                                "swapon /swapfile\n",
+                                "echo '/swapfile none swap sw 0 0' >>/etc/fstab\n",
+                                "git clone https://github.com/elastest/elastest-toolbox.git /opt/workdir\n",
+                                "pushd /opt/workdir/AWS/ansible\n",
+                                "ansible-galaxy install geerlingguy.docker\n",
+                                "PIP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)\n",
+                                "sed -i \"s/ELASTEST_PUBLIC_IP/$PIP/\" roles/elastest/vars/main.yml\n",
+                                "sed -i \"s/ELASTEST_VERSION/", {
+                                    "Ref": "ElastestVersion"
+                                }, "/\" roles/elastest/vars/main.yml\n",
+                                "sed -i \"s/elastest_run_ec2: false/elastest_run_ec2: true/\" roles/elastest/vars/main.yml\n",
+                                "sed -i \"s/elastest_user: elastest/elastest_user: ", {
+                                    "Ref": "ElastestUsername"
+                                }, "/\" roles/elastest/vars/main.yml\n",
+                                "sed -i \"s/elastest_password: elastest/elastest_password: ", {
+                                    "Ref": "ElastestPassword"
+                                }, "/\" roles/elastest/vars/main.yml\n",
+                                "ansible-playbook -i \"localhost,\" -c local play.yml\n",
+                                "docker pull elastest/etm-jenkins:latest\n",
+                                "popd\n",
+                                "/usr/local/bin/check_app_ready.sh\n",
+                                "docker run -d --restart unless-stopped --name ElastestJenkinsCI -p 8080:8080 -p 50000:50000 --env JAVA_OPTS=\"-Djenkins.install.runSetupWizard=false\" elastest/etm-jenkins:latest\n",
+                                "/usr/local/bin/cfn-signal -e $? --stack ", {
+                                    "Ref": "AWS::StackName"
+                                }, " --resource WaitCondition --region ", {
+                                    "Ref": "AWS::Region"
+                                }, "\n"
+                            ]
+                        ]
+                    }
+                },
+                "BlockDeviceMappings": [{
+                    "DeviceName": "/dev/sda1",
+                    "Ebs": {
+                        "VolumeType": "io1",
+                        "Iops": "200",
+                        "DeleteOnTermination": "true",
+                        "VolumeSize": "50"
+                    }
+                }]
+            }
+        },
+        "WaitCondition": {
+            "Type": "AWS::CloudFormation::WaitCondition",
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Timeout": "PT30M",
+                    "Count": "1"
+                }
+            }
+        },
+        "ElastestSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Elastest Security Group",
+                "SecurityGroupIngress": [{
+                        "IpProtocol": "tcp",
+                        "FromPort": "32768",
+                        "ToPort": "61000",
+                        "CidrIp": "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "22",
+                        "ToPort": "22",
+                        "CidrIp": "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "8080",
+                        "ToPort": "8080",
+                        "CidrIp": "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "50000",
+                        "ToPort": "50000",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        }
+    },
+    "Outputs": {
+        "ElastestIP": {
+            "Description": "Elastest URL",
+            "Value": {
+                "Fn::Join": [
+                    "", [
+                        "http://",
+                        {
+                            "Fn::GetAtt": [
+                                "ElastestEC2Instance",
+                                "PublicIp"
+                            ]
+                        },
+                        ":37000"
+                    ]
+                ]
+            }
+        },
+        "JenkinsCI": {
+            "Description": "Jenkins CI URL",
+            "Value": {
+                "Fn::Join": [
+                    "", [
+                        "http://",
+                        {
+                            "Fn::GetAtt": [
+                                "ElastestEC2Instance",
+                                "PublicIp"
+                            ]
+                        },
+                        ":8080"
+                    ]
+                ]
+            }
+        }
+    }
+}
