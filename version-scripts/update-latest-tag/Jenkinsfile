@@ -1,0 +1,49 @@
+node('docker'){
+    
+    stage "CI container setup" 
+
+        def mycontainer = docker.image('elastest/ci-docker-compose-py-siblings')
+        mycontainer.pull() // make sure we have the latest available from Docker Hub
+        mycontainer.inside("-u jenkins -v /var/run/docker.sock:/var/run/docker.sock:rw -v ${WORKSPACE}:/home/jenkins/.m2") {
+
+            stage "Update the elastest/platform latest tag" 
+                echo "Updating latest tag"
+                sh 'docker pull elastest/platform:${TAG}; docker tag elastest/platform:${TAG} elastest/platform'
+            
+                  
+            stage "Publish elastest/platform image"
+                echo ("Publish elastest/platform image")
+                def myimage = docker.image('elastest/platform')
+                withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'elastestci-dockerhub',
+                    usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                    sh 'docker login -u "$USERNAME" -p "$PASSWORD"'
+                    myimage.push()
+                }
+                
+            stage "Update the elastest/platform-services latest tag" 
+                echo "Updating latest tag"
+                sh 'docker pull elastest/platform-services:${TAG}; docker tag elastest/platform-services:${TAG} elastest/platform-services'
+            
+                  
+            stage "Publish elastest/platform-services image"
+                echo ("Publish elastest/platform-services image")
+                def platformServicesImage = docker.image('elastest/platform-services')
+                withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'elastestci-dockerhub',
+                    usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                    sh 'docker login -u "$USERNAME" -p "$PASSWORD"'
+                    platformServicesImage.push()
+                }
+            
+        }
+    
+}
+
+def containerIp(service) {
+    containerIp = sh (
+        script: "docker inspect --format=\"{{.NetworkSettings.Networks."+env.COMPOSE_PROJECT_NAME+"_elastest.IPAddress}}\" "+env.COMPOSE_PROJECT_NAME+"_"+service+"_1",
+        returnStdout: true
+    ).trim()
+    
+    echo service+" IP = " + containerIp;
+    return containerIp;
+}
