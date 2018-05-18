@@ -197,8 +197,10 @@ def runPlatform(params):
         dockerCommand = dockerCommand + ' -p elastest'
 
         elastest_images = getElasTestImagesAsString(mode)
+        elastest_core_images = getElasTestCoreImagesAsString(mode)
         replaceEnvVarValue('ET_IMAGES', elastest_images,
                         'elastest/platform', files_list)
+        replaceEnvVarValue('ET_CORE_IMAGES', elastest_core_images, 'elastest/platform', files_list)
         # If command=stop
         if(command == 'stop'):
             instruction = ' down'

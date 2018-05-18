@@ -308,6 +308,17 @@ def getAllImagesByExecMode(mode):
     
     return images_list
 
+
+def getAllCoreImagesByExecMode(mode):
+    images_list = []
+    global core_list
+    core_list = getCoreListByExecMode(mode)
+    images_list = images_list + list(set(getCoreImages()))
+    
+    images_list.append(getContainerImage())
+    
+    return images_list
+
 def getElastestImages(without_tag):
     images_list = getAllImages()
 
@@ -336,6 +347,23 @@ def getElastestImagesByExecMode(mode, without_tag):
 
 def getElasTestImagesAsString(mode):
     images_list = getElastestImagesByExecMode(mode, False)    
+    return ",".join(map(str,images_list))
+
+def getElastestCoreImagesByExecMode(mode, without_tag):
+    images_list = getAllCoreImagesByExecMode(mode)
+
+    elastest_images = []
+    for image in images_list:
+        if(image.startswith(et_image_name_prefix)):
+            if(without_tag):
+                image_splited = image.split(':')
+                elastest_images.append(image_splited[0])
+            else:
+                elastest_images.append(image)
+    return elastest_images
+
+def getElasTestCoreImagesAsString(mode):
+    images_list = getElastestCoreImagesByExecMode(mode, False)    
     return ",".join(map(str,images_list))
 
 
