@@ -15,7 +15,7 @@ To run this VM you need 8GB of memory and 30GB of disk available.
 You need [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](https://www.vagrantup.com/docs/installation/) installed. Vagrant boxes start by default with a 10GB hard disk attached. 
 This is too small for running ElasTest. To start with a bigger disk, our Vagrantfiles make use of the Vagrant plugin `vagrant-disksize`. To install this plugin, issue the following command in a shell:
 
-    vagrant install vagrant-disksize
+    vagrant plugin install vagrant-disksize
 
 ## Run ElasTest in a VM
 
