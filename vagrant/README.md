@@ -29,8 +29,8 @@ Just run `vagrant up` to start the VM. Once started, the ID of the Docker contai
 
 ElasTest won't be yet available, it will be downloading some Docker images it needs. To check when ElasTest is available we need to inspect the logs of the Docker container whose ID we gathered in the previous step:
 
-   vagrant ssh
-   docker logs -f 9e58c843d99274f8384ba3d2541ebd805637a4c0a57c1cadfe156e4f534361e7
+    vagrant ssh
+    sudo docker logs -f 9e58c843d99274f8384ba3d2541ebd805637a4c0a57c1cadfe156e4f534361e7
 
 As soon as the ElasTest URL is shown, the platform is ready. We use the URL provided to point a browser at it:
 
