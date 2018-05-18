@@ -4,7 +4,7 @@ The Vagrantfiles in this repository starts up a Vagrant box, based on VirtualBox
 
 * Vagrantfile in elastest folder will start ElasTest in normal mode
 * Vagrantfile in elastest-lite folder will start ElasTest in exerimental-lite mode
-* Vagrantfile in elastest-dev folder will start ElasTest in experimental mode
+* Vagrantfile in elastest-experimental folder will start ElasTest in experimental mode
 
 For more information on these modes, please refer to the [ElasTest documentation](https://elastest.io/docs/).
 
