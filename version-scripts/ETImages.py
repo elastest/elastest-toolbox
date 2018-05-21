@@ -90,11 +90,13 @@ def getETDockerImagesFromYml(yml):
 
 #*** Images Lists Getters By File Type ***#
 
-def getImagesFromYmlFilesList(files_list):
+def getImagesFromYmlFilesList(files_list, get_from_env=True):
+    # get_from_env is used to get images from declared env variables (example: ET_DOCKER_IMG_DOCKBEAT)
     files_images = []
     for path in files_list:
         files_images = files_images + getImagesList(getYml(path))
-        files_images = files_images + getETDockerImagesFromYml(getYml(path))
+        if(get_from_env):
+            files_images = files_images + getETDockerImagesFromYml(getYml(path))
     return files_images
 
 def getImagesFromJsonFilesList(files_list):
@@ -119,8 +121,8 @@ def getETDockerImagesFromETServiceJsonFile(path):
 
 #*** Images Lists Getters By Component Type ***#
 
-def getCoreImages():
-    return getImagesFromYmlFilesList(core_list)
+def getCoreImages(get_from_env=True):
+    return getImagesFromYmlFilesList(core_list, get_from_env)
 
 
 def getTSSImages():
@@ -313,7 +315,7 @@ def getAllCoreImagesByExecMode(mode):
     images_list = []
     global core_list
     core_list = getCoreListByExecMode(mode)
-    images_list = images_list + list(set(getCoreImages()))
+    images_list = images_list + list(set(getCoreImages(False)))
     
     images_list.append(getContainerImage())
     
