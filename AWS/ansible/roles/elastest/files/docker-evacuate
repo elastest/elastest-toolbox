@@ -3,7 +3,7 @@
 # Delete all containers
 docker rm -f $(docker ps -a -q)
 
-for volume in $(docker volume ls | grep -v mysql | grep -v elastest_elasticsearch-data | tail -n +2 | awk '{print $2}')
+for volume in $(docker volume ls | grep -v mysql | grep -v elastest_elasticsearch-data | grep -v elastest_etm-testlink | tail -n +2 | awk '{print $2}')
 do
   docker volume rm $volume
 done

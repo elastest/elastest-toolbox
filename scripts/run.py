@@ -40,6 +40,8 @@ def getArgs(params):
         '--password', '-p', help='Set the user password to access ElasTest. Use together --user. Usage: --password=passuser', required=False)
     parser.add_argument('--testlink', '-tl', help='Start the TestLink Tool integrated with ElasTest. Usage: --testlink',
                         required=False, action='store_true')
+    parser.add_argument('--internet-disabled', '-id',
+                        help='Set if internet is disabled. Usage: --internet-disabled', required=False, action='store_true')
 
     # Custom usage message
     usage = parser.format_usage()
@@ -197,8 +199,15 @@ def runPlatform(params):
         dockerCommand = dockerCommand + ' -p elastest'
 
         elastest_images = getElasTestImagesAsString(mode)
+        elastest_core_images = getElasTestCoreImagesAsString(mode)
         replaceEnvVarValue('ET_IMAGES', elastest_images,
                         'elastest/platform', files_list)
+        replaceEnvVarValue('ET_CORE_IMAGES', elastest_core_images, 'elastest/platform', files_list)
+
+        # If internet is disabled
+        if(args.internet_disabled):
+            replaceEnvVarValue('ET_INTERNET_DISABLED', 'true', 'false', files_list)
+
         # If command=stop
         if(command == 'stop'):
             instruction = ' down'

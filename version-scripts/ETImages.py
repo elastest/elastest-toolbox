@@ -90,11 +90,13 @@ def getETDockerImagesFromYml(yml):
 
 #*** Images Lists Getters By File Type ***#
 
-def getImagesFromYmlFilesList(files_list):
+def getImagesFromYmlFilesList(files_list, get_from_env=True):
+    # get_from_env is used to get images from declared env variables (example: ET_DOCKER_IMG_DOCKBEAT)
     files_images = []
     for path in files_list:
         files_images = files_images + getImagesList(getYml(path))
-        files_images = files_images + getETDockerImagesFromYml(getYml(path))
+        if(get_from_env):
+            files_images = files_images + getETDockerImagesFromYml(getYml(path))
     return files_images
 
 def getImagesFromJsonFilesList(files_list):
@@ -119,8 +121,8 @@ def getETDockerImagesFromETServiceJsonFile(path):
 
 #*** Images Lists Getters By Component Type ***#
 
-def getCoreImages():
-    return getImagesFromYmlFilesList(core_list)
+def getCoreImages(get_from_env=True):
+    return getImagesFromYmlFilesList(core_list, get_from_env)
 
 
 def getTSSImages():
@@ -308,6 +310,17 @@ def getAllImagesByExecMode(mode):
     
     return images_list
 
+
+def getAllCoreImagesByExecMode(mode):
+    images_list = []
+    global core_list
+    core_list = getCoreListByExecMode(mode)
+    images_list = images_list + list(set(getCoreImages(False)))
+    
+    images_list.append(getContainerImage())
+    
+    return images_list
+
 def getElastestImages(without_tag):
     images_list = getAllImages()
 
@@ -336,6 +349,23 @@ def getElastestImagesByExecMode(mode, without_tag):
 
 def getElasTestImagesAsString(mode):
     images_list = getElastestImagesByExecMode(mode, False)    
+    return ",".join(map(str,images_list))
+
+def getElastestCoreImagesByExecMode(mode, without_tag):
+    images_list = getAllCoreImagesByExecMode(mode)
+
+    elastest_images = []
+    for image in images_list:
+        if(image.startswith(et_image_name_prefix)):
+            if(without_tag):
+                image_splited = image.split(':')
+                elastest_images.append(image_splited[0])
+            else:
+                elastest_images.append(image)
+    return elastest_images
+
+def getElasTestCoreImagesAsString(mode):
+    images_list = getElastestCoreImagesByExecMode(mode, False)    
     return ",".join(map(str,images_list))
 
 
