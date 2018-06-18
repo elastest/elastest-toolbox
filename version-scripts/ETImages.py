@@ -17,7 +17,7 @@ socat_image_property = 'et.socat.image'
 chrome_browser = 'chrome'
 firefox_browser = 'firefox'
 
-images_to_pre_pulling = ['elastest/eus-novnc', 'elastest/etm-socat', 'elastest/eus', 'elastest/etm-dockbeat']
+images_to_pre_pulling = ['elastest/etm-socat', 'elastest/eus', 'elastest/etm-dockbeat']
 tss_images_in_normal_mode = ['eus']
 
 class MyEncoder(json.JSONEncoder):
