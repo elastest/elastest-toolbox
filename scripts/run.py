@@ -42,6 +42,8 @@ def getArgs(params):
                         required=False, action='store_true')
     parser.add_argument('--internet-disabled', '-id',
                         help='Set if internet is disabled. Usage: --internet-disabled', required=False, action='store_true')
+    parser.add_argument('--master-slave', '-ms',
+                        help='If you enable the master-slave mode, the TJobs will be run in a remote VM (slave). Usage: --master-slave', required=False, action='store_true')
 
     # Custom usage message
     usage = parser.format_usage()
@@ -98,7 +100,7 @@ def runPlatform(params):
             files_list.append('../etm/docker/docker-compose-main.yml')
             replaceEnvVarValue('ET_SHARED_FOLDER', args.shared_folder,
                             '/shared-data/', files_list)
-
+        
         # Proxy env variables   
         files_list = []
         files_list.append('../etm/docker/docker-compose-proxy.yml')
@@ -151,6 +153,12 @@ def runPlatform(params):
             replaceEnvVarValue('GF_SERVER_DOMAIN', et_host , 'nightly.elastest.io:37000', files_list)
                                  
             message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' Mode)...'
+
+            if(args.master_slave):
+                files_list = []
+                files_list.append('../etm/deploy/docker-compose-main.yml')
+                replaceEnvVarValue('ET_MASTER_SLAVE_MODE', 'true',
+                            'false', files_list)
 
         # If is Experimental-lite or Normal mode
         else:
