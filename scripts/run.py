@@ -166,11 +166,7 @@ def runPlatform(params):
             files_list.append('../etm/deploy/docker-compose-main.yml')
             dockerCommand = 'docker-compose ' + platform_services + ' ' + mysql_elasticsearch_lite + ' ' + etm + ' ' + esm + ' ' + eim + \
                             ' ' + etm_proxy + ' ' + etm_tlink + ' '
-            
-            #Replace emp env variables
-            et_host = "localhost"
-            if(args.server_address):
-                et_host = args.server_address            
+                  
                                  
             message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' Mode)...'
 
