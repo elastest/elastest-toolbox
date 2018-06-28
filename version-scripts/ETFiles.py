@@ -14,6 +14,7 @@ etm_main_experimental = '../etm/deploy/docker-compose-main.yml'
 platform_services = '../platform-services/docker-compose.yml'
 
 etm_complementary_lite = '../etm/docker/docker-compose-complementary.yml'
+mysql_elasticsearch_lite = '../docker-compose-mysql-elasticsearch-lite.yml'
 etm_main_lite = '../etm/docker/docker-compose-main.yml'
 etm_eim = '../etm/docker/docker-compose-eim.yml'
 
@@ -37,7 +38,7 @@ etm_properties_file = '../etm/application.properties'
 
 # Images to pull at the start
 imagesFilesToPrePull = {'eusBrowsers': eus_browsers_properties_file,
-                        'eusNovnc': eus_properties_file, 'etmSocat': etm_properties_file,
+                        'etmSocat': etm_properties_file,
                         'eus': eus}
 
 tss_images_files = {'eus': eus, 'ebs': ebs, 'ess': ess, 'eds': eds, 'ems': ems}
@@ -51,16 +52,20 @@ def getCoreList():
 
 def getCoreListByExecMode(mode):
     if (mode == 'normal'):
-        core_list = [esm, etm_complementary_lite, etm_main_lite, etm_proxy, platform_services]
+        core_list = [esm, etm_complementary_lite,
+                     etm_main_lite, etm_proxy, platform_services]
     elif(mode == 'experimental-lite'):
-        core_list = [esm, etm_complementary_lite, etm_main_lite, etm_proxy, platform_services, etm_eim]
+        core_list = [mysql_elasticsearch_lite, esm, eim, etm_complementary_experimental,
+                     etm_main_experimental, etm_proxy, platform_services]
     else:
         core_list = [emp, edm, esm, eim, epm, etm_complementary_experimental,
                      etm_main_experimental, etm_proxy, platform_services]
     return core_list
 
+
 def getTSSFile(tss):
     return tss_images_files[tss]
+
 
 def getTSSList():
     tss_list = [eus, ebs, ess, eds, ems]

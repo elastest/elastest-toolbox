@@ -28,6 +28,8 @@ COPY epm/deploy /elastest-toolbox/epm/deploy
 
 COPY emp/deploy /elastest-toolbox/emp/deploy
 
+COPY docker-compose-mysql-elasticsearch-lite.yml /elastest-toolbox/docker-compose-mysql-elasticsearch-lite.yml
+
 # Copy all elastestservice.json
 
 COPY ebs/elastestservice.json /elastest-toolbox/ebs/elastestservice.json

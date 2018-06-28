@@ -131,6 +131,8 @@ def runPlatform(params):
         eim = '-f ../eim/deploy/docker-compose.yml'
         epm = '-f ../epm/deploy/docker-compose.yml'
         etm_tlink = '-f ../etm/docker/docker-compose-testlink.yml'
+        mysql_elasticsearch_lite = '-f ../docker-compose-mysql-elasticsearch-lite.yml'
+
 
         platform_services = '-f ../platform-services/docker-compose.yml'
 
@@ -159,8 +161,26 @@ def runPlatform(params):
                 files_list.append('../etm/deploy/docker-compose-main.yml')
                 replaceEnvVarValue('ET_MASTER_SLAVE_MODE', 'true',
                             'false', files_list)
+        #If is Experimental-lite 
+        elif(mode == 'experimental-lite'):
+            files_list.append('../etm/deploy/docker-compose-main.yml')
+            dockerCommand = 'docker-compose ' + platform_services + ' ' + mysql_elasticsearch_lite + ' ' + etm + ' ' + esm + ' ' + eim + \
+                            ' ' + etm_proxy + ' ' + etm_tlink + ' '
+            
+            #Replace emp env variables
+            et_host = "localhost"
+            if(args.server_address):
+                et_host = args.server_address            
+                                 
+            message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' Mode)...'
 
-        # If is Experimental-lite or Normal mode
+            if(args.master_slave):
+                files_list = []
+                files_list.append('../etm/deploy/docker-compose-main.yml')
+                replaceEnvVarValue('ET_MASTER_SLAVE_MODE', 'true',
+                            'false', files_list)            
+
+        # If Normal mode
         else:
             #Change the default execution mode
             files_list.append('../etm/docker/docker-compose-main.yml')
@@ -183,11 +203,6 @@ def runPlatform(params):
                 etm_main_ports = '-f ../etm/docker/docker-compose-main-ports.yml'
 
             etm = etm_complementary + ' ' + etm_complementary_ports + ' ' + etm_main + ' ' + etm_main_ports
-            # Add EIM to Experimental-lite
-            if(mode == 'experimental-lite'):
-                etm = etm + ' ' + etm_eim
-                if(args.dev):
-                    etm = etm + ' -f ../etm/docker/docker-compose-eim-dev-ports.yml'
                     
             dockerCommand = 'docker-compose ' + platform_services + ' ' + etm + ' ' + \
                 etm_proxy + ' '

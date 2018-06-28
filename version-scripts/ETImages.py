@@ -12,7 +12,6 @@ et_image_name_prefix = 'elastest/'
 et_docker_image_name_prefix = 'ET_DOCKER_IMG'
 preloaded_images = ['']
 
-novnc_image_property = 'novnc.image.id'
 socat_image_property = 'et.socat.image'
 chrome_browser = 'chrome'
 firefox_browser = 'firefox'
