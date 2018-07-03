@@ -130,6 +130,7 @@ def runPlatform(params):
         esm = '-f ../esm/deploy/docker-compose.yml'
         eim = '-f ../eim/deploy/docker-compose.yml'
         epm = '-f ../epm/deploy/docker-compose.yml'
+        epm_ansible-adapter = '-f ../epm/deploy/docker-compose-ansible-adapter.yml'
         etm_tlink = '-f ../etm/docker/docker-compose-testlink.yml'
         mysql_elasticsearch_lite = '-f ../docker-compose-mysql-elasticsearch-lite.yml'
 
@@ -161,6 +162,7 @@ def runPlatform(params):
                 files_list.append('../etm/deploy/docker-compose-main.yml')
                 replaceEnvVarValue('ET_MASTER_SLAVE_MODE', 'true',
                             'false', files_list)
+                dockerCommand = dockerCommand + ' ' + epm_ansible-adapter + ' '
         #If is Experimental-lite 
         elif(mode == 'experimental-lite'):
             files_list.append('../etm/deploy/docker-compose-main.yml')
