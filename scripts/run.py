@@ -162,7 +162,7 @@ def runPlatform(params):
                 files_list.append('../etm/deploy/docker-compose-main.yml')
                 replaceEnvVarValue('ET_MASTER_SLAVE_MODE', 'true',
                             'false', files_list)
-                dockerCommand = dockerCommand + ' ' + epm_ansible_adapter + ' '
+                #dockerCommand = dockerCommand + ' ' + epm_ansible_adapter + ' '
         #If is Experimental-lite 
         elif(mode == 'experimental-lite'):
             files_list.append('../etm/deploy/docker-compose-main.yml')
