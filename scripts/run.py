@@ -112,6 +112,10 @@ def runPlatform(params):
         
         if (mode == 'experimental'):
             replaceEnvVarValue('LOCATION_RULES', 'nginx-experimental-locations.conf', 'nginx-base-location.conf', files_list)
+        
+        if(mode == 'normal'):
+            replaceEnvVarValue('LOGSTASH_HOST', 'etm', 'etm-logstash', files_list)
+            replaceEnvVarValue('LOGSTASH_HTTP_PATH', '/api/monitoring/', '/', files_list)
       
         if(args.logs == True):
             FNULL = subprocess.STDOUT
@@ -191,7 +195,6 @@ def runPlatform(params):
             # etm root path docker-compose files:
             etm_complementary = '-f ../etm/docker/docker-compose-complementary.yml'            
             etm_main = '-f ../etm/docker/docker-compose-main.yml'
-            etm_eim = '-f ../etm/docker/docker-compose-eim.yml'
             
             if(args.dev):                
                 print ''

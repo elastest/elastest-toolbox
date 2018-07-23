@@ -5,10 +5,12 @@ import sys
 from ETDockerNightly import *
 from DockerUtils import *
 
+
 def buildImageFromToolbox(tag, image, dockerfile):
     if(not dockerfile):
         dockerfile = ''
-    docker_command = 'docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg COMMIT_DATE=$(git log -1 --format=%cd --date=format:%Y-%m-%dT%H:%M:%S) --build-arg VERSION=' + tag + ' -t ' + image + ' . ' + dockerfile
+    docker_command = 'docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg COMMIT_DATE=$(git log -1 --format=%cd --date=format:%Y-%m-%dT%H:%M:%S) --build-arg VERSION=' + \
+        tag + ' -t ' + image + ' . ' + dockerfile
     command = 'sh -c "cd ..; ' + docker_command + '"'  # Note: cd only in this call
     build_result = subprocess.call(shlex.split(command))
 
@@ -30,13 +32,19 @@ def buildPlatform(tag):
     return image
 
 
-if (len (sys.argv) > 1) :
+if (len(sys.argv) > 1):
     tag = sys.argv[1]
 else:
     tag = 'bytime'
 
+only_modify_files = False
+
+if (len(sys.argv) > 2 and sys.argv[2] == 'True'):
+    # If True, only modify files without build and push images
+    only_modify_files = True
+
 print('Reading ET components files to modify images tags...')
-tag = updateFilesToNightly(tag)
+tag = updateFilesToNightly(tag, only_modify_files)
 
 # Build and push Platform Services Image
 print('Building Platform Services Image')
