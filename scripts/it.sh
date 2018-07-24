@@ -2,7 +2,7 @@
 
 # Start
 echo 'Running Platform...'
-docker run -d -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform:dev start --pullcore --noports
+docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform:dev start -l --pullcore --noports &
 
 # Check if is started
 echo 'Checking if ETM is working...'
