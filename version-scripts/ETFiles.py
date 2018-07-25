@@ -52,7 +52,7 @@ def getCoreList():
 
 def getCoreListByExecMode(mode):
     if (mode == 'normal'):
-        core_list = [esm, etm_complementary_lite,
+        core_list = [etm_complementary_lite,
                      etm_main_lite, etm_proxy, platform_services]
     elif(mode == 'experimental-lite'):
         core_list = [mysql_elasticsearch_lite, esm, eim, etm_complementary_experimental,
