@@ -147,15 +147,18 @@ def runPlatform(params):
 
         # If is Experimental mode
         files_list = []
-        if(mode == 'experimental'):
-            files_list.append('../etm/deploy/docker-compose-main.yml')
+        if(mode == 'experimental'):            
             dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + \
                             ' ' + epm + ' ' + emp + ' ' + etm_proxy + ' ' + etm_tlink + ' '
             
             #Replace emp env variables
             et_host = "localhost"
             if(args.server_address):
-                et_host = args.server_address            
+                et_host = args.server_address
+                files_list.append('../epm/deploy/docker-compose.yml')
+                replaceEnvVarValue('ET_PUBLIC_HOST', args.server_address,
+                            'localhost', files_list)
+            files_list = []
             files_list.append('../emp/deploy/docker-compose.yml')
             replaceEnvVarValue('GF_SERVER_DOMAIN', et_host , 'nightly.elastest.io:37000', files_list)
                                  
