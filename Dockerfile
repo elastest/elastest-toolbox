@@ -1,5 +1,8 @@
 FROM edujgurjc/alpine-python-compose
 
+RUN pip install 'docker-compose==1.21.0'
+
+
 ## netcat
 RUN  apk add --no-cache netcat-openbsd
 
