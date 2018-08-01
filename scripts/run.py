@@ -237,7 +237,7 @@ def runPlatform(params):
 
         # If command=stop
         if(command == 'stop'):
-            instruction = ' down'
+            instruction = ' down --timeout 90'
             message = 'Stopping ElasTest Platform (' + mode + ' mode)...'
 
         if(len(dockerCommand) > 0):
