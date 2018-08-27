@@ -227,6 +227,9 @@ def runPlatform(params):
 
         elastest_images = getElasTestImagesAsString(mode)
         elastest_core_images = getElasTestCoreImagesAsString(mode)
+        files_list = []
+        files_list.append('../etm/deploy/docker-compose-main.yml')
+        files_list.append('../etm/docker/docker-compose-main.yml')
         replaceEnvVarValue('ET_IMAGES', elastest_images,
                         'elastest/platform', files_list)
         replaceEnvVarValue('ET_CORE_IMAGES', elastest_core_images, 'elastest/platform', files_list)
