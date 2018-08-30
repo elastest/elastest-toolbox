@@ -113,7 +113,7 @@ def runPlatform(params):
         if (mode == 'experimental'):
             replaceEnvVarValue('LOCATION_RULES', 'nginx-experimental-locations.conf', 'nginx-base-location.conf', files_list)
         
-        if(mode == 'normal'):
+        if(mode == 'normal' or mode == 'experimental-lite'):
             replaceEnvVarValue('LOGSTASH_HOST', 'etm', 'etm-logstash', files_list)
             replaceEnvVarValue('LOGSTASH_HTTP_PATH', '/api/monitoring/', '/', files_list)
       
