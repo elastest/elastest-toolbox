@@ -170,22 +170,7 @@ def runPlatform(params):
                 replaceEnvVarValue('ET_MASTER_SLAVE_MODE', 'true',
                             'false', files_list)
                 #dockerCommand = dockerCommand + ' ' + epm_ansible_adapter + ' '
-        #If is Experimental-lite 
-        elif(mode == 'experimental-lite'):
-            files_list.append('../etm/deploy/docker-compose-main.yml')
-            dockerCommand = 'docker-compose ' + platform_services + ' ' + mysql_elasticsearch_lite + ' ' + etm + ' ' + esm + ' ' + eim + \
-                            ' ' + etm_proxy + ' ' + etm_tlink + ' '
-                  
-                                 
-            message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' Mode)...'
-
-            if(args.master_slave):
-                files_list = []
-                files_list.append('../etm/deploy/docker-compose-main.yml')
-                replaceEnvVarValue('ET_MASTER_SLAVE_MODE', 'true',
-                            'false', files_list)            
-
-        # If Normal mode
+        #If is Experimental-lite or Normal mode
         else:
             #Change the default execution mode
             files_list.append('../etm/docker/docker-compose-main.yml')

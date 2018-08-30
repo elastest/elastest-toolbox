@@ -1,6 +1,6 @@
 FROM edujgurjc/alpine-python-compose
 
-RUN pip install 'docker-compose==1.21.0'
+RUN pip install 'docker-compose==1.22.0'
 
 
 ## netcat
