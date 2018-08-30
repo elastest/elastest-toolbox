@@ -5,7 +5,9 @@ import time
 import urllib2
 import socket
 import sys
+sys.path.append('../version-scripts')
 import argparse
+from DockerUtils import *
 
 projectName = 'elastest'
 component = 'etm'
@@ -119,9 +121,8 @@ def checkWorking(url):
 def insertPlatformIntoNetwork():
 	try:
 		backslashStr = '\\'
-		doubleBackslash = backslashStr + backslashStr
-		command = 'cat /proc/self/cgroup | grep "docker" | sed s/' + doubleBackslash + '//' + doubleBackslash + 'n/g | tail -1'
-		id = subprocess.check_output(command, shell=True, stderr=subprocess.PIPE)
+		doubleBackslash = backslashStr + backslashStr		
+		id = getContainerId()
 		if(id == ''):
 			return ''
 
