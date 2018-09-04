@@ -40,6 +40,8 @@ def getArgs(params):
         '--password', '-p', help='Set the user password to access ElasTest. Use together --user. Usage: --password=passuser', required=False)
     parser.add_argument('--testlink', '-tl', help='Start the TestLink Tool integrated with ElasTest. Usage: --testlink',
                         required=False, action='store_true')
+    parser.add_argument('--jenkins', '-jk', help='Start the Jenkins Tool integrated with ElasTest. Usage: --jenkins',
+                        required=False, action='store_true')                        
     parser.add_argument('--internet-disabled', '-id',
                         help='Set if internet is disabled. Usage: --internet-disabled', required=False, action='store_true')
     parser.add_argument('--master-slave', '-ms',
@@ -136,6 +138,7 @@ def runPlatform(params):
         epm = '-f ../epm/deploy/docker-compose.yml'
         epm_ansible_adapter = '-f ../epm/deploy/docker-compose-ansible-adapter.yml'
         etm_tlink = '-f ../etm/docker/docker-compose-testlink.yml'
+        etm_jenkins = '-f ../etm/docker/docker-compose-jenkins.yml'
         mysql_elasticsearch_lite = '-f ../docker-compose-mysql-elasticsearch-lite.yml'
 
 
@@ -197,7 +200,7 @@ def runPlatform(params):
                 etm_proxy + ' '
             message = 'Starting ElasTest Platform ' + platform_version + ' (' + mode + ' mode)...'
 
-            # If the testlink option is used, add the docker-compofile of the Testlink tool
+            # If the testlink option is used, add the docker-compose file of the Testlink tool
             if(args.testlink):
                 dockerCommand = dockerCommand + ' ' + etm_tlink
             else:
@@ -206,6 +209,17 @@ def runPlatform(params):
                 files_list.append('../etm/docker/docker-compose-main.yml')
                 replaceEnvVarValue('ET_ETM_TESTLINK_HOST', 'none',
                                 'etm-testlink', files_list)
+
+
+            # If the jenkins option is used, add the docker-compose file of the Jenkins tool
+            if(args.jenkins):
+                dockerCommand = dockerCommand + ' ' + etm_jenkins
+            else:
+                files_list = []
+                files_list.append('../etm/deploy/docker-compose-main.yml')
+                files_list.append('../etm/docker/docker-compose-main.yml')
+                replaceEnvVarValue('ET_ETM_JENKINS_HOST', 'none',
+                                'etm-jenkins', files_list)                                
         
         # Add the project name to the docker-compose command
         dockerCommand = dockerCommand + ' -p elastest'
