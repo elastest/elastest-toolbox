@@ -138,6 +138,7 @@ def runPlatform(params):
         epm = '-f ../epm/deploy/docker-compose.yml'
         epm_ansible_adapter = '-f ../epm/deploy/docker-compose-ansible-adapter.yml'
         etm_tlink = '-f ../etm/docker/docker-compose-testlink.yml'
+        etm_tlink_ports = '-f ../etm/docker/docker-compose-testlink-ports.yml'
         etm_jenkins = '-f ../etm/docker/docker-compose-jenkins.yml'
         mysql_elasticsearch_lite = '-f ../docker-compose-mysql-elasticsearch-lite.yml'
 
@@ -202,7 +203,7 @@ def runPlatform(params):
 
             # If the testlink option is used, add the docker-compose file of the Testlink tool
             if(args.testlink):
-                dockerCommand = dockerCommand + ' ' + etm_tlink
+                dockerCommand = dockerCommand + ' ' + etm_tlink + ' ' + etm_tlink_ports
             else:
                 files_list = []
                 files_list.append('../etm/deploy/docker-compose-main.yml')
