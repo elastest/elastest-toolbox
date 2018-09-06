@@ -140,6 +140,7 @@ def runPlatform(params):
         etm_tlink = '-f ../etm/docker/docker-compose-testlink.yml'
         etm_tlink_ports = '-f ../etm/docker/docker-compose-testlink-ports.yml'
         etm_jenkins = '-f ../etm/docker/docker-compose-jenkins.yml'
+        etm_jenkins_ports = '-f ../etm/docker/docker-compose-jenkins-ports.yml'
         mysql_elasticsearch_lite = '-f ../docker-compose-mysql-elasticsearch-lite.yml'
 
 
@@ -214,7 +215,7 @@ def runPlatform(params):
 
             # If the jenkins option is used, add the docker-compose file of the Jenkins tool
             if(args.jenkins):
-                dockerCommand = dockerCommand + ' ' + etm_jenkins
+                dockerCommand = dockerCommand + ' ' + etm_jenkins + ' ' + etm_jenkins_ports
             else:
                 files_list = []
                 files_list.append('../etm/deploy/docker-compose-main.yml')
