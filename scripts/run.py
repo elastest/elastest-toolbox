@@ -154,7 +154,7 @@ def runPlatform(params):
         files_list = []
         if(mode == 'experimental'):            
             dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + \
-                            ' ' + epm + ' ' + emp + ' ' + etm_proxy + ' ' + etm_tlink + ' ' + etm_tlink_ports + \ 
+                            ' ' + epm + ' ' + emp + ' ' + etm_proxy + ' ' + etm_tlink + ' ' + etm_tlink_ports + \
                             ' ' + etm_jenkins + ' ' + etm_jenkins_ports + ' '
             
             #Replace emp env variables
