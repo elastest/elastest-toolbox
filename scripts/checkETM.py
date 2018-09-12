@@ -24,8 +24,8 @@ args=[]
 def getArgs(params):
 	# Define arguments
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--container', '-c', help='Sets timeout in seconds for wait to the ETM container creation. Usage: --container=240', required=False)
-	parser.add_argument('--running', '-r', help='Sets timeout in seconds for wait to ETM is running. Usage: --running=290')
+	parser.add_argument('--container', '-c', help='Sets timeout in seconds for wait to the ETM container creation. Usage: --container=800', required=False)
+	parser.add_argument('--running', '-r', help='Sets timeout in seconds for wait to ETM is running. Usage: --running=800')
 
 	# Custom usage message
 	usage = parser.format_usage()
@@ -66,7 +66,7 @@ def getContainerIp(containerName):
 def containerIP():
 	ip = ''
 	wait = True
-	timeout = 240 #seconds
+	timeout = 800 #seconds
 	if(args.container):
 		timeout=args.container
 	start_time = time.time()
@@ -164,7 +164,7 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
 	working = False
 	message_counter=1
 
-	timeout = 290 #seconds
+	timeout = 800 #seconds
 	if(args.running):
 		timeout=args.running
 	start_time = time.time()
