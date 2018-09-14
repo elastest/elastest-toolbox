@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import yaml
 import json
+import fileinput
 
 # ET CORE DOCKER COMPOSE FILES (ETM, EDM, EIM, ESM, EMP and EPM)
 emp = '../emp/deploy/docker-compose.yml'
@@ -107,3 +108,11 @@ def getJson(path):
 def saveJson(path, json_file):
     with open(path, 'w') as outfile:
         json.dump(json_file, outfile, indent=4, separators=(',', ': '))
+
+
+def getLineByContent(content, path):
+    result = ''
+    for line in fileinput.input(path):
+        if(content in line):
+            result = line
+    return result

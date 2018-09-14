@@ -12,6 +12,8 @@ from setEnv import *
 from DockerUtils import *
 from update import *
 from pull import *
+from stringUtils import *
+from ETFiles import *
 
 outputMessages={'update': 'Updating ElasTest Platform version ', 'pull-images': 'Pulling the ElasTest Platform Images '}
 def getArgs(params):
@@ -94,7 +96,15 @@ def runPlatform(params):
             files_list.append('../etm/deploy/docker-compose-main.yml')
             files_list.append('../etm/docker/docker-compose-main.yml')
             replaceEnvVarValue('ET_PUBLIC_HOST', args.server_address,
-                            'localhost', files_list)
+                               'localhost', files_list)
+            #set the new Jenkins location
+            files_list = []
+            files_list.append('../etm/docker/docker-compose-jenkins.yml')
+            jenkinsPort = getKeyFromYmlMapEntry(getLineByContent(
+                '8080', '../etm/docker/docker-compose-jenkins.yml'))
+            replaceEnvVarValue('JENKINS_LOCATION', 'http://' +
+                               args.server_address + ':' + jenkinsPort, 'none', files_list)
+
 
         if(args.shared_folder):
             files_list = []
