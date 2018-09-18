@@ -7,7 +7,7 @@ import subprocess
 import argparse
 import os
 import threading
-import platform
+import requests
 from checkETM import *
 from setEnv import *
 from DockerUtils import *
@@ -84,8 +84,6 @@ def runPlatform(params):
     # ETM docker-compose files
     etmDockerComposeMainFromDocker = '../etm/docker/docker-compose-main.yml'
     etmDockerComposeMainFromDeploy = '../etm/deploy/docker-compose-main.yml'
-
-    print  'Running ElasTest in ' + platform.system()
 
     if(command == 'update' or command == 'pull-images'):
         message = outputMessages[command] + '...'
@@ -253,12 +251,15 @@ def runPlatform(params):
                         'elastest/platform', files_list)
         replaceEnvVarValue('ET_CORE_IMAGES', elastest_core_images, 'elastest/platform', files_list)
 
-        # If Mac OS, change localtime volume in docker/etm-main
-        if(platform.system().lower().startswith('macos')):
-            localtimePath = '/etc/localtime'
-            originalLocaltimeVolume = localtimePath + ':' + localtimePath +':ro'
-            macLocaltimeVolume = '/private' + localtimePath + ':' + localtimePath + ':ro'
-            searchAndReplace(etmDockerComposeMainFromDocker, originalLocaltimeVolume, macLocaltimeVolume)
+
+        # Get timezone and set it to ETM
+        response = requests.get('https://timezoneapi.io/api/ip')
+        timezoneRequestData = response.json()
+        if(timezoneRequestData['meta']['code'] == '200'):
+            timezone =  timezoneRequestData['data']['timezone']['id']
+            print 'Timezone: ' + timezone
+            replaceEnvVarValue('HOST_TIMEZONE', timezone,
+                        'UTC', files_list)
 
         # If internet is disabled
         if(args.internet_disabled):
