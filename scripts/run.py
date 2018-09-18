@@ -7,6 +7,7 @@ import subprocess
 import argparse
 import os
 import threading
+import platform
 from checkETM import *
 from setEnv import *
 from DockerUtils import *
@@ -80,6 +81,12 @@ def runPlatform(params):
     mode = args.mode
     platform_version = getVersionFromHostContainer()   
 
+    # ETM docker-compose files
+    etmDockerComposeMainFromDocker = '../etm/docker/docker-compose-main.yml'
+    etmDockerComposeMainFromDeploy = '../etm/deploy/docker-compose-main.yml'
+
+    print  'Running ElasTest in ' + platform.system()
+
     if(command == 'update' or command == 'pull-images'):
         message = outputMessages[command] + '...'
         print message
@@ -93,8 +100,8 @@ def runPlatform(params):
         if(args.server_address):
             #setServerAddress(args.server_address)
             files_list = []
-            files_list.append('../etm/deploy/docker-compose-main.yml')
-            files_list.append('../etm/docker/docker-compose-main.yml')
+            files_list.append(etmDockerComposeMainFromDeploy)
+            files_list.append(etmDockerComposeMainFromDocker)
             replaceEnvVarValue('ET_PUBLIC_HOST', args.server_address,
                                'localhost', files_list)
             #set the new Jenkins location
@@ -108,8 +115,8 @@ def runPlatform(params):
 
         if(args.shared_folder):
             files_list = []
-            files_list.append('../etm/deploy/docker-compose-main.yml')
-            files_list.append('../etm/docker/docker-compose-main.yml')
+            files_list.append(etmDockerComposeMainFromDeploy)
+            files_list.append(etmDockerComposeMainFromDocker)
             replaceEnvVarValue('ET_SHARED_FOLDER', args.shared_folder,
                             '/shared-data/', files_list)
         
@@ -182,14 +189,14 @@ def runPlatform(params):
 
             if(args.master_slave):
                 files_list = []
-                files_list.append('../etm/deploy/docker-compose-main.yml')
+                files_list.append(etmDockerComposeMainFromDeploy)
                 replaceEnvVarValue('ET_MASTER_SLAVE_MODE', 'true',
                             'false', files_list)
                 #dockerCommand = dockerCommand + ' ' + epm_ansible_adapter + ' '
         #If is Experimental-lite or Normal mode
         else:
             #Change the default execution mode
-            files_list.append('../etm/docker/docker-compose-main.yml')
+            files_list.append(etmDockerComposeMainFromDocker)
             replaceEnvVarValue('EXEC_MODE', args.mode, 'normal', files_list)
 
             #Initially do not bind ports
@@ -218,8 +225,8 @@ def runPlatform(params):
                 dockerCommand = dockerCommand + ' ' + etm_tlink + ' ' + etm_tlink_ports
             else:
                 files_list = []
-                files_list.append('../etm/deploy/docker-compose-main.yml')
-                files_list.append('../etm/docker/docker-compose-main.yml')
+                files_list.append(etmDockerComposeMainFromDeploy)
+                files_list.append(etmDockerComposeMainFromDocker)
                 replaceEnvVarValue('ET_ETM_TESTLINK_HOST', 'none',
                                 'etm-testlink', files_list)
 
@@ -229,8 +236,8 @@ def runPlatform(params):
                 dockerCommand = dockerCommand + ' ' + etm_jenkins + ' ' + etm_jenkins_ports
             else:
                 files_list = []
-                files_list.append('../etm/deploy/docker-compose-main.yml')
-                files_list.append('../etm/docker/docker-compose-main.yml')
+                files_list.append(etmDockerComposeMainFromDeploy)
+                files_list.append(etmDockerComposeMainFromDocker)
                 replaceEnvVarValue('ET_ETM_JENKINS_HOST', 'none',
                                 'etm-jenkins', files_list)                                
         
@@ -240,11 +247,18 @@ def runPlatform(params):
         elastest_images = getElasTestImagesAsString(mode)
         elastest_core_images = getElasTestCoreImagesAsString(mode)
         files_list = []
-        files_list.append('../etm/deploy/docker-compose-main.yml')
-        files_list.append('../etm/docker/docker-compose-main.yml')
+        files_list.append(etmDockerComposeMainFromDeploy)
+        files_list.append(etmDockerComposeMainFromDocker)
         replaceEnvVarValue('ET_IMAGES', elastest_images,
                         'elastest/platform', files_list)
         replaceEnvVarValue('ET_CORE_IMAGES', elastest_core_images, 'elastest/platform', files_list)
+
+        # If Mac OS, change localtime volume in docker/etm-main
+        if(platform.system().lower().startswith('macos')):
+            localtimePath = '/etc/localtime'
+            originalLocaltimeVolume = localtimePath + ':' + localtimePath +':ro'
+            macLocaltimeVolume = '/private' + localtimePath + ':' + localtimePath + ':ro'
+            searchAndReplace(etmDockerComposeMainFromDocker, originalLocaltimeVolume, macLocaltimeVolume)
 
         # If internet is disabled
         if(args.internet_disabled):
