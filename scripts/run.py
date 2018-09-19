@@ -102,6 +102,8 @@ def runPlatform(params):
             files_list.append(etmDockerComposeMainFromDocker)
             replaceEnvVarValue('ET_PUBLIC_HOST', args.server_address,
                                'localhost', files_list)
+            replaceEnvVarValue('ET_PUBLIC_HOST_TYPE', "server_address",
+                               'default', files_list)
             #set the new Jenkins location
             files_list = []
             files_list.append('../etm/docker/docker-compose-jenkins.yml')
