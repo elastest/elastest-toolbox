@@ -124,14 +124,15 @@ def runPlatform(params):
         # Set credentials 
         files_list = []
         files_list.append('../etm/deploy/docker-compose-main.yml')
-        files_list.append('../etm/docker/docker-compose-main.yml')        
-        files_list.append('../etm/docker/docker-compose-jenkins.yml')        
+        files_list.append('../etm/docker/docker-compose-main.yml')
+        files_list.append('../etm/docker/docker-compose-jenkins.yml')
+        servicePass = createPassword(8,8)
         if (args.user and args.password):
             replaceEnvVarValue('ET_USER', args.user, 'none', files_list)
             replaceEnvVarValue('ET_PASS', args.password, 'none', files_list)
         else:
             replaceEnvVarValue('ET_USER', 'elastest', 'none', files_list)
-            replaceEnvVarValue('ET_PASS', createPassword(8,8), 'none', files_list)
+            replaceEnvVarValue('ET_PASS', servicePass , 'none', files_list)
 
         files_list = []
         files_list.append('../etm/docker/docker-compose-testlink.yml')        
@@ -140,7 +141,7 @@ def runPlatform(params):
             replaceEnvVarValue('TESTLINK_PASSWORD', args.password, 'none', files_list)
         else:
             replaceEnvVarValue('TESTLINK_USERNAME', 'elastest', 'none', files_list)
-            replaceEnvVarValue('TESTLINK_PASSWORD', createPassword(8,8), 'none', files_list)
+            replaceEnvVarValue('TESTLINK_PASSWORD', servicePass, 'none', files_list)
 
 
         # Proxy env variables   
