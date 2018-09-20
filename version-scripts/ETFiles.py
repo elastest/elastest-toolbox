@@ -2,6 +2,7 @@
 import yaml
 import json
 import fileinput
+import os
 
 # ET CORE DOCKER COMPOSE FILES (ETM, EDM, EIM, ESM, EMP and EPM)
 emp = '../emp/deploy/docker-compose.yml'
@@ -116,3 +117,27 @@ def getLineByContent(content, path):
         if(content in line):
             result = line
     return result
+
+
+def checkIfDirExists(path):
+    return os.path.exists(path)
+
+
+def createDir(path):
+    os.makedirs(path)
+
+
+def checkIfFileExists(path):
+    return os.path.isfile(path)
+
+
+def readFileByLines(path, linesToRead):
+    with open(path) as myfile:
+       head = [next(myfile) for x in xrange(linesToRead)]
+    return head
+
+
+def writeFile(path, content):
+    file = open(path, 'w')
+    file.write(content)
+    file.close()

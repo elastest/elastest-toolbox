@@ -121,29 +121,42 @@ def runPlatform(params):
                             '/shared-data/', files_list)
         
         
-        # Set credentials 
+        # Set credentials
+        randomPass = createPassword(8,8)
+        integratedAppUser = "none"
+        integratedAppPass = "none"
+        configPad = '/shared-data/config/'
+        credentialsFilePath = '/shared-data/config/credentials'
+        if not checkIfDirExists(configPad):
+            createDir(configPad)        
+        if (checkIfFileExists(credentialsFilePath)):
+            credentials = readFileByLines(credentialsFilePath, 1)[0].split(',')
+            integratedAppUser = credentials[0]
+            integratedAppPass = credentials[1]
+        else:
+            if (args.user and args.password):
+                integratedAppUser = args.user
+                integratedAppPass = args.password            
+            else:
+                integratedAppUser = 'elastest'
+                integratedAppPass = randomPass
+            
+            writeFile(credentialsFilePath, integratedAppUser + ',' + integratedAppPass)
+
+        
         files_list = []
         files_list.append('../etm/deploy/docker-compose-main.yml')
         files_list.append('../etm/docker/docker-compose-main.yml')
         files_list.append('../etm/docker/docker-compose-jenkins.yml')
-        servicePass = createPassword(8,8)
-        if (args.user and args.password):
-            replaceEnvVarValue('ET_USER', args.user, 'none', files_list)
-            replaceEnvVarValue('ET_PASS', args.password, 'none', files_list)
-        else:
-            replaceEnvVarValue('ET_USER', 'elastest', 'none', files_list)
-            replaceEnvVarValue('ET_PASS', servicePass , 'none', files_list)
+        replaceEnvVarValue('ET_USER', integratedAppUser, 'none', files_list)
+        replaceEnvVarValue('ET_PASS', integratedAppPass, 'none', files_list)
 
         files_list = []
-        files_list.append('../etm/docker/docker-compose-testlink.yml')        
-        if (args.user and args.password):
-            replaceEnvVarValue('TESTLINK_USERNAME', args.user, 'none', files_list)
-            replaceEnvVarValue('TESTLINK_PASSWORD', args.password, 'none', files_list)
-        else:
-            replaceEnvVarValue('TESTLINK_USERNAME', 'elastest', 'none', files_list)
-            replaceEnvVarValue('TESTLINK_PASSWORD', servicePass, 'none', files_list)
+        files_list.append('../etm/docker/docker-compose-testlink.yml')
+        replaceEnvVarValue('TESTLINK_USERNAME', integratedAppUser, 'none', files_list)
+        replaceEnvVarValue('TESTLINK_PASSWORD', integratedAppPass, 'none', files_list)
 
-
+       
         # Proxy env variables   
         files_list = []
         files_list.append('../etm/docker/docker-compose-proxy.yml')        
