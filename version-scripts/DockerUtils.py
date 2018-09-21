@@ -37,6 +37,16 @@ def pushImage(image):
         exit(1)
 
 
+def getBindingVolumes():
+    command = 'docker inspect --format "{{ range .HostConfig.Binds }}{{.}}|{{end}}" ' + \
+        os.environ['HOSTNAME']
+    bindingVolumes = str(subprocess.check_output(
+        shlex.split(command))).rstrip('\n')
+    print 'Binding volumes: ' + bindingVolumes
+
+    return bindingVolumes
+
+
 def getContainerImage():
     command = 'docker inspect --format "{{ index .Config.Image }}" ' + \
         os.environ['HOSTNAME']

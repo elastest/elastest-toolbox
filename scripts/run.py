@@ -15,6 +15,7 @@ from update import *
 from pull import *
 from stringUtils import *
 from ETFiles import *
+from messages import *
 
 outputMessages={'update': 'Updating ElasTest Platform version ', 'pull-images': 'Pulling the ElasTest Platform Images '}
 def getArgs(params):
@@ -79,7 +80,18 @@ def runPlatform(params):
 
     command = args.command  # start, stop, update or pull-images
     mode = args.mode
-    platform_version = getVersionFromHostContainer()   
+    platform_version = getVersionFromHostContainer()
+
+    # Config the ElasTest home
+    bindingVolumes = getBindingVolumes().split('|')
+    for bindingVolume in bindingVolumes:
+        if ('.elastest:/data' in bindingVolume):
+            os.environ['ET_DATA_IN_HOST'] = bindingVolume.split(':')[0]
+            os.environ['ET_DATA_IN_CONTAINER'] = bindingVolume.split(':')[1]
+
+    if (not 'ET_DATA_IN_HOST' in os.environ):
+        printMsg('jenkins_home_error')
+        os._exit(1)
 
     # ETM docker-compose files
     etmDockerComposeMainFromDocker = '../etm/docker/docker-compose-main.yml'
