@@ -81,18 +81,7 @@ def runPlatform(params):
     command = args.command  # start, stop, update or pull-images
     mode = args.mode
     platform_version = getVersionFromHostContainer()
-
-    # Config the ElasTest home
-    bindingVolumes = getBindingVolumes().split('|')
-    for bindingVolume in bindingVolumes:
-        if ('.elastest:/data' in bindingVolume):
-            os.environ['ET_DATA_IN_HOST'] = bindingVolume.split(':')[0]
-            os.environ['ET_DATA_IN_CONTAINER'] = bindingVolume.split(':')[1]
-
-    if (not 'ET_DATA_IN_HOST' in os.environ):
-        printMsg('jenkins_home_error')
-        os._exit(1)
-
+   
     # ETM docker-compose files
     etmDockerComposeMainFromDocker = '../etm/docker/docker-compose-main.yml'
     etmDockerComposeMainFromDeploy = '../etm/deploy/docker-compose-main.yml'
@@ -123,15 +112,18 @@ def runPlatform(params):
                 '8080', '../etm/docker/docker-compose-jenkins.yml'))
             replaceEnvVarValue('JENKINS_LOCATION', 'http://' +
                                args.server_address + ':' + jenkinsPort, 'none', files_list)
+                
+        # Config the ElasTest home
+        if (command == 'start'):
+            bindingVolumes = getBindingVolumes().split('|')
+            for bindingVolume in bindingVolumes:
+                if ('.elastest:/data' in bindingVolume):
+                    os.environ['ET_DATA_IN_HOST'] = bindingVolume.split(':')[0]
+                    os.environ['ET_DATA_IN_CONTAINER'] = bindingVolume.split(':')[1]
 
-
-        if(args.shared_folder):
-            files_list = []
-            files_list.append(etmDockerComposeMainFromDeploy)
-            files_list.append(etmDockerComposeMainFromDocker)
-            replaceEnvVarValue('ET_SHARED_FOLDER', args.shared_folder,
-                            '/shared-data/', files_list)
-        
+            if (not 'ET_DATA_IN_HOST' in os.environ):
+                printMsg('jenkins_home_error')
+                os._exit(1)
         
         # Set credentials
         randomPass = createPassword(8,8)
