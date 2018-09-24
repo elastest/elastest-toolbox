@@ -41,8 +41,7 @@ def getBindingVolumes():
     command = 'docker inspect --format "{{ range .HostConfig.Binds }}{{.}}|{{end}}" ' + \
         os.environ['HOSTNAME']
     bindingVolumes = str(subprocess.check_output(
-        shlex.split(command))).rstrip('\n')
-    print 'Binding volumes: ' + bindingVolumes
+        shlex.split(command))).rstrip('\n')    
 
     return bindingVolumes
 
