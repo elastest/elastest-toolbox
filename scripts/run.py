@@ -117,7 +117,7 @@ def runPlatform(params):
         if (command == 'start'):
             bindingVolumes = getBindingVolumes().split('|')
             for bindingVolume in bindingVolumes:
-                if ('.elastest:/data' in bindingVolume):
+                if ('/data' in bindingVolume):
                     os.environ['ET_DATA_IN_HOST'] = bindingVolume.split(':')[0]
                     os.environ['ET_DATA_IN_CONTAINER'] = bindingVolume.split(':')[1]
 
