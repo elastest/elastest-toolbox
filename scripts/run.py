@@ -117,12 +117,12 @@ def runPlatform(params):
         if (command == 'start'):
             bindingVolumes = getBindingVolumes().split('|')
             for bindingVolume in bindingVolumes:
-                if ('/data' in bindingVolume):
+                if ('/data' == bindingVolume.split(':')[1] ):
                     os.environ['ET_DATA_IN_HOST'] = bindingVolume.split(':')[0]
                     os.environ['ET_DATA_IN_CONTAINER'] = bindingVolume.split(':')[1]
 
             if (not 'ET_DATA_IN_HOST' in os.environ):
-                printMsg('jenkins_home_error')
+                printMsg('elastest_home_error')
                 os._exit(1)
         
         # Set credentials

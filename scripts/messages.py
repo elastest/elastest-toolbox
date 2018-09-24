@@ -24,7 +24,7 @@ def printMsg(key):
         print ''
         print '' + outputMessages['pull-images']
         print ''
-    elif(key == 'jenkins_home_error'):
+    elif(key == 'elastest_home_error'):
 		print ''
 		print 'ERROR: It is necessary to configure a volume to store ElasTest data'
 		print 'eg. -v ~/.elastest:/data'
