@@ -117,7 +117,7 @@ def runPlatform(params):
         if (command == 'start'):
             bindingVolumes = getBindingVolumes().split('|')
             for bindingVolume in bindingVolumes:
-                if ('/data' == bindingVolume.split(':')[1] ):
+                if (not bindingVolume == '' and '/data' == bindingVolume.split(':')[1]):
                     os.environ['ET_DATA_IN_HOST'] = bindingVolume.split(':')[0]
                     os.environ['ET_DATA_IN_CONTAINER'] = bindingVolume.split(':')[1]
 
