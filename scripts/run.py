@@ -129,8 +129,8 @@ def runPlatform(params):
         randomPass = createPassword(8,8)
         integratedAppUser = "none"
         integratedAppPass = "none"
-        configPad = '/shared-data/config/'
-        credentialsFilePath = '/shared-data/config/credentials'
+        configPad = os.environ['ET_DATA_IN_CONTAINER'] + '/config'
+        credentialsFilePath = configPad + '/credentials'
         if not checkIfDirExists(configPad):
             createDir(configPad)        
         if (checkIfFileExists(credentialsFilePath)):
