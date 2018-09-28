@@ -171,7 +171,10 @@ def runPlatform(params):
             replaceEnvVarValue('ET_PASS', args.password, 'none', files_list)
         
         if (mode == 'experimental'):
-            replaceEnvVarValue('LOCATION_RULES', 'nginx-experimental-locations.conf', 'nginx-base-location.conf', files_list)
+            if(args.dev):
+                replaceEnvVarValue('LOCATION_RULES', 'nginx-dev-experimental-locations.conf', 'nginx-base-location.conf', files_list)
+            else:
+                replaceEnvVarValue('LOCATION_RULES', 'nginx-experimental-locations.conf', 'nginx-base-location.conf', files_list)
         
         if(mode == 'normal' or mode == 'experimental-lite'):
             replaceEnvVarValue('LOGSTASH_HOST', 'etm', 'etm-logstash', files_list)
@@ -212,9 +215,13 @@ def runPlatform(params):
         files_list = []
         if(mode == 'experimental'):            
             dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + \
-                            ' ' + epm + ' ' + emp + ' ' + etm_proxy + ' ' + etm_tlink + ' ' + etm_tlink_ports + \
+                            ' ' +  etm_proxy + ' ' + etm_tlink + ' ' + etm_tlink_ports + \
                             ' ' + etm_jenkins + ' ' + etm_jenkins_ports + ' '
-            
+            # If dev mode, no start epm and emp
+            if(not args.dev):
+                dockerCommand = dockerCommand + epm + ' ' + emp + ' '
+
+
             #Replace emp env variables
             et_host = "localhost"
             if(args.server_address):
