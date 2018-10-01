@@ -23,6 +23,7 @@ args=[]
 HEADER = '\033[95m'
 OKBLUE = '\033[94m'
 OKGREEN = '\033[92m'
+WARNING_SOLID = '\033[33m'
 WARNING = '\033[93m'
 FAIL = '\033[91m'
 ENDC = '\033[0m'
@@ -203,8 +204,9 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
 				exit(1)
 
 		etprint('')
-		etprint(OKGREEN +'ElasTest Platform is available at ' + ENDC + OKBLUE +  final_url + ENDC)
-		etprint('Press Ctrl+C to stop.')
+		etprint(WARNING + 'ElasTest Platform is available at ' + final_url + ENDC)
+		etprint('')
+		etprint(OKBLUE + 'Press Ctrl+C to stop.' + ENDC)
 		return 0
 	else:
 		etprint('ERROR: ElasTest Platform not started correctly')
