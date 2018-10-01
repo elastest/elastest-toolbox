@@ -314,8 +314,9 @@ def runPlatform(params):
                 timezoneRequestData = response.json()
                 if(timezoneRequestData['meta']['code'] == '200'):
                     timezone =  timezoneRequestData['data']['timezone']['id']
-
-        print 'Timezone: ' + timezone
+        if(args.dev):                
+            print 'Timezone: ' + timezone
+            
         replaceEnvVarValue('HOST_TIMEZONE', timezone,
                     'UTC', files_list)
 
