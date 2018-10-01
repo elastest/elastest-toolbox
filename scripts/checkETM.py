@@ -20,6 +20,16 @@ proxyPort = '37000'
 etprintEnabled=True
 args=[]
 
+HEADER = '\033[95m'
+OKBLUE = '\033[94m'
+OKGREEN = '\033[92m'
+WARNING = '\033[93m'
+FAIL = '\033[91m'
+ENDC = '\033[0m'
+BOLD = '\033[1m'
+UNDERLINE = '\033[4m'
+
+
 # Input Arguments
 def getArgs(params):
 	# Define arguments
@@ -193,7 +203,7 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
 				exit(1)
 
 		etprint('')
-		etprint('ElasTest Platform is available at ' + final_url)
+		etprint(OKGREEN +'ElasTest Platform is available at ' + ENDC + OKBLUE +  final_url + ENDC)
 		etprint('Press Ctrl+C to stop.')
 		return 0
 	else:
