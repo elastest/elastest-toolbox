@@ -192,6 +192,7 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
 				etprint('ERROR: Proxy is not started')
 				exit(1)
 
+		etprint('')
 		etprint('ElasTest Platform is available at ' + final_url)
 		etprint('Press Ctrl+C to stop.')
 		return 0
