@@ -113,7 +113,7 @@ def runPlatform(params):
             replaceEnvVarValue('JENKINS_LOCATION', 'http://' +
                                args.server_address + ':' + jenkinsPort, 'none', files_list)
                 
-        # Config the ElasTest home
+             # Config the ElasTest home
         if (command == 'start'):
             bindingVolumes = getBindingVolumes().split('|')
             for bindingVolume in bindingVolumes:
@@ -135,14 +135,18 @@ def runPlatform(params):
         etLogsPath = os.environ['ET_DATA_IN_CONTAINER'] + os.environ['ET_LOGS_RELATIVE_FOLDER_PATH']
         if not checkIfDirExists(etLogsPath):
             createDir(etLogsPath)
-
         # Set credentials
         randomPass = createPassword(8,8)
         integratedAppUser = "none"
         integratedAppPass = "none"
+        testLinkAPIKey = "none"
+        configPad = os.environ['ET_DATA_IN_CONTAINER'] + '/config'
         credentialsFilePath = configPad + '/credentials'
+        if not checkIfDirExists(configPad):
+            createDir(configPad)        
         if (checkIfFileExists(credentialsFilePath)):
             credentials = readFileByLines(credentialsFilePath, 1)[0].split(',')
+            testLinkAPIKey = readFileByLines(credentialsFilePath, 2)[1]
             integratedAppUser = credentials[0]
             integratedAppPass = credentials[1]
         else:
@@ -152,13 +156,17 @@ def runPlatform(params):
             else:
                 integratedAppUser = 'elastest'
                 integratedAppPass = randomPass
+
+            testLinkAPIKey = generateUUID(True)
             
             writeFile(credentialsFilePath, integratedAppUser + ',' + integratedAppPass)
+            writeFile(credentialsFilePath, testLinkAPIKey)
 
         
         files_list = []
         files_list.append('../etm/deploy/docker-compose-main.yml')
         files_list.append('../etm/docker/docker-compose-main.yml')
+        replaceEnvVarValue('ET_ETM_TESTLINK_API_KEY', testLinkAPIKey, 'none', files_list)
         files_list.append('../etm/docker/docker-compose-jenkins.yml')
         replaceEnvVarValue('ET_USER', integratedAppUser, 'none', files_list)
         replaceEnvVarValue('ET_PASS', integratedAppPass, 'none', files_list)
@@ -178,7 +186,7 @@ def runPlatform(params):
             replaceEnvVarValue('ET_USER', args.user, 'none', files_list)
             replaceEnvVarValue('ET_PASS', args.password, 'none', files_list)
         
-        if (mode == 'experimental'):
+              if (mode == 'experimental'):
             if(args.dev):
                 replaceEnvVarValue('LOCATION_RULES', 'nginx-dev-experimental-locations.conf', 'nginx-base-location.conf', files_list)
             else:

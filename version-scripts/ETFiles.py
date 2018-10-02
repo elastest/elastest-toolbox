@@ -132,12 +132,14 @@ def checkIfFileExists(path):
 
 
 def readFileByLines(path, linesToRead):
-    with open(path) as myfile:
+    myfile = open(path)
+    with myfile:
        head = [next(myfile) for x in xrange(linesToRead)]
+    myfile.close()
     return head
 
 
 def writeFile(path, content):
-    file = open(path, 'w')
-    file.write(content)
+    file = open(path, 'a')
+    file.write(content + '\n')
     file.close()
