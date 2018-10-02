@@ -93,7 +93,7 @@ def containerIP():
 		except Exception as error:
 			pass
 		if(float(time.time() - start_time) >= float(timeout)):
-			etprint('Timeout: container ' + etmContainerName + ' not created')
+			etprint(FAIL + 'Timeout: container ' + etmContainerName + ' not created' + ENDC)
 			exit(1)
 	return ip
 
@@ -140,7 +140,7 @@ def insertPlatformIntoNetwork():
 		commandTwo = 'docker network connect ' + projectName + '_elastest ' + id
 		result = subprocess.call(shlex.split(commandTwo))
 		if(result > 0):
-			etprint('Error: Unable to register Platform on the network')
+			etprint(FAIL + 'Error: Unable to register Platform on the network' + ENDC)
 			exit (1)
 	except subprocess.CalledProcessError:
 		pass
@@ -158,6 +158,7 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
         etprint('Please wait a few seconds while we start the ElasTest services, the ElasTest URL will be shown when ready.')
         etprint('')
 		
+	# Wait for ETM container created and
 	# Get ETM container IP
 	etmIP = containerIP()
 
@@ -180,6 +181,12 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
 		timeout=args.running
 	start_time = time.time()
 	while (wait):
+    	# If ETM container is exited, throw error
+		etmIsNotExited = containerExistsAndIsNotExited(etmContainerName)
+
+		if(not etmIsNotExited):
+			etprint(FAIL + 'ERROR: ElasTest container (' + etmContainerName + ') is Stopped or Exited' + ENDC)
+			return 1
 		working = checkWorking(url)
 		if (working):
 			wait = False
@@ -209,6 +216,6 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
 		etprint(OKBLUE + 'Press Ctrl+C to stop.' + ENDC)
 		return 0
 	else:
-		etprint('ERROR: ElasTest Platform not started correctly')
+		etprint(FAIL + 'ERROR: ElasTest Platform not started correctly' + ENDC)
 		return 1
 

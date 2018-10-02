@@ -126,3 +126,35 @@ def existsLocalImage(image):
     if(':' not in image):
         image + ':latest'
     return True if image in getRepoTag(image) else False
+
+
+def containerExists(containerId):
+    exists = False
+    command = ['docker ps -a --format "{{.Names}}" | grep -E "^' + containerId + '$"']
+    try:
+        containerName = subprocess.check_output(command, shell=True).split("\n")[0]
+        if(not containerName is None and containerName != ''):
+            exists = True 
+    except TypeError:
+        exists = False
+    except subprocess.CalledProcessError:
+        exists = False
+
+    return exists
+
+def containerExistsAndIsNotExited(containerId):
+    if(not containerExists(containerId)):
+        return False
+
+    notExited = True
+    command = 'docker container inspect -f "{{.State.ExitCode}}" ' + containerId
+    try:
+        exitCode = subprocess.check_output(shlex.split(command)).split("\n")[0]
+        if(exitCode != '0'):
+            notExited = False 
+    except TypeError:
+        notExited = False
+    except subprocess.CalledProcessError:
+        notExited = False
+
+    return notExited
