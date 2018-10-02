@@ -30,6 +30,8 @@ ENDC = '\033[0m'
 BOLD = '\033[1m'
 UNDERLINE = '\033[4m'
 
+elastestGoogleGroupsUrl = 'https://groups.google.com/forum/#!forum/elastest-users'
+
 
 # Input Arguments
 def getArgs(params):
@@ -185,7 +187,18 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
 		etmIsNotExited = containerExistsAndIsNotExited(etmContainerName)
 
 		if(not etmIsNotExited):
-			etprint(FAIL + 'ERROR: ElasTest container (' + etmContainerName + ') is Stopped or Exited' + ENDC)
+    			
+			errorRelativeFilePath = '/etmExited.log'
+			errorHostPath =	os.environ['ET_DATA_IN_HOST'] +  os.environ['ET_LOGS_RELATIVE_FOLDER_PATH'] + errorRelativeFilePath
+			errorContainerPath = os.environ['ET_DATA_IN_CONTAINER'] +  os.environ['ET_LOGS_RELATIVE_FOLDER_PATH'] + errorRelativeFilePath
+			etprint(FAIL + 'ERROR: ElasTest main service container (' + etmContainerName + ') is Stopped or Exited' + ENDC)
+
+			writed = writeContainerLogsToFile(etmContainerName, errorContainerPath)
+			if(writed):
+				etprint(OKBLUE + 'An error file has been generated in ' + errorHostPath + ENDC)
+				
+			etprint(OKBLUE + 'Please, report the problem to us at ' + elastestGoogleGroupsUrl + ENDC)
+
 			return 1
 		working = checkWorking(url)
 		if (working):

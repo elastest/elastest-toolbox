@@ -158,3 +158,21 @@ def containerExistsAndIsNotExited(containerId):
         notExited = False
 
     return notExited
+
+
+def writeContainerLogsToFile(containerId, completeFilePath):
+    if(not containerExists(containerId)):
+        return False
+
+    writed = True
+    command = 'docker logs ' + containerId + ' >& ' + completeFilePath
+    try:
+        exitCode = subprocess.call(command, shell=True)
+        if(exitCode != 0):
+            writed = False 
+    except TypeError:
+        writed = False
+    except subprocess.CalledProcessError:
+        writed = False
+
+    return writed

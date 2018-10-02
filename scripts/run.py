@@ -120,19 +120,27 @@ def runPlatform(params):
                 if (not bindingVolume == '' and '/data' == bindingVolume.split(':')[1]):
                     os.environ['ET_DATA_IN_HOST'] = bindingVolume.split(':')[0]
                     os.environ['ET_DATA_IN_CONTAINER'] = bindingVolume.split(':')[1]
-
+                    break
             if (not 'ET_DATA_IN_HOST' in os.environ):
                 printMsg('elastest_home_error')
                 os._exit(1)
         
+        # Create folders if not exists
+        os.environ['ET_CONFIG_RELATIVE_FOLDER_PATH'] = '/config'
+        configPad = os.environ['ET_DATA_IN_CONTAINER'] + os.environ['ET_CONFIG_RELATIVE_FOLDER_PATH']
+        if not checkIfDirExists(configPad):
+            createDir(configPad)
+
+        os.environ['ET_LOGS_RELATIVE_FOLDER_PATH'] = '/etlogs'
+        etLogsPath = os.environ['ET_DATA_IN_CONTAINER'] + os.environ['ET_LOGS_RELATIVE_FOLDER_PATH']
+        if not checkIfDirExists(etLogsPath):
+            createDir(etLogsPath)
+
         # Set credentials
         randomPass = createPassword(8,8)
         integratedAppUser = "none"
         integratedAppPass = "none"
-        configPad = os.environ['ET_DATA_IN_CONTAINER'] + '/config'
         credentialsFilePath = configPad + '/credentials'
-        if not checkIfDirExists(configPad):
-            createDir(configPad)        
         if (checkIfFileExists(credentialsFilePath)):
             credentials = readFileByLines(credentialsFilePath, 1)[0].split(',')
             integratedAppUser = credentials[0]
