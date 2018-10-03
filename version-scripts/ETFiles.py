@@ -134,7 +134,7 @@ def checkIfFileExists(path):
 def readFileByLines(path, linesToRead):
     myfile = open(path)
     with myfile:
-       head = [next(myfile) for x in xrange(linesToRead)]
+        head = [next(myfile) for x in xrange(linesToRead)]
     myfile.close()
     return head
 
