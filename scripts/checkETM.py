@@ -195,9 +195,9 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
 
 			writed = writeContainerLogsToFile(etmContainerName, errorContainerPath)
 			if(writed):
-				etprint(OKBLUE + 'An error file has been generated in ' + errorHostPath + ENDC)
+				etprint(OKGREEN + 'An error file has been generated in ' + errorHostPath + ENDC)
 				
-			etprint(OKBLUE + 'Please, report the problem to us at ' + elastestGoogleGroupsUrl + ENDC)
+			etprint(OKGREEN + 'Please, report the problem to us at ' + elastestGoogleGroupsUrl + ENDC)
 
 			return 1
 		working = checkWorking(url)
@@ -226,7 +226,7 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
 		etprint('')
 		etprint(WARNING + 'ElasTest Platform is available at ' + final_url + ENDC)
 		etprint('')
-		etprint(OKBLUE + 'Press Ctrl+C to stop.' + ENDC)
+		etprint(OKGREEN + 'Press Ctrl+C to stop.' + ENDC)
 		return 0
 	else:
 		etprint(FAIL + 'ERROR: ElasTest Platform not started correctly' + ENDC)
