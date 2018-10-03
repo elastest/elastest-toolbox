@@ -186,11 +186,13 @@ def runPlatform(params):
             replaceEnvVarValue('ET_USER', args.user, 'none', files_list)
             replaceEnvVarValue('ET_PASS', args.password, 'none', files_list)
         
-              if (mode == 'experimental'):
+        if (mode == 'experimental'):
             if(args.dev):
-                replaceEnvVarValue('LOCATION_RULES', 'nginx-dev-experimental-locations.conf', 'nginx-base-location.conf', files_list)
+                replaceEnvVarValue(
+                    'LOCATION_RULES', 'nginx-dev-experimental-locations.conf', 'nginx-base-location.conf', files_list)
             else:
-                replaceEnvVarValue('LOCATION_RULES', 'nginx-experimental-locations.conf', 'nginx-base-location.conf', files_list)
+                replaceEnvVarValue(
+                    'LOCATION_RULES', 'nginx-experimental-locations.conf', 'nginx-base-location.conf', files_list)
         
         if(mode == 'normal' or mode == 'experimental-lite'):
             replaceEnvVarValue('LOGSTASH_HOST', 'etm', 'etm-logstash', files_list)
