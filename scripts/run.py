@@ -146,7 +146,11 @@ def runPlatform(params):
             createDir(configPad)        
         if (checkIfFileExists(credentialsFilePath)):
             credentials = readFileByLines(credentialsFilePath, 1)[0].split(',')
-            testLinkAPIKey = readFileByLines(credentialsFilePath, 2)[1]
+            try:
+                testLinkAPIKey = readFileByLines(credentialsFilePath, 2)[1]
+            except:
+                testLinkAPIKey = generateUUID(True)
+                writeFile(credentialsFilePath, testLinkAPIKey)
             integratedAppUser = credentials[0]
             integratedAppPass = credentials[1]
         else:
