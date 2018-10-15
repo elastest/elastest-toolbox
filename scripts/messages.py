@@ -25,6 +25,12 @@ def printMsg(key):
         print '' + outputMessages['pull-images']
         print ''
     elif(key == 'elastest_home_error'):
-		print ''
-		print 'ERROR: It is necessary to configure a volume to store ElasTest data'
-		print 'eg. -v ~/.elastest:/data'
+        print ''
+        print 'ERROR: It is necessary to configure a volume to store ElasTest data'
+        print 'eg. -v ~/.elastest:/data'
+    elif(key == 'credentials_already_established'):
+        print ''
+        print 'WARNING! The credentials for Jenkins and TestLink have already been established. They were probably established on an earlier start of ElasTest.'
+        print 'These credentials are created at the first start up of ElasTest.'
+        print 'You can access them in the section of each of the services on ElasTest.'
+        print ''

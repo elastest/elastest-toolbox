@@ -153,6 +153,9 @@ def runPlatform(params):
                 writeFile(credentialsFilePath, testLinkAPIKey)
             integratedAppUser = credentials[0]
             integratedAppPass = credentials[1]
+            if (args.user and args.password):
+                printMsg('credentials_already_established')                
+
         else:
             if (args.user and args.password):
                 integratedAppUser = args.user
