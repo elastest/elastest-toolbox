@@ -6,7 +6,7 @@ docker run -v ~/.elastest:/data -v /var/run/docker.sock:/var/run/docker.sock --r
 
 # Check if is started
 echo 'Checking if ETM is working...'
-docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform:dev wait
+docker run -v ~/.elastest:/data -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform:dev wait
 responseCheck=$?
 
 echo 'Stopping ET Platform...'
