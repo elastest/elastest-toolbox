@@ -30,7 +30,7 @@ def printMsg(key):
         print 'eg. -v ~/.elastest:/data'
     elif(key == 'credentials_already_established'):
         print ''
-        print 'WARNING! The credentials for Jenkins and TestLink have already been established. They were probably established on an earlier start of ElasTest.'
-        print 'These credentials are created at the first start up of ElasTest.'
-        print 'You can access them in the section of each of the services on ElasTest.'
+        print 'WARNING! The credentials for Jenkins and TestLink have already been established.'
+        print 'These credentials were set at the first start up of ElasTest.'
+        print 'You can see them in the service page on ElasTest.'
         print ''
