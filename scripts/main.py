@@ -68,6 +68,15 @@ def stopUpdate(expresion, signal, frame):
     print (' Stop updating.')
     sys.exit(0)
 
+def configureDataFolders():
+    bindingVolumes = getBindingVolumes().split('|')
+    for bindingVolume in bindingVolumes:
+        if (not bindingVolume == '' and '/data' == bindingVolume.split(':')[1]):
+            os.environ['ET_DATA_IN_HOST'] = bindingVolume.split(':')[0]
+            os.environ['ET_DATA_IN_CONTAINER'] = bindingVolume.split(':')[1]
+            os.environ['ET_CONFIG_RELATIVE_FOLDER_PATH'] = '/config'
+            os.environ['ET_LOGS_RELATIVE_FOLDER_PATH'] = '/etlogs'
+            break
 
 #########################################################################################
 
@@ -78,7 +87,13 @@ argsList = argsToList(args)
 expresion = argsList[0:]
 params = argsList[1:]
 
+# Config the ElasTest data folder on the host and inside the containers
+configureDataFolders()
+
 if(args.instruction == 'start'):
+    if (not 'ET_DATA_IN_HOST' in os.environ):
+        printMsg('elastest_home_error')
+        os._exit(1)
     signal.signal(signal.SIGINT, partial(stop, params))
     signal.signal(signal.SIGTERM, partial(stop, params))
 
@@ -110,9 +125,15 @@ elif(args.instruction == 'stop'):
         result = runPlatform(['stop'])
 
 elif(args.instruction == 'wait'):
+    if (not 'ET_DATA_IN_HOST' in os.environ):
+        printMsg('elastest_home_error')
+        os._exit(1)
     checkResult = runCheckETM(params)
     exit(checkResult)
 elif(args.instruction == 'inspect'):
+    if (not 'ET_DATA_IN_HOST' in os.environ):
+        printMsg('elastest_home_error')
+        os._exit(1)
     inspectPlatform(params)
 elif(args.instruction == 'update'):
     signal.signal(signal.SIGINT, partial(stopUpdate, expresion))

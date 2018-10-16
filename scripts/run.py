@@ -21,7 +21,7 @@ outputMessages={'update': 'Updating ElasTest Platform version ', 'pull-images': 
 def getArgs(params):
     # Define arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('command', help='Platform command to execute: start or stop',
+    parser.add_argument('command', help='Platform command to execute: start, stop, update, ...',
                         type=str, choices=set(('start', 'stop', 'update', 'pull-images')))
     parser.add_argument('--mode', '-m', help='Set ElasTest execution mode. Usage: --mode=experimental',
                         type=str, choices=set(('normal', 'experimental-lite', 'experimental')), default='normal')
@@ -112,29 +112,15 @@ def runPlatform(params):
                 '8080', '../etm/docker/docker-compose-jenkins.yml'))
             replaceEnvVarValue('JENKINS_LOCATION', 'http://' +
                                args.server_address + ':' + jenkinsPort, 'none', files_list)
-                
-             # Config the ElasTest home
-        if (command == 'start'):
-            bindingVolumes = getBindingVolumes().split('|')
-            for bindingVolume in bindingVolumes:
-                if (not bindingVolume == '' and '/data' == bindingVolume.split(':')[1]):
-                    os.environ['ET_DATA_IN_HOST'] = bindingVolume.split(':')[0]
-                    os.environ['ET_DATA_IN_CONTAINER'] = bindingVolume.split(':')[1]
-                    break
-            if (not 'ET_DATA_IN_HOST' in os.environ):
-                printMsg('elastest_home_error')
-                os._exit(1)
         
-        # Create folders if not exists
-        os.environ['ET_CONFIG_RELATIVE_FOLDER_PATH'] = '/config'
+        # Create config and logs folders
         configPad = os.environ['ET_DATA_IN_CONTAINER'] + os.environ['ET_CONFIG_RELATIVE_FOLDER_PATH']
         if not checkIfDirExists(configPad):
             createDir(configPad)
-
-        os.environ['ET_LOGS_RELATIVE_FOLDER_PATH'] = '/etlogs'
         etLogsPath = os.environ['ET_DATA_IN_CONTAINER'] + os.environ['ET_LOGS_RELATIVE_FOLDER_PATH']
         if not checkIfDirExists(etLogsPath):
             createDir(etLogsPath)
+
         # Set credentials
         randomPass = createPassword(8,8)
         integratedAppUser = "none"
