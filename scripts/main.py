@@ -131,9 +131,6 @@ elif(args.instruction == 'wait'):
     checkResult = runCheckETM(params)
     exit(checkResult)
 elif(args.instruction == 'inspect'):
-    if (not 'ET_DATA_IN_HOST' in os.environ):
-        printMsg('elastest_home_error')
-        os._exit(1)
     inspectPlatform(params)
 elif(args.instruction == 'update'):
     signal.signal(signal.SIGINT, partial(stopUpdate, expresion))
