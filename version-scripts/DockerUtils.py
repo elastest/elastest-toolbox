@@ -4,7 +4,7 @@ import shlex
 import time
 import sys
 import os
-import re
+import socket
 
 pull_command = 'pull-images'
 
@@ -190,18 +190,14 @@ def getWinHostMachineIp():
 def getMacHostMachineIp():
     return getIpFromTraceRoute('docker.for.mac.localhost')
 
+def getHostMachineIp():
+    return getIpFromTraceRoute('host.docker.internal')
+
+
 def getIpFromTraceRoute(dns):
     ip = None
-    command = ['traceroute ' + dns]
     try:
-        FNULL = open(os.devnull, 'w')
-        output = subprocess.check_output(
-            command, stderr=FNULL, shell=True).split("\n")[0]
-        if(not output is None and output != ''):
-            p = re.compile('\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}')
-            ip = p.search(output)
-    except TypeError:
-        ip = None
-    except subprocess.CalledProcessError:
+        ip = socket.gethostbyname(dns)
+    except socket.error, exc:
         ip = None
     return ip
