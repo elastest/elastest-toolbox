@@ -201,3 +201,11 @@ def getIpFromTraceRoute(dns):
     except socket.error, exc:
         ip = None
     return ip
+
+def getHostOS():
+    if(not getWinHostMachineIp() is None):
+        return 'Windows'
+    elif(not getMacHostMachineIp() is None):
+        return 'Mac'
+    else:
+        return 'Other'

@@ -82,6 +82,10 @@ def runPlatform(params):
     mode = args.mode
     platform_version = getVersionFromHostContainer()
    
+    hostOs = getHostOS()
+    if(not args.server_address and hostOs != 'Other'):
+        args.server_address = 'localhost'
+    
     # ETM docker-compose files
     etmDockerComposeMainFromDocker = '../etm/docker/docker-compose-main.yml'
     etmDockerComposeMainFromDeploy = '../etm/deploy/docker-compose-main.yml'
