@@ -4,6 +4,7 @@ import shlex
 import time
 import sys
 import os
+import re
 
 pull_command = 'pull-images'
 
@@ -41,7 +42,7 @@ def getBindingVolumes():
     command = 'docker inspect --format "{{ range .HostConfig.Binds }}{{.}}|{{end}}" ' + \
         os.environ['HOSTNAME']
     bindingVolumes = str(subprocess.check_output(
-        shlex.split(command))).rstrip('\n')    
+        shlex.split(command))).rstrip('\n')
 
     return bindingVolumes
 
@@ -117,12 +118,13 @@ def executePlatformCommand(image, command, dockerArgs, commandArgs):
         print ('')
         print (' Updating ElasTest components....')
         print ('')
-        command_line = ('docker run %s --rm -v /var/run/docker.sock:/var/run/docker.sock %s %s %s')%(dockerArgs,image,command,commandArgs)
+        command_line = ('docker run %s --rm -v /var/run/docker.sock:/var/run/docker.sock %s %s %s') % (
+            dockerArgs, image, command, commandArgs)
 
     subprocess.check_output(shlex.split(command_line))
 
 
-def existsLocalImage(image):    
+def existsLocalImage(image):
     if(':' not in image):
         image + ':latest'
     return True if image in getRepoTag(image) else False
@@ -130,17 +132,20 @@ def existsLocalImage(image):
 
 def containerExists(containerId):
     exists = False
-    command = ['docker ps -a --format "{{.Names}}" | grep -E "^' + containerId + '$"']
+    command = [
+        'docker ps -a --format "{{.Names}}" | grep -E "^' + containerId + '$"']
     try:
-        containerName = subprocess.check_output(command, shell=True).split("\n")[0]
+        containerName = subprocess.check_output(
+            command, shell=True).split("\n")[0]
         if(not containerName is None and containerName != ''):
-            exists = True 
+            exists = True
     except TypeError:
         exists = False
     except subprocess.CalledProcessError:
         exists = False
 
     return exists
+
 
 def containerExistsAndIsNotExited(containerId):
     if(not containerExists(containerId)):
@@ -151,7 +156,7 @@ def containerExistsAndIsNotExited(containerId):
     try:
         exitCode = subprocess.check_output(shlex.split(command)).split("\n")[0]
         if(exitCode != '0'):
-            notExited = False 
+            notExited = False
     except TypeError:
         notExited = False
     except subprocess.CalledProcessError:
@@ -169,10 +174,34 @@ def writeContainerLogsToFile(containerId, completeFilePath):
     try:
         exitCode = subprocess.call(command, shell=True)
         if(exitCode != 0):
-            writed = False 
+            writed = False
     except TypeError:
         writed = False
     except subprocess.CalledProcessError:
         writed = False
 
     return writed
+
+
+def getWinHostMachineIp():
+    return getIpFromTraceRoute('docker.for.win.localhost')
+
+
+def getMacHostMachineIp():
+    return getIpFromTraceRoute('docker.for.mac.localhost')
+
+def getIpFromTraceRoute(dns):
+    ip = None
+    command = ['traceroute ' + dns]
+    try:
+        FNULL = open(os.devnull, 'w')
+        output = subprocess.check_output(
+            command, stderr=FNULL, shell=True).split("\n")[0]
+        if(not output is None and output != ''):
+            p = re.compile('\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}')
+            ip = p.search(output)
+    except TypeError:
+        ip = None
+    except subprocess.CalledProcessError:
+        ip = None
+    return ip
