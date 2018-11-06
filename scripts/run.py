@@ -82,8 +82,8 @@ def runPlatform(params):
     mode = args.mode
     platform_version = getVersionFromHostContainer()
    
-    hostOs = getHostOS()
-    if(not args.server_address and hostOs != 'Other'):
+    # If Host OS is MAC/WIN and server-address is not passed
+    if(not args.server_address and not hostOSIsOther()):
         args.server_address = 'localhost'
     
     # ETM docker-compose files

@@ -209,3 +209,12 @@ def getHostOS():
         return 'Mac'
     else:
         return 'Other'
+
+def hostOSIsWindows():
+    return getHostOS() == 'Windows'
+
+def hostOSIsMac():
+    return getHostOS() == 'Mac'
+
+def hostOSIsOther():
+    return getHostOS() == 'Other'
