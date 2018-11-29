@@ -198,7 +198,7 @@ def getIpFromTraceRoute(dns):
     ip = None
     try:
         ip = socket.gethostbyname(dns)
-    except socket.error, exc:
+    except socket.error:
         ip = None
     return ip
 
