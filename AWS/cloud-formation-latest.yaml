@@ -1,0 +1,347 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  AWS CloudFormation ELASTEST.
+Parameters:
+  KeyName:
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    Description: >
+      Specifies the name of an existing Amazon EC2 key pair to enable SSH access
+      to the EC2 instances in your cluster.
+    ConstraintDescription: Must be the name of an existing EC2 KeyPair.
+  ElastestUsername:
+    Type: String
+    Description: A valid username to access Elastest Platform
+    Default: elastest
+  ElastestPassword:
+    Type: String
+    Description: A valid password for Elastest User
+    Default: elastest
+    NoEcho: true
+  ElastestVersion:
+    Type: String
+    Description: Elastest version to deploy
+    Default: latest
+  InstanceType:
+    Description: Elastest Machine - EC2 instance type
+    Type: String
+    Default: c5.2xlarge
+    AllowedValues:
+      - a1.2xlarge
+      - a1.4xlarge
+      - c5.2xlarge
+      - c5.4xlarge
+      - c5.9xlarge
+      - c5.18xlarge
+      - c5d.2xlarge
+      - c5d.4xlarge
+      - c5d.9xlarge
+      - c5d.18xlarge
+      - r5.2xlarge
+      - r5.4xlarge
+      - r5.12xlarge
+      - r5.24xlarge
+      - r5d.2xlarge
+      - r5d.4xlarge
+      - r5d.12xlarge
+      - r5d.24xlarge
+    ConstraintDescription: must be a valid EC2 instance type.
+  SwapSize:
+    Type: String
+    Description: >-
+      It's known that ElasticSearch needs some swap space. This CloudFormation
+      will create a swapfile in the instance to be used as swap space. Please
+      set the size
+    Default: '4'
+  WantJenkins:
+    Type: String
+    Default: true
+    Description: Do you want to use Jenkins CI with Elastest?
+    AllowedValues:
+      - true
+      - false
+  WantTestLink:
+    Type: String
+    Default: true
+    Description: Do you want to use TestLink Project Manager with Elastest?
+    AllowedValues:
+      - true
+      - false
+Mappings:
+  RegionMap:
+    ap-south-1:
+      AMI: ami-0ccfb82eb6753816c
+    eu-west-3:
+      AMI: ami-0d211c0630a27d535
+    eu-north-1:
+      AMI: ami-0668e678
+    eu-west-2:
+      AMI: ami-093e991c961466876
+    eu-west-1:
+      AMI: ami-03066618d711c711f
+    ap-northeast-2:
+      AMI: ami-04e54d146a99b4902
+    ap-northeast-1:
+      AMI: ami-0add9d820fddb4986
+    sa-east-1:
+      AMI: ami-06334b62398fffc0f
+    ca-central-1:
+      AMI: ami-08920d280a9085846
+    ap-southeast-1:
+      AMI: ami-021d3dcd4504ff87d
+    ap-southeast-2:
+      AMI: ami-043fd543a2f513317
+    eu-central-1:
+      AMI: ami-014bdcadfd7487c3c
+    us-east-1:
+      AMI: ami-0a9a72fc61e9e5f59
+    us-east-2:
+      AMI: ami-091500d5046adbdef
+    us-west-1:
+      AMI: ami-04d2b883688faa414
+    us-west-2:
+      AMI: ami-07891ef972bbf5ae7
+
+Resources:
+  ElastestEC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Metadata:
+      Comment: "Install and configure Elastest Instance on EC2"
+      AWS::CloudFormation::Init:
+        config:
+          files:
+            "/etc/cfn/cfn-hup.conf":
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+              mode: "000400"
+              owner: "root"
+              group: "root"
+            "/etc/cfn/hooks.d/cfn-auto-reloader.conf":
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.ElastestEC2Instance.Metadata.AWS::CloudFormation::Init
+                action=/usr/local/bin/cfn-init -v --stack ${AWS::StackName} --resource ElastestEC2Instance --region ${AWS::Region}
+              mode: "000400"
+              owner: "root"
+              group: "root"
+            "/usr/local/bin/installDocker.sh":
+              content: |
+                #!/bin/bash -x
+                set -eu -o pipefail
+                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+                add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
+                apt-get update 
+                apt-get install -y docker-ce
+                usermod -aG docker ubuntu
+              mode: "000755"
+              owner: "root"
+              group: "root"
+            "/usr/local/bin/createSwapSpace.sh":
+              content: !Sub |
+                #!/bin/bash -x
+                set -eu -o pipefail
+                fallocate -l ${SwapSize}G /swapfile
+                chmod 600 /swapfile
+                mkswap /swapfile
+                swapon /swapfile
+                echo '/swapfile none swap sw 0 0' >>/etc/fstab
+              mode: "000755"
+              owner: "root"
+              group: "root"
+            "/usr/local/bin/adjustMaxMapCount.sh":
+              content: |
+                #!/bin/bash -x
+                set -eu -o pipefail
+                echo vm.max_map_count=262144 >> /etc/sysctl.conf
+                sysctl -w vm.max_map_count=262144
+              mode: "000755"
+              owner: "root"
+              group: "root"
+            "/usr/local/bin/lauchElastest.sh":
+              content: !Sub |
+                #!/bin/bash -x
+                set -eu -o pipefail
+                PUBLIC_HOSTNAME=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
+                docker run \
+                  -d \
+                  --rm \
+                  -v /etc/elastest:/data \
+                  -v /var/run/docker.sock:/var/run/docker.sock \
+                  elastest/platform start \
+                  --server-address=$PUBLIC_HOSTNAME \
+                  -u ${ElastestUsername} \
+                  -p ${ElastestPassword} \
+                  $([ ${WantJenkins} == "true" ] && echo " --jenkins ") \
+                  $([ ${WantTestLink} == "true" ] && echo " --testlink ")
+              mode: "000755"
+              owner: "root"
+              group: "root"
+            "/usr/local/bin/waitForElastest.sh":
+              content: |
+                #!/bin/bash -x
+                sleep 1m
+
+                CONTAINER_ID=$(docker ps --format "table {{.ID}}" | tail -n +2)
+
+                while true
+                do 
+                  docker logs $CONTAINER_ID | grep "Press Ctrl+C to stop"
+                  if [ $? == 0 ]; then
+                    break
+                  fi
+                  sleep 1m
+                done
+              mode: "000755"
+              owner: "root"
+              group: "root"
+            "/usr/local/bin/setAfterBootEnv.sh":
+              content: |
+                #!/bin/bash
+
+                cat >/usr/local/bin/elastest-start<<EOF
+                #!/bin/bash
+                PUBLIC_IP=\$(curl http://169.254.169.254/latest/meta-data/public-hostname)
+                nohup docker run --rm -d -v /etc/elastest:/data -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --server-address=\${PUBLIC_IP} &>/dev/null &
+                disown
+                exit 0
+                EOF
+                chmod 0755 /usr/local/bin/elastest-start
+
+                cat >/usr/local/bin/elastest-stop<<EOF
+                #!/bin/bash
+                docker run --rm -d -v /var/run/docker.sock:/var/run/docker.sock elastest/platform stop
+                EOF
+                chmod 0755 /usr/local/bin/elastest-stop
+
+                cat >/etc/systemd/system/elastest.service<<EOF
+                [Unit]
+                Description=ElasTest Platform
+                After=docker.service
+                Requires=docker.service
+
+                [Service]
+                TimeoutStartSec=60
+                Restart=always
+                ExecStop=/usr/local/bin/elastest-stop
+                ExecStart=/usr/local/bin/elastest-start
+                RemainAfterExit=yes
+
+                [Install]
+                WantedBy=multi-user.target
+                EOF
+                systemctl daemon-reload
+                systemctl enable elastest
+              mode: "000755"
+              owner: "root"
+              group: "root"
+    Properties:
+      ImageId: !FindInMap 
+        - RegionMap
+        - !Ref 'AWS::Region'
+        - AMI
+      InstanceType: !Ref InstanceType
+      SecurityGroups:
+        - !Ref ElastestSecurityGroup
+      KeyName: !Ref KeyName
+      Tags:
+        - Key: Name
+          Value: !Ref 'AWS::StackName'
+      UserData: 
+        "Fn::Base64":
+          !Sub |
+            #!/bin/bash 
+            set -eu -o pipefail
+            apt-get update
+            apt-get install -y python-pip
+            pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+
+            cfn-init --region ${AWS::Region} --stack ${AWS::StackId} --resource ElastestEC2Instance
+
+            /usr/local/bin/installDocker.sh || { echo "[Elastest] error installing Docker"; exit 1; }
+
+            /usr/local/bin/createSwapSpace.sh || { echo "[Elastest] error creating swap space"; exit 1; }
+
+            /usr/local/bin/adjustMaxMapCount.sh || { echo "[Elastest] error installing ajusting Max Map Count"; exit 1; }
+
+            /usr/local/bin/lauchElastest.sh || { echo "[Elastest] error launching elastest"; exit 1; }
+
+            /usr/local/bin/waitForElastest.sh || { echo "[Elastest] error waiting for elastest"; exit 1; }
+
+            /usr/local/bin/setAfterBootEnv.sh || { echo "[Elastest] error setting the after boot environment"; exit 1; }
+
+            # sending the finish call
+            /usr/local/bin/cfn-signal -e $? --stack ${AWS::StackId} --resource WaitCondition --region ${AWS::Region}
+
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeType: io1
+            Iops: '200'
+            DeleteOnTermination: 'true'
+            VolumeSize: '50'
+
+  WaitCondition:
+    Type: 'AWS::CloudFormation::WaitCondition'
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT45M
+        Count: '1'
+  
+  ElastestSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Elastest Security Group
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 5044
+        ToPort: 5044
+        CidrIp: 0.0.0.0/0  
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0  
+      - IpProtocol: tcp
+        FromPort: 32768
+        ToPort: 61000
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 8180
+        ToPort: 8180
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 5001
+        ToPort: 5001
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 2376
+        ToPort: 2376
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 8001
+        ToPort: 8001
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 8082
+        ToPort: 8082
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 3000
+        ToPort: 3000
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 8080
+        ToPort: 8080
+        CidrIp: 0.0.0.0/0
+
+Outputs:
+  ElastestIP:
+    Description: Elastest Endpoint
+    Value: !Join 
+      - ''
+      - - 'http://'
+        - !GetAtt 
+          - ElastestEC2Instance
+          - PublicDnsName
+        - ':37000'
