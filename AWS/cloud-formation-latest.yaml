@@ -70,6 +70,11 @@ Parameters:
     Type: Number
     Default: 50
     Description: Disk size for data and everything else
+  CustomDNS:
+    Type: String
+    Description: >-
+      If you have a custom DNS name like elastest.mycompany.com or an ElasticIP you can 
+      write it down here. If not, leave this blank.
 Mappings:
   RegionMap:
     ap-south-1:
@@ -167,7 +172,11 @@ Resources:
               content: !Sub |
                 #!/bin/bash -x
                 set -eu -o pipefail
-                PUBLIC_HOSTNAME=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
+                if [ "${CustomDNS}" == "" ]; then
+                  PUBLIC_HOSTNAME=$(curl http://169.254.169.254/latest/meta-data/public-hostname)
+                else
+                  PUBLIC_HOSTNAME=${CustomDNS}
+                fi
                 docker run \
                   -d \
                   --rm \
@@ -204,6 +213,8 @@ Resources:
               content: |
                 #!/bin/bash
 
+                if [ "${CustomDNS}" == "" ]; then
+
                 cat >/usr/local/bin/elastest-start<<EOF
                 #!/bin/bash
                 PUBLIC_IP=\$(curl http://169.254.169.254/latest/meta-data/public-hostname)
@@ -211,6 +222,19 @@ Resources:
                 disown
                 exit 0
                 EOF
+                
+                else
+
+                cat >/usr/local/bin/elastest-start<<EOF
+                #!/bin/bash
+                PUBLIC_IP=${CustomDNS}
+                nohup docker run --rm -d -v /etc/elastest:/data -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --server-address=\${PUBLIC_IP} &>/dev/null &
+                disown
+                exit 0
+                EOF
+
+                fi
+
                 chmod 0755 /usr/local/bin/elastest-start
 
                 cat >/usr/local/bin/elastest-stop<<EOF
