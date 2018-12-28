@@ -46,12 +46,12 @@ Parameters:
       - r5d.24xlarge
     ConstraintDescription: must be a valid EC2 instance type.
   SwapSize:
-    Type: String
+    Type: Number
     Description: >-
       It's known that ElasticSearch needs some swap space. This CloudFormation
       will create a swapfile in the instance to be used as swap space. Please
       set the size
-    Default: '4'
+    Default: 4
   WantJenkins:
     Type: String
     Default: true
@@ -66,6 +66,10 @@ Parameters:
     AllowedValues:
       - true
       - false
+  DiskSize:
+    Type: Number
+    Default: 50
+    Description: Disk size for data and everything else
 Mappings:
   RegionMap:
     ap-south-1:
@@ -280,7 +284,7 @@ Resources:
             VolumeType: io1
             Iops: '200'
             DeleteOnTermination: 'true'
-            VolumeSize: '50'
+            VolumeSize: !Sub ${DiskSize}
 
   WaitCondition:
     Type: 'AWS::CloudFormation::WaitCondition'
