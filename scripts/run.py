@@ -113,7 +113,7 @@ def runPlatform(params):
             files_list = []
             files_list.append('../etm/docker/docker-compose-jenkins.yml')
             jenkinsPort = getKeyFromYmlMapEntry(getLineByContent(
-                '8080', '../etm/docker/docker-compose-jenkins.yml'))
+                '8080', '../etm/docker/docker-compose-jenkins-ports.yml'))
             replaceEnvVarValue('JENKINS_LOCATION', 'http://' +
                                args.server_address + ':' + jenkinsPort, 'none', files_list)
         
