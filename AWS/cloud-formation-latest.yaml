@@ -21,6 +21,16 @@ Parameters:
     Type: String
     Description: Elastest version to deploy
     Default: latest
+  ElastestMode:
+    Type: String
+    Description: >
+      ElasTest has three execution modes. Normal mode (default mode), Experimental-lite and Experimental. 
+      Each of them increases the number of features offered by ElasTest from less to more.
+    Default: normal
+    AllowedValues:
+      - normal
+      - experimental-lite
+      - experimental
   InstanceType:
     Description: Elastest Machine - EC2 instance type
     Type: String
@@ -186,6 +196,7 @@ Resources:
                   --server-address=$PUBLIC_HOSTNAME \
                   -u ${ElastestUsername} \
                   -p ${ElastestPassword} \
+                  -m=${ElastestMode} \
                   $([ ${WantJenkins} == "true" ] && echo " --jenkins ") \
                   $([ ${WantTestLink} == "true" ] && echo " --testlink ")
               mode: "000755"
@@ -210,7 +221,7 @@ Resources:
               owner: "root"
               group: "root"
             "/usr/local/bin/setAfterBootEnv.sh":
-              content: |
+              content: !Sub |
                 #!/bin/bash
 
                 if [ "${CustomDNS}" == "" ]; then
@@ -218,7 +229,7 @@ Resources:
                 cat >/usr/local/bin/elastest-start<<EOF
                 #!/bin/bash
                 PUBLIC_IP=\$(curl http://169.254.169.254/latest/meta-data/public-hostname)
-                nohup docker run --rm -d -v /etc/elastest:/data -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --server-address=\${PUBLIC_IP} &>/dev/null &
+                nohup docker run -d --rm -v /etc/elastest:/data -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --server-address=$PUBLIC_HOSTNAME -u ${ElastestUsername} -p ${ElastestPassword} -m=${ElastestMode} $([ ${WantJenkins} == "true" ] && echo " --jenkins ") $([ ${WantTestLink} == "true" ] && echo " --testlink ") &>/dev/null &
                 disown
                 exit 0
                 EOF
@@ -228,7 +239,7 @@ Resources:
                 cat >/usr/local/bin/elastest-start<<EOF
                 #!/bin/bash
                 PUBLIC_IP=${CustomDNS}
-                nohup docker run --rm -d -v /etc/elastest:/data -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --server-address=\${PUBLIC_IP} &>/dev/null &
+                nohup docker run -d --rm -v /etc/elastest:/data -v /var/run/docker.sock:/var/run/docker.sock elastest/platform start --server-address=$PUBLIC_HOSTNAME -u ${ElastestUsername} -p ${ElastestPassword} -m=${ElastestMode} $([ ${WantJenkins} == "true" ] && echo " --jenkins ") $([ ${WantTestLink} == "true" ] && echo " --testlink ") &>/dev/null &
                 disown
                 exit 0
                 EOF
