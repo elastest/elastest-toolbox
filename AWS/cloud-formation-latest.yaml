@@ -229,7 +229,7 @@ Resources:
                 cat >/usr/local/bin/elastest-start<<EOF
                 #!/bin/bash
                 PUBLIC_IP=\$(curl http://169.254.169.254/latest/meta-data/public-hostname)
-                nohup docker run -d --rm -v /etc/elastest:/data -v /var/run/docker.sock:/var/run/docker.sock elastest/platform:${ElastestVersion} start --server-address=$PUBLIC_HOSTNAME -u ${ElastestUsername} -p ${ElastestPassword} -m=${ElastestMode} $([ ${WantJenkins} == "true" ] && echo " --jenkins ") $([ ${WantTestLink} == "true" ] && echo " --testlink ") &>/dev/null &
+                nohup docker run -d --rm -v /etc/elastest:/data -v /var/run/docker.sock:/var/run/docker.sock elastest/platform:${ElastestVersion} start --server-address=\$PUBLIC_HOSTNAME -u ${ElastestUsername} -p ${ElastestPassword} -m=${ElastestMode} $([ ${WantJenkins} == "true" ] && echo " --jenkins ") $([ ${WantTestLink} == "true" ] && echo " --testlink ") &>/dev/null &
                 disown
                 exit 0
                 EOF
@@ -239,7 +239,7 @@ Resources:
                 cat >/usr/local/bin/elastest-start<<EOF
                 #!/bin/bash
                 PUBLIC_IP=${CustomDNS}
-                nohup docker run -d --rm -v /etc/elastest:/data -v /var/run/docker.sock:/var/run/docker.sock elastest/platform:${ElastestVersion} start --server-address=$PUBLIC_HOSTNAME -u ${ElastestUsername} -p ${ElastestPassword} -m=${ElastestMode} $([ ${WantJenkins} == "true" ] && echo " --jenkins ") $([ ${WantTestLink} == "true" ] && echo " --testlink ") &>/dev/null &
+                nohup docker run -d --rm -v /etc/elastest:/data -v /var/run/docker.sock:/var/run/docker.sock elastest/platform:${ElastestVersion} start --server-address=\$PUBLIC_HOSTNAME -u ${ElastestUsername} -p ${ElastestPassword} -m=${ElastestMode} $([ ${WantJenkins} == "true" ] && echo " --jenkins ") $([ ${WantTestLink} == "true" ] && echo " --testlink ") &>/dev/null &
                 disown
                 exit 0
                 EOF
