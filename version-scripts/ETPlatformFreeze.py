@@ -32,8 +32,10 @@ def buildPlatform(tag):
     return image
 
 
+buildingNightly = True
 if (len(sys.argv) > 1):
     tag = sys.argv[1]
+    buildingNightly = False
 else:
     tag = 'bytime'
 
@@ -57,3 +59,8 @@ print('Building Platform Image')
 platform_image = buildPlatform(tag)
 print('Pushing Platform Image')
 pushImage(platform_image)
+
+if (buildingNightly):
+    # Publish nightly images
+    pushImage(tagImage(platform_image, "nightly"))
+    pushImage(tagImage(services_image, "nightly"))
