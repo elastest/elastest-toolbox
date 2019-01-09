@@ -34,9 +34,11 @@ def buildPlatform(tag):
 
 buildingNightly = True
 if (len(sys.argv) > 1):
+    print('Freezing release')
     tag = sys.argv[1]
     buildingNightly = False
 else:
+    print('Freezing nightly')
     tag = 'bytime'
 
 only_modify_files = False
@@ -61,6 +63,7 @@ print('Pushing Platform Image')
 pushImage(platform_image)
 
 if (buildingNightly):
+    print('Pushing nightly images')
     # Publish nightly images
     pushImage(tagImage(platform_image, "nightly"))
     pushImage(tagImage(services_image, "nightly"))
