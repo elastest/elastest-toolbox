@@ -6,6 +6,7 @@ from ETDockerNightly import *
 from DockerUtils import *
 
 
+
 def buildImageFromToolbox(tag, image, dockerfile):
     if(not dockerfile):
         dockerfile = ''
@@ -67,5 +68,5 @@ pushImage(platform_image)
 if (buildingNightly):
     print('Pushing nightly images')
     # Publish nightly images
-    pushImage(tagImage(platform_image, "nightly"))
-    pushImage(tagImage(services_image, "nightly"))
+    pushImage(tagImage(platform_image.split(':')[0], "nightly"))
+    pushImage(tagImage(services_image.split(':')[0], "nightly"))
