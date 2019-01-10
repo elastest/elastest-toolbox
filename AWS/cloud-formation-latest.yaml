@@ -46,6 +46,7 @@ Parameters:
       - c5d.4xlarge
       - c5d.9xlarge
       - c5d.18xlarge
+      - r4.xlarge
       - r5.2xlarge
       - r5.4xlarge
       - r5.12xlarge
