@@ -4,7 +4,7 @@ Description: |
 Parameters:
   KeyName:
     Type: 'AWS::EC2::KeyPair::KeyName'
-    Description: >
+    Description: >-
       Specifies the name of an existing Amazon EC2 key pair to enable SSH access
       to the EC2 instances in your cluster.
     ConstraintDescription: Must be the name of an existing EC2 KeyPair.
@@ -23,7 +23,7 @@ Parameters:
     Default: latest
   ElastestMode:
     Type: String
-    Description: >
+    Description: >-
       ElasTest has three execution modes. Normal mode (default mode), Experimental-lite and Experimental. 
       Each of them increases the number of features offered by ElasTest from less to more.
     Default: normal
@@ -31,10 +31,17 @@ Parameters:
       - normal
       - experimental-lite
       - experimental
+  EnableElastestLogs:
+    Type: String
+    Description: This option allows you to get all containers logs. Good for debbuging.
+    Default: false
+    AllowedValues:
+      - true
+      - false
   InstanceType:
     Description: Elastest Machine - EC2 instance type
     Type: String
-    Default: c5.2xlarge
+    Default: m5.2xlarge
     AllowedValues:
       - a1.2xlarge
       - a1.4xlarge
@@ -47,6 +54,9 @@ Parameters:
       - c5d.9xlarge
       - c5d.18xlarge
       - r4.xlarge
+      - m5.2xlarge
+      - m5.4xlarge
+      - m5.12xlarge
       - r5.2xlarge
       - r5.4xlarge
       - r5.12xlarge
@@ -199,7 +209,8 @@ Resources:
                   -p ${ElastestPassword} \
                   -m=${ElastestMode} \
                   $([ ${WantJenkins} == "true" ] && echo " --jenkins ") \
-                  $([ ${WantTestLink} == "true" ] && echo " --testlink ")
+                  $([ ${WantTestLink} == "true" ] && echo " --testlink ") \
+                  $([ ${EnableElastestLogs} == "true" ] && echo --logs)
               mode: "000755"
               owner: "root"
               group: "root"
@@ -208,15 +219,25 @@ Resources:
                 #!/bin/bash -x
                 sleep 1m
 
-                CONTAINER_ID=$(docker ps --format "table {{.ID}}" | tail -n +2)
+                ETM_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' elastest_etm_1)
 
-                while true
-                do 
-                  docker logs $CONTAINER_ID | grep "Press Ctrl+C to stop"
-                  if [ $? == 0 ]; then
-                    break
-                  fi
-                  sleep 1m
+                while [ "${ETM_IP}"x == "x" ]; do
+                  ETM_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' elastest_etm_1);
+                  sleep 1m;
+                done
+
+                while [ $(curl --output /dev/null --silent --head --fail --write-out "%{http_code}\\n"  http://${ETM_IP}:8091/) != "200" ];
+                do
+                  echo "Waiting for elastest ETM...";
+                  sleep 1m;
+                done
+
+                NGINX_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' elastest_etm-proxy_1)
+
+                while [ $(curl --output /dev/null --silent --head --fail --write-out "%{http_code}\\n" http://${NGINX_IP}/) != "401" ];
+                do
+                  echo "Waiting for elastest ETM Proxy...";
+                  sleep 1m;
                 done
               mode: "000755"
               owner: "root"
@@ -229,8 +250,18 @@ Resources:
 
                 cat >/usr/local/bin/elastest-start<<EOF
                 #!/bin/bash
-                PUBLIC_IP=\$(curl http://169.254.169.254/latest/meta-data/public-hostname)
-                nohup docker run -d --rm -v /etc/elastest:/data -v /var/run/docker.sock:/var/run/docker.sock elastest/platform:${ElastestVersion} start --server-address=\$PUBLIC_HOSTNAME -u ${ElastestUsername} -p ${ElastestPassword} -m=${ElastestMode} $([ ${WantJenkins} == "true" ] && echo " --jenkins ") $([ ${WantTestLink} == "true" ] && echo " --testlink ") &>/dev/null &
+                docker rm -f \$(docker ps -a -q)
+                PUBLIC_HOSTNAME=\$(curl http://169.254.169.254/latest/meta-data/public-hostname)
+                nohup docker run -d --rm -v /etc/elastest:/data \
+                -v /var/run/docker.sock:/var/run/docker.sock \
+                elastest/platform:${ElastestVersion} start \
+                --server-address=\$PUBLIC_HOSTNAME \
+                -u ${ElastestUsername} \
+                -p ${ElastestPassword} \
+                -m=${ElastestMode} \
+                $([ ${WantJenkins} == "true" ] && echo " --jenkins ") \
+                $([ ${WantTestLink} == "true" ] && echo " --testlink ") \
+                $([ ${EnableElastestLogs} == "true" ] && echo " --logs ") &>/dev/null &
                 disown
                 exit 0
                 EOF
@@ -239,8 +270,18 @@ Resources:
 
                 cat >/usr/local/bin/elastest-start<<EOF
                 #!/bin/bash
-                PUBLIC_IP=${CustomDNS}
-                nohup docker run -d --rm -v /etc/elastest:/data -v /var/run/docker.sock:/var/run/docker.sock elastest/platform:${ElastestVersion} start --server-address=\$PUBLIC_HOSTNAME -u ${ElastestUsername} -p ${ElastestPassword} -m=${ElastestMode} $([ ${WantJenkins} == "true" ] && echo " --jenkins ") $([ ${WantTestLink} == "true" ] && echo " --testlink ") &>/dev/null &
+                docker rm -f \$(docker ps -a -q)
+                PUBLIC_HOSTNAM=${CustomDNS}
+                nohup docker run -d --rm -v /etc/elastest:/data \
+                -v /var/run/docker.sock:/var/run/docker.sock \
+                elastest/platform:${ElastestVersion} start \
+                --server-address=\$PUBLIC_HOSTNAME \
+                -u ${ElastestUsername} \
+                -p ${ElastestPassword} \
+                -m=${ElastestMode} \
+                $([ ${WantJenkins} == "true" ] && echo " --jenkins ") \
+                $([ ${WantTestLink} == "true" ] && echo " --testlink ") \
+                $([ ${EnableElastestLogs} == "true" ] && echo " --logs ") &>/dev/null &
                 disown
                 exit 0
                 EOF
