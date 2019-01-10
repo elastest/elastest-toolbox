@@ -19,7 +19,12 @@ def pullImage(image):
 
 
 def tagImage(image, tag):
-    new_tagged = image + ':' + tag
+    new_tagged = ''
+    if ':' in image:
+        new_tagged = image.split(':')[0] + ':' + tag
+    else:
+        new_tagged = image + ':' + tag
+        
     tag_command = 'docker tag ' + image + ' ' + new_tagged
     tag_result = subprocess.call(shlex.split(tag_command))
 
