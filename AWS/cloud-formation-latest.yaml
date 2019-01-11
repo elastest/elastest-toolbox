@@ -383,6 +383,11 @@ Resources:
         FromPort: 32768
         ToPort: 61000
         CidrIp: 0.0.0.0/0
+  
+  MyEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref ElastestEC2Instance
 
 Outputs:
   ElastestIP:
