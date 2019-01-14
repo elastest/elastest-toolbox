@@ -199,6 +199,7 @@ Resources:
                   PUBLIC_HOSTNAME=${CustomDNS}
                 fi
                 docker run \
+                  $([ ${EnableElastestLogs} == "true" ] && echo " --log-driver json-file --log-opt max-size=50m --log-opt max-file=5 ") \
                   -d \
                   --rm \
                   -v /etc/elastest:/data \
@@ -210,7 +211,7 @@ Resources:
                   -m=${ElastestMode} \
                   $([ ${WantJenkins} == "true" ] && echo " --jenkins ") \
                   $([ ${WantTestLink} == "true" ] && echo " --testlink ") \
-                  $([ ${EnableElastestLogs} == "true" ] && echo --logs)
+                  $([ ${EnableElastestLogs} == "true" ] && echo --logs )
               mode: "000755"
               owner: "root"
               group: "root"
@@ -252,7 +253,8 @@ Resources:
                 #!/bin/bash
                 docker rm -f \$(docker ps -a -q)
                 PUBLIC_HOSTNAME=\$(curl http://169.254.169.254/latest/meta-data/public-hostname)
-                nohup docker run -d --rm -v /etc/elastest:/data \
+                nohup docker run $([ ${EnableElastestLogs} == "true" ] && echo " --log-driver json-file --log-opt max-size=50m --log-opt max-file=5 ") \
+                -d --rm -v /etc/elastest:/data \
                 -v /var/run/docker.sock:/var/run/docker.sock \
                 elastest/platform:${ElastestVersion} start \
                 --server-address=\$PUBLIC_HOSTNAME \
@@ -272,7 +274,8 @@ Resources:
                 #!/bin/bash
                 docker rm -f \$(docker ps -a -q)
                 PUBLIC_HOSTNAM=${CustomDNS}
-                nohup docker run -d --rm -v /etc/elastest:/data \
+                nohup docker run $([ ${EnableElastestLogs} == "true" ] && echo " --log-driver json-file --log-opt max-size=50m --log-opt max-file=5 ") \
+                -d --rm -v /etc/elastest:/data \
                 -v /var/run/docker.sock:/var/run/docker.sock \
                 elastest/platform:${ElastestVersion} start \
                 --server-address=\$PUBLIC_HOSTNAME \
