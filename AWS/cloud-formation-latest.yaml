@@ -199,11 +199,11 @@ Resources:
                   PUBLIC_HOSTNAME=${CustomDNS}
                 fi
                 docker run \
-                  $([ ${EnableElastestLogs} == "true" ] && echo " --log-driver json-file --log-opt max-size=50m --log-opt max-file=5 ") \
                   -d \
                   --rm \
                   -v /etc/elastest:/data \
                   -v /var/run/docker.sock:/var/run/docker.sock \
+                  $([ ${EnableElastestLogs} == "true" ] && echo " --log-driver json-file --log-opt max-size=50m --log-opt max-file=5 ") \
                   elastest/platform:${ElastestVersion} start \
                   --server-address=$PUBLIC_HOSTNAME \
                   -u ${ElastestUsername} \
@@ -253,9 +253,10 @@ Resources:
                 #!/bin/bash
                 docker rm -f \$(docker ps -a -q)
                 PUBLIC_HOSTNAME=\$(curl http://169.254.169.254/latest/meta-data/public-hostname)
-                nohup docker run $([ ${EnableElastestLogs} == "true" ] && echo " --log-driver json-file --log-opt max-size=50m --log-opt max-file=5 ") \
+                nohup docker run \
                 -d --rm -v /etc/elastest:/data \
                 -v /var/run/docker.sock:/var/run/docker.sock \
+                $([ ${EnableElastestLogs} == "true" ] && echo " --log-driver json-file --log-opt max-size=50m --log-opt max-file=5 ") \
                 elastest/platform:${ElastestVersion} start \
                 --server-address=\$PUBLIC_HOSTNAME \
                 -u ${ElastestUsername} \
@@ -274,9 +275,10 @@ Resources:
                 #!/bin/bash
                 docker rm -f \$(docker ps -a -q)
                 PUBLIC_HOSTNAM=${CustomDNS}
-                nohup docker run $([ ${EnableElastestLogs} == "true" ] && echo " --log-driver json-file --log-opt max-size=50m --log-opt max-file=5 ") \
+                nohup docker run \
                 -d --rm -v /etc/elastest:/data \
                 -v /var/run/docker.sock:/var/run/docker.sock \
+                $([ ${EnableElastestLogs} == "true" ] && echo " --log-driver json-file --log-opt max-size=50m --log-opt max-file=5 ") \
                 elastest/platform:${ElastestVersion} start \
                 --server-address=\$PUBLIC_HOSTNAME \
                 -u ${ElastestUsername} \
