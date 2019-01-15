@@ -373,7 +373,7 @@ def runPlatform(params):
             try:
                 if(args.logs and command == 'start'):
                     # If print logs, run in bg
-                    subprocess.Popen(shlex.split(dockerCommand), stderr=FNULL)
+                    subprocess.Popen(dockerCommand, shell=True, bufsize=-1, stderr=FNULL)
                 else:
                     result = subprocess.call(shlex.split(dockerCommand), stderr=FNULL)
                     if(result == 0 and command == 'start'):
