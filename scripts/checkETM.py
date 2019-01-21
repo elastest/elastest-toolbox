@@ -157,6 +157,7 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
     global etprintEnabled
     etprintEnabled = printEnabled
 
+    etprint('')
     etprint('ElasTest services are starting. This will likely take some time. The ElasTest URL will be shown when ready.')
     etprint('')
         

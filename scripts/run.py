@@ -31,9 +31,7 @@ def getArgs(params):
     parser.add_argument('--pullcore', '-pc', help='Force pull of only necessary images. Usage: --pullcore',
                         required=False, action='store_true')
     parser.add_argument('--noports', '-np', help='Unbind all ports. Usage: --noports',
-                        required=False, action='store_true')
-    parser.add_argument('--logs', '-l', help='Show logs of all containers. Usage: --logs',
-                        required=False, action='store_true')
+                        required=False, action='store_true')    
     parser.add_argument('--server-address', '-sa',
                         help='Set server address Env Var. Usage: --server-address=XXXXXX', required=False)
     parser.add_argument('--shared-folder', '-sf',
@@ -194,14 +192,6 @@ def runPlatform(params):
         if(mode == 'normal' or mode == 'experimental-lite'):
             replaceEnvVarValue('LOGSTASH_HOST', 'etm', 'etm-logstash', files_list)
             replaceEnvVarValue('LOGSTASH_HTTP_PATH', '/api/monitoring/', '/', files_list)
-      
-        if(args.logs == True):
-            FNULL = subprocess.STDOUT
-            instruction = ' up'
-        else:
-            FNULL = open(os.devnull, 'w')
-            instruction = ' up -d'
-   
 
         message = ''
 
@@ -362,7 +352,12 @@ def runPlatform(params):
                     try:
                         subprocess.call(shlex.split(dockerCommand + ' pull'))
                     except KeyboardInterrupt:  # Hide error on SIGINT
-                        exit(1)
+                        exit(1)                
+                # Run containers in background by default
+                instruction = ' up -d'
+
+            # Set subporcess output log
+            FNULL = subprocess.STDOUT
 
             dockerCommand = dockerCommand + instruction
             print ''
@@ -371,26 +366,18 @@ def runPlatform(params):
 
             # Run docker-compose up/down
             try:
-                if(args.logs and command == 'start'):
-                    # If print logs, run in bg
-                    p = subprocess.Popen(dockerCommand, shell=True, stdout=subprocess.PIPE)
-                    output, error = p.communicate()
-                    
-                    if error:
-                        print('error:', error, sys.stderr)
-                else:
-                    result = subprocess.call(shlex.split(dockerCommand), stderr=FNULL)
-                    if(result == 0 and command == 'start'):
-                        check_params = [[], True]
-                        # Set proxy value to True
-                        check_params.append(True)
-                        if(args.server_address):
-                            check_params.append(args.server_address)
+                result = subprocess.call(shlex.split(dockerCommand), stderr=FNULL)
+                if(result == 0 and command == 'start'):
+                    check_params = [[], True]
+                    # Set proxy value to True
+                    check_params.append(True)
+                    if(args.server_address):
+                        check_params.append(args.server_address)
 
-                        # Run check ETM in bg
-                        check_thread = threading.Thread(target=runCheckETM, args=check_params)
-                        check_thread.daemon = True
-                        check_thread.start()
+                    # Run check ETM in bg
+                    check_thread = threading.Thread(target=runCheckETM, args=check_params)
+                    check_thread.daemon = True
+                    check_thread.start()
                 return 0
             except KeyboardInterrupt:  # Hide error on SIGINT
                 pass
