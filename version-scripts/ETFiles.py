@@ -7,6 +7,7 @@ import os
 # ET CORE DOCKER COMPOSE FILES (ETM, EDM, EIM, ESM, EMP and EPM)
 emp = '../emp/deploy/docker-compose.yml'
 edm = '../edm/deploy/docker-compose.yml'
+edm_lite = '../edm/deploy/docker-compose-lite.yml'
 esm = '../esm/deploy/docker-compose.yml'
 eim = '../eim/deploy/docker-compose.yml'
 epm = '../epm/deploy/docker-compose.yml'
@@ -47,7 +48,7 @@ tss_images_files = {'eus': eus, 'ebs': ebs, 'ess': ess, 'eds': eds, 'ems': ems}
 
 
 def getCoreList():
-    core_list = [emp, edm, esm, eim, epm, etm_complementary_experimental, platform_services,
+    core_list = [emp, edm_lite, esm, eim, epm, etm_complementary_experimental, platform_services,
                  etm_main_experimental, etm_complementary_lite, etm_main_lite, etm_proxy]
     return core_list
 
@@ -59,7 +60,7 @@ def getCoreListByExecMode(mode):
                      etm_main_lite, etm_proxy, platform_services]
     # Experimental
     else:
-        core_list = [emp, edm, esm, eim, epm, etm_complementary_experimental,
+        core_list = [emp, edm_lite, esm, eim, epm, etm_complementary_experimental,
                      etm_main_experimental, etm_proxy, platform_services]
     return core_list
 

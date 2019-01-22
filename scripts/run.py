@@ -199,6 +199,7 @@ def runPlatform(params):
         etm_proxy_env = '-f ../etm/docker/docker-compose-proxy-env.yml'
         emp = '-f ../emp/deploy/docker-compose.yml'        
         edm = '-f ../edm/deploy/docker-compose.yml'
+        edm_lite = '-f ../edm/deploy/docker-compose-lite.yml'
         esm = '-f ../esm/deploy/docker-compose.yml'
         eim = '-f ../eim/deploy/docker-compose.yml'
         epm = '-f ../epm/deploy/docker-compose.yml'
@@ -219,7 +220,7 @@ def runPlatform(params):
         # If is Experimental mode
         files_list = []
         if(mode == 'experimental'):            
-            dockerCommand = 'docker-compose ' + platform_services + ' ' + edm + ' ' + etm + ' ' + esm + ' ' + eim + \
+            dockerCommand = 'docker-compose ' + platform_services + ' ' + edm_lite + ' ' + etm + ' ' + esm + ' ' + eim + \
                             ' ' +  etm_proxy + ' ' + etm_tlink + ' ' + etm_tlink_ports + \
                             ' ' + etm_jenkins + ' ' + etm_jenkins_ports + ' '
             # If dev mode, no start epm and emp
