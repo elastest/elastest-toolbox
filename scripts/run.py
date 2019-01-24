@@ -23,8 +23,8 @@ def getArgs(params):
     parser = argparse.ArgumentParser()
     parser.add_argument('command', help='Platform command to execute: start, stop, update, ...',
                         type=str, choices=set(('start', 'stop', 'update', 'pull-images')))
-    parser.add_argument('--mode', '-m', help='Set ElasTest execution mode. Usage: --mode=experimental',
-                        type=str, choices=set(('normal', 'experimental-lite', 'experimental')), default='normal')
+    parser.add_argument('--mode', '-m', help='Set ElasTest execution mode. Usage: --mode=singlenode',
+                        type=str, choices=set(('mini', 'singlenode')), default='mini')
     parser.add_argument('--dev', '-d', help='Configure ElasTest for development.', required=False, action='store_true')
     parser.add_argument('--pullall', '-pa', help='Force pull of all images. Usage: --pullall',
                         required=False, action='store_true')
@@ -181,7 +181,7 @@ def runPlatform(params):
             replaceEnvVarValue('ET_USER', args.user, 'none', files_list)
             replaceEnvVarValue('ET_PASS', args.password, 'none', files_list)
         
-        if (mode == 'experimental'):
+        if (mode == 'singlenode'):
             if(args.dev):
                 replaceEnvVarValue(
                     'LOCATION_RULES', 'nginx-dev-experimental-locations.conf', 'nginx-base-location.conf', files_list)
@@ -189,7 +189,7 @@ def runPlatform(params):
                 replaceEnvVarValue(
                     'LOCATION_RULES', 'nginx-experimental-locations.conf', 'nginx-base-location.conf', files_list)
         
-        if(mode == 'normal' or mode == 'experimental-lite'):
+        if(mode == 'mini'):
             replaceEnvVarValue('LOGSTASH_HOST', 'etm', 'etm-logstash', files_list)
             replaceEnvVarValue('LOGSTASH_HTTP_PATH', '/api/monitoring/', '/', files_list)
 
@@ -217,9 +217,9 @@ def runPlatform(params):
         etm_main = '-f ../etm/deploy/docker-compose-main.yml'
         etm = etm_complementary + ' ' + etm_main
 
-        # If is Experimental mode
+        # If is singlenode mode
         files_list = []
-        if(mode == 'experimental'):            
+        if(mode == 'singlenode'):            
             dockerCommand = 'docker-compose ' + platform_services + ' ' + edm_lite + ' ' + etm + ' ' + esm + ' ' + eim + \
                             ' ' +  etm_proxy + ' ' + etm_tlink + ' ' + etm_tlink_ports + \
                             ' ' + etm_jenkins + ' ' + etm_jenkins_ports + ' '
@@ -247,11 +247,11 @@ def runPlatform(params):
                 replaceEnvVarValue('ET_MASTER_SLAVE_MODE', 'true',
                             'false', files_list)
                 #dockerCommand = dockerCommand + ' ' + epm_ansible_adapter + ' '
-        #If is Experimental-lite or Normal mode
+        #If is Mini mode
         else:
             #Change the default execution mode
             files_list.append(etmDockerComposeMainFromDocker)
-            replaceEnvVarValue('EXEC_MODE', args.mode, 'normal', files_list)
+            replaceEnvVarValue('EXEC_MODE', args.mode, 'mini', files_list)
 
             #Initially do not bind ports
             etm_complementary_ports = '-f ../etm/docker/docker-compose-complementary-ports.yml'

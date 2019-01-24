@@ -11,8 +11,8 @@ dev_tag = 'dev'
 def getArgs(params):
     # Define arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('--mode', '-m', help='Set ElasTest execution mode. Usage: --mode=experimental',
-                        type=str, choices=set(('normal', 'experimental-lite', 'experimental')), default='normal')
+    parser.add_argument('--mode', '-m', help='Set ElasTest execution mode. Usage: --mode=singlenode',
+                        type=str, choices=set(('mini', 'singlenode')), default='mini')
 
     # Custom usage message
     usage = parser.format_usage()

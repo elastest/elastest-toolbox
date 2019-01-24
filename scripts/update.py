@@ -17,8 +17,8 @@ pull_command = 'pull-images'
 def getArgs(params):
     # Define arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('--mode', '-m', help='Set ElasTest execution mode. Usage: --mode=experimental',
-                        type=str, choices=set(('normal', 'experimental-lite', 'experimental')), default='normal')
+    parser.add_argument('--mode', '-m', help='Set ElasTest execution mode. Usage: --mode=singlenode',
+                        type=str, choices=set(('mini', 'singlenode')), default='mini')
 
     # Custom usage message
     usage = parser.format_usage()
@@ -43,7 +43,7 @@ def updatePlatform(params):
 
     confirmMessage1 = 'You are going to update the ElasTest version ' + \
         getVersionFromHostContainer() + '. Continue?'
-    #Confirm that you want to update this ElasTest version
+    # Confirm that you want to update this ElasTest version
     if(yes_or_no(confirmMessage1)):
         elasTestRunning = elasTestIsRunning()
         if(elasTestRunning):
@@ -65,20 +65,20 @@ def updatePlatform(params):
             print ('')
             print (' Updating ElasTest...')
             print ('')
-            #Update platform image
+            # Update platform image
             image = getContainerImage()
             updateImage(image)
 
             print ('')
-            #Update platform-services image
+            # Update platform-services image
             updateImage(eps_image)
 
-            #Get images list to update
+            # Get images list to update
             dockerArgs = '-e ET_OLD_IMAGES="%s"' % (
                 getElasTestImagesAsString(mode))
             commandArgs = '-m=%s' % (mode)
 
-            #Download/update the images of the ElasTest components
+            # Download/update the images of the ElasTest components
             executePlatformCommand(image, pull_command,
                                    dockerArgs, commandArgs)
             print ('')
@@ -108,18 +108,19 @@ def elasTestIsRunning():
         return False
 
 
-def stopRunningElasTest():    
+def stopRunningElasTest():
     platformImage = getContainerImage()
     getContainersCommand = ['docker ps -q --filter ancestor=' + platformImage]
-    platformContainers = str(subprocess.check_output(getContainersCommand, shell=True)).split()
+    platformContainers = str(subprocess.check_output(
+        getContainersCommand, shell=True)).split()
     platformContainers.remove(getContainerId())
-    for containerId in platformContainers:        
+    for containerId in platformContainers:
         killContainer(containerId, 'SIGTERM')
-    
+
 
 def yes_or_no(question, default="yes"):
     valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
-    
+
     if default == None:
         prompt = " [y/n] "
     elif default == "yes":
@@ -137,8 +138,5 @@ def yes_or_no(question, default="yes"):
         elif choice in valid:
             return valid[choice]
         else:
-            sys.stdout.write("Please respond with 'yes' or 'no' "\
+            sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
-                            
-
-    

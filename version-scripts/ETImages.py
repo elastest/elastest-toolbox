@@ -16,13 +16,15 @@ socat_image_property = 'et.socat.image'
 chrome_browser = 'chrome'
 firefox_browser = 'firefox'
 
-images_to_pre_pulling = ['elastest/etm-socat', 'elastest/eus', 'elastest/etm-dockbeat']
-tss_images_in_normal_mode = ['eus']
+images_to_pre_pulling = ['elastest/etm-socat',
+                         'elastest/eus', 'elastest/etm-dockbeat']
+
 
 class MyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, (bytes, bytearray)):
-            return obj.decode("ASCII") # <- or any other encoding of your choice
+            # <- or any other encoding of your choice
+            return obj.decode("ASCII")
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
 
@@ -37,7 +39,8 @@ def getValuesListOfKey(d, key):
         try:
             return [d[key]]
         except TypeError:
-            print ('dict modified: ' + yaml.dump(d, stream=None, default_flow_style=True))
+            print ('dict modified: ' + yaml.dump(d,
+                                                 stream=None, default_flow_style=True))
             dm = yaml.dump(d, stream=None, default_flow_style=True)
             return [dm[key]]
     for k in d:
@@ -46,7 +49,7 @@ def getValuesListOfKey(d, key):
     return values_list
 
 
-def getImagesList(d):    
+def getImagesList(d):
     return getValuesListOfKey(d, 'image')
 
 
@@ -61,15 +64,17 @@ def getYmlFromETServicesJsonFile(json):
     except KeyError:
         return yaml.load('')
 
-def getPropertiesFromFile(path):    
+
+def getPropertiesFromFile(path):
     separator = "="
-    keys = {}    
+    keys = {}
     with open(path) as f:
         for line in f:
-            if separator in line:                
+            if separator in line:
                 name, value = line.split(separator, 1)
-                keys[name.strip()] = value.strip()        
-    return keys;
+                keys[name.strip()] = value.strip()
+    return keys
+
 
 def getETDockerImagesFromYml(yml):
     dynamic_images = []
@@ -78,7 +83,7 @@ def getETDockerImagesFromYml(yml):
         for var in yml[environment]:
             try:
                 if(var.startswith(et_docker_image_name_prefix)):
-                    dynamic_images.append(var.split('=')[1])                    
+                    dynamic_images.append(var.split('=')[1])
             except TypeError:
                 print ('Error getting ET_DOCKER_IMAGES')
         return dynamic_images
@@ -89,29 +94,34 @@ def getETDockerImagesFromYml(yml):
 
 #*** Images Lists Getters By File Type ***#
 
+
 def getImagesFromYmlFilesList(files_list, get_from_env=True):
     # get_from_env is used to get images from declared env variables (example: ET_DOCKER_IMG_DOCKBEAT)
     files_images = []
     for path in files_list:
         files_images = files_images + getImagesList(getYml(path))
         if(get_from_env):
-            files_images = files_images + getETDockerImagesFromYml(getYml(path))
+            files_images = files_images + \
+                getETDockerImagesFromYml(getYml(path))
     return files_images
+
 
 def getImagesFromJsonFilesList(files_list):
     files_images = []
-    for path in files_list:        
+    for path in files_list:
         files_images = files_images + \
             getImagesList(getYmlFromETServicesJsonPath(path))
         files_images = files_images + \
             getETDockerImagesFromETServiceJsonFile(path)
     return files_images
 
+
 def getImageFromJsonFile(service_name):
-    image = None    
-    file_path = getFilePathByImage(service_name)    
+    image = None
+    file_path = getFilePathByImage(service_name)
     image = getImagesList(getYmlFromETServicesJsonPath(file_path))
     return image
+
 
 def getETDockerImagesFromETServiceJsonFile(path):
     json_file = getJson(path)
@@ -119,6 +129,7 @@ def getETDockerImagesFromETServiceJsonFile(path):
     return getETDockerImagesFromYml(yml)
 
 #*** Images Lists Getters By Component Type ***#
+
 
 def getCoreImages(get_from_env=True):
     return getImagesFromYmlFilesList(core_list, get_from_env)
@@ -131,40 +142,43 @@ def getTSSImages():
 def getEnginesImages():
     return getImagesFromYmlFilesList(engines_list)
 
+
 def getImageByServiceName(service_name):
     image = None
     image = getImageFromJsonFile(service_name)
     return image
 
+
 def getBrowserImage(browser):
-    properties = {}    
+    properties = {}
     properties = getPropertiesFromFile(getFilePathByImage('eusBrowsers'))
     latest_version = 0
-    browser_image = None    
-    
-    for key, value in properties.iteritems():        
+    browser_image = None
+
+    for key, value in properties.iteritems():
         if browser in key:
             if re.findall('\d+', key)[0] > latest_version:
                 latest_version = re.findall('\d+', key)[0]
-                browser_image = value                
-    
+                browser_image = value
+
     return browser_image
 
 
-def getBrowsersImages():    
-    browser_images = []    
+def getBrowsersImages():
+    browser_images = []
     browser_images.append(getBrowserImage(chrome_browser))
-    browser_images.append(getBrowserImage(firefox_browser))    
+    browser_images.append(getBrowserImage(firefox_browser))
     return browser_images
-    
+
+
 def getImageFromFileProperties(image_key, properties_type):
     image = None
-    properties = {}    
+    properties = {}
     properties = getPropertiesFromFile(getFilePathByImage(properties_type))
     image = properties.get(image_key, None)
-    
+
     return image
-    
+
 
 ##################################    Updaters    ##################################
 
@@ -196,15 +210,15 @@ def updateImagesTagOfReadYml(d, tag):
     return d
 
 
-def updateETDockerImagesTagYml(yml, tag):    
+def updateETDockerImagesTagYml(yml, tag):
     environment = 'environment'
     if environment in yml:
         for i, var in enumerate(yml[environment]):
             try:
                 if(var.startswith(et_docker_image_name_prefix)):
-                    yml[environment][i] = modifyImageTag(var, tag)                    
+                    yml[environment][i] = modifyImageTag(var, tag)
             except TypeError:
-                print ('Error updating ET_DOCKER_IMAGES')                
+                print ('Error updating ET_DOCKER_IMAGES')
         return yml
     for k in yml:
         if isinstance(yml[k], dict):
@@ -221,13 +235,14 @@ def updateImagesTagOfYmlFile(path, tag):
 
 
 def updateImagesTagOfJsonFile(path, tag):
-    json_file = getJson(path)    
+    json_file = getJson(path)
 
     # Update images version in the docker-compose files
     yml = getYmlFromETServicesJsonFile(json_file)
-    new_yml = updateImagesTagOfReadYml(yml, tag)    
+    new_yml = updateImagesTagOfReadYml(yml, tag)
     new_yml = updateETDockerImagesTagYml(new_yml, tag)
-    json_file['manifest']['manifest_content'] = json.loads(json.dumps(yaml.dump(new_yml, encoding=('utf-8'), default_flow_style=False), cls=MyEncoder))    
+    json_file['manifest']['manifest_content'] = json.loads(json.dumps(yaml.dump(
+        new_yml, encoding=('utf-8'), default_flow_style=False), cls=MyEncoder))
     # Save new json file with images tag updated
     saveJson(path, json_file)
 
@@ -295,18 +310,17 @@ def getAllImagesByExecMode(mode):
     global core_list
     core_list = getCoreListByExecMode(mode)
     images_list = images_list + list(set(getCoreImages()))
-    if (mode == 'experimental' or mode == 'experimental-lite'):
-        global tss_list
-        tss_list = getTSSList()
-        global engines_list
-        engines_list = getEnginesList()        
-        images_list = images_list + getTSSImages()
-        images_list = images_list + getEnginesImages()
-    else:
-        images_list = images_list + getTSSImagesByServices(tss_images_in_normal_mode)
-    
+
+    # All modes
+    global tss_list
+    tss_list = getTSSList()
+    global engines_list
+    engines_list = getEnginesList()
+    images_list = images_list + getTSSImages()
+    images_list = images_list + getEnginesImages()
+
     images_list.append(getContainerImage())
-    
+
     return images_list
 
 
@@ -315,10 +329,11 @@ def getAllCoreImagesByExecMode(mode):
     global core_list
     core_list = getCoreListByExecMode(mode)
     images_list = images_list + list(set(getCoreImages(False)))
-    
+
     images_list.append(getContainerImage())
-    
+
     return images_list
+
 
 def getElastestImages(without_tag):
     images_list = getAllImages()
@@ -333,6 +348,7 @@ def getElastestImages(without_tag):
                 elastest_images.append(image)
     return elastest_images
 
+
 def getElastestImagesByExecMode(mode, without_tag):
     images_list = getAllImagesByExecMode(mode)
 
@@ -346,9 +362,11 @@ def getElastestImagesByExecMode(mode, without_tag):
                 elastest_images.append(image)
     return elastest_images
 
+
 def getElasTestImagesAsString(mode):
-    images_list = getElastestImagesByExecMode(mode, False)    
-    return ",".join(map(str,images_list))
+    images_list = getElastestImagesByExecMode(mode, False)
+    return ",".join(map(str, images_list))
+
 
 def getElastestCoreImagesByExecMode(mode, without_tag):
     images_list = getAllCoreImagesByExecMode(mode)
@@ -363,12 +381,13 @@ def getElastestCoreImagesByExecMode(mode, without_tag):
                 elastest_images.append(image)
     return elastest_images
 
+
 def getElasTestCoreImagesAsString(mode):
-    images_list = getElastestCoreImagesByExecMode(mode, False)    
-    return ",".join(map(str,images_list))
+    images_list = getElastestCoreImagesByExecMode(mode, False)
+    return ",".join(map(str, images_list))
 
 
-def getPreloadedImages(elastest_images):    
+def getPreloadedImages(elastest_images):
     images_list = []
     for image_to_pulling in images_to_pre_pulling:
         for et_image in elastest_images:
@@ -377,6 +396,7 @@ def getPreloadedImages(elastest_images):
                 break
 
     return images_list
+
 
 def updateFilesImagesWithTag(tag):
     loadETLists()
@@ -390,8 +410,9 @@ def pullAllImages():
     for image in images_list:
         pullImage(image)
 
+
 def pullPreloadImages(elastest_images):
     images_list = getPreloadedImages(elastest_images)
-    for image in images_list:       
-        if (not existsLocalImage(image)):            
+    for image in images_list:
+        if (not existsLocalImage(image)):
             pullImage(image)
