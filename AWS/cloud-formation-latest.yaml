@@ -31,13 +31,6 @@ Parameters:
       - normal
       - experimental-lite
       - experimental
-  EnableElastestLogs:
-    Type: String
-    Description: This option allows you to get all containers logs. Good for debbuging.
-    Default: false
-    AllowedValues:
-      - true
-      - false
   InstanceType:
     Description: Elastest Machine - EC2 instance type
     Type: String
@@ -202,8 +195,7 @@ Resources:
                   -d \
                   --rm \
                   -v /etc/elastest:/data \
-                  -v /var/run/docker.sock:/var/run/docker.sock \
-                  $([ ${EnableElastestLogs} == "true" ] && echo " --log-driver json-file --log-opt max-size=50m --log-opt max-file=5 ") \
+                  -v /var/run/docker.sock:/var/run/docker.sock \                  
                   elastest/platform:${ElastestVersion} start \
                   --server-address=$PUBLIC_HOSTNAME \
                   -u ${ElastestUsername} \
@@ -211,7 +203,6 @@ Resources:
                   -m=${ElastestMode} \
                   $([ ${WantJenkins} == "true" ] && echo " --jenkins ") \
                   $([ ${WantTestLink} == "true" ] && echo " --testlink ") \
-                  $([ ${EnableElastestLogs} == "true" ] && echo --logs )
               mode: "000755"
               owner: "root"
               group: "root"
@@ -256,15 +247,13 @@ Resources:
                 nohup docker run \
                 -d --rm -v /etc/elastest:/data \
                 -v /var/run/docker.sock:/var/run/docker.sock \
-                $([ ${EnableElastestLogs} == "true" ] && echo " --log-driver json-file --log-opt max-size=50m --log-opt max-file=5 ") \
                 elastest/platform:${ElastestVersion} start \
                 --server-address=\$PUBLIC_HOSTNAME \
                 -u ${ElastestUsername} \
                 -p ${ElastestPassword} \
                 -m=${ElastestMode} \
                 $([ ${WantJenkins} == "true" ] && echo " --jenkins ") \
-                $([ ${WantTestLink} == "true" ] && echo " --testlink ") \
-                $([ ${EnableElastestLogs} == "true" ] && echo " --logs ") &>/dev/null &
+                $([ ${WantTestLink} == "true" ] && echo " --testlink ") \                
                 disown
                 exit 0
                 EOF
@@ -278,7 +267,6 @@ Resources:
                 nohup docker run \
                 -d --rm -v /etc/elastest:/data \
                 -v /var/run/docker.sock:/var/run/docker.sock \
-                $([ ${EnableElastestLogs} == "true" ] && echo " --log-driver json-file --log-opt max-size=50m --log-opt max-file=5 ") \
                 elastest/platform:${ElastestVersion} start \
                 --server-address=\$PUBLIC_HOSTNAME \
                 -u ${ElastestUsername} \
@@ -286,7 +274,6 @@ Resources:
                 -m=${ElastestMode} \
                 $([ ${WantJenkins} == "true" ] && echo " --jenkins ") \
                 $([ ${WantTestLink} == "true" ] && echo " --testlink ") \
-                $([ ${EnableElastestLogs} == "true" ] && echo " --logs ") &>/dev/null &
                 disown
                 exit 0
                 EOF
