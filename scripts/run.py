@@ -48,6 +48,7 @@ def getArgs(params):
                         help='Set if internet is disabled. Usage: --internet-disabled', required=False, action='store_true')
     parser.add_argument('--master-slave', '-ms',
                         help='If you enable the master-slave mode, the TJobs will be run in a remote VM (slave). Usage: --master-slave', required=False, action='store_true')
+    parser.add_argument('--enable-ere', help=argparse.SUPPRESS, required=False, action='store_true')
 
     # Custom usage message
     usage = parser.format_usage()
@@ -162,6 +163,11 @@ def runPlatform(params):
         files_list.append('../etm/deploy/docker-compose-main.yml')
         files_list.append('../etm/docker/docker-compose-main.yml')
         replaceEnvVarValue('ET_ETM_TESTLINK_API_KEY', testLinkAPIKey, 'none', files_list)
+
+        if(args.enable_ere):                
+            print 'ERE is enabled'
+            replaceEnvVarValue('ET_TEST_ENGINES_ERE_ENABLED', 'true', 'false', files_list)
+
         files_list.append('../etm/docker/docker-compose-jenkins.yml')
         replaceEnvVarValue('ET_USER', integratedAppUser, 'none', files_list)
         replaceEnvVarValue('ET_PASS', integratedAppPass, 'none', files_list)
