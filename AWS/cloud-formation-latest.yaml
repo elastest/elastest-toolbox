@@ -26,7 +26,7 @@ Parameters:
     Description: >-
       ElasTest has two execution modes. Mini mode (default mode) and Single-node. 
       Each of them increases the number of features offered by ElasTest from less to more.
-    Default: normal
+    Default: mini
     AllowedValues:
       - mini
       - singlenode
