@@ -24,13 +24,12 @@ Parameters:
   ElastestMode:
     Type: String
     Description: >-
-      ElasTest has three execution modes. Normal mode (default mode), Experimental-lite and Experimental. 
+      ElasTest has two execution modes. Mini mode (default mode) and Single-node. 
       Each of them increases the number of features offered by ElasTest from less to more.
     Default: normal
     AllowedValues:
-      - normal
-      - experimental-lite
-      - experimental
+      - mini
+      - singlenode
   InstanceType:
     Description: Elastest Machine - EC2 instance type
     Type: String
