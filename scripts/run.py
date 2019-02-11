@@ -49,6 +49,8 @@ def getArgs(params):
     parser.add_argument('--master-slave', '-ms',
                         help='If you enable the master-slave mode, the TJobs will be run in a remote VM (slave). Usage: --master-slave', required=False, action='store_true')
     parser.add_argument('--enable-ere', help=argparse.SUPPRESS, required=False, action='store_true')
+    parser.add_argument('--log-level', '-ll', help='Sets the log level (at the moment, only for ETM). Usage: --log-level=debug',
+                        type=str, choices=set(('trace', 'debug', 'info', 'warn', 'error')), default='DEBUG')
 
     # Custom usage message
     usage = parser.format_usage()
@@ -312,6 +314,8 @@ def runPlatform(params):
         replaceEnvVarValue('ET_IMAGES', elastest_images,
                         'elastest/platform', files_list)
         replaceEnvVarValue('ET_CORE_IMAGES', elastest_core_images, 'elastest/platform', files_list)
+        if(args.log_level):
+            replaceEnvVarValue('ET_ETM_LOG_LEVEL', args.log_level.upper(), 'DEBUG', files_list)
 
 
         # Get timezone and set it to ETM
