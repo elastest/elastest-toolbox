@@ -194,7 +194,7 @@ Resources:
                   -d \
                   --rm \
                   -v /etc/elastest:/data \
-                  -v /var/run/docker.sock:/var/run/docker.sock \                  
+                  -v /var/run/docker.sock:/var/run/docker.sock \
                   elastest/platform:${ElastestVersion} start \
                   --server-address=$PUBLIC_HOSTNAME \
                   -u ${ElastestUsername} \
