@@ -18,7 +18,8 @@ Then, you can go to [AWS CloudFormation Pane](https://eu-west-1.console.aws.amaz
 | Stack name | The name of the stack | Elastest is OK | 
 | ElastestPassword | elastest | Password to access the platform | 
 | ElastestUsername | elastest | Username to access the platform | 
-| ElastestVersion | latest | which version of elastest do you want to launch | 
+| ElastestVersion | latest | which version of elastest do you want to launch |
+| ElastestMode | mini,singlenode | Choose the mode with which you want to start Elastest |
 | InstanceType | m4.large | Elastest needs resources to run, please be genereous | 
 | KeyName |  | RSA key to access the instance through SSH | 
 | SwapSize | 4 | The amount of swap memory in GB | 
