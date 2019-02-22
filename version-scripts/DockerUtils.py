@@ -119,6 +119,8 @@ def killContainer(container, signal):
 
 
 def executePlatformCommand(image, command, dockerArgs, commandArgs):
+    STDOUT = subprocess.STDOUT
+    FNULL = open(os.devnull, 'w')
     if (command == pull_command):
         print ('')
         print (' Updating ElasTest components....')
@@ -126,7 +128,7 @@ def executePlatformCommand(image, command, dockerArgs, commandArgs):
         command_line = ('docker run %s --rm -v /var/run/docker.sock:/var/run/docker.sock %s %s %s') % (
             dockerArgs, image, command, commandArgs)
 
-    subprocess.check_output(shlex.split(command_line))
+    subprocess.call(shlex.split(command_line), stderr=STDOUT, stdout=FNULL)
 
 
 def existsLocalImage(image):
