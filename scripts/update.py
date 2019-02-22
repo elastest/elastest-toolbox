@@ -67,7 +67,7 @@ def updatePlatform(params):
             print ('')
             # Update platform image
             image = getContainerImage()
-            updateImage(image)
+            image = updateImage(image)
 
             print ('')
             # Update platform-services image
@@ -95,6 +95,7 @@ def updateImage(image):
         image_parts = image.split(':')
         image = image_parts[0]
     pullImage(image)
+    return image
 
 
 def elasTestIsRunning():
