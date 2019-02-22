@@ -78,6 +78,10 @@ def configureDataFolders():
             os.environ['ET_LOGS_RELATIVE_FOLDER_PATH'] = '/etlogs'
             break
 
+def setSignalsTreatment(treatment):
+    signal.signal(signal.SIGINT, partial(treatment, expresion))
+    signal.signal(signal.SIGTERM, partial(treatment, expresion))
+
 #########################################################################################
 
 # Main
@@ -133,8 +137,8 @@ elif(args.instruction == 'wait'):
 elif(args.instruction == 'inspect'):
     inspectPlatform(params)
 elif(args.instruction == 'update'):
-    signal.signal(signal.SIGINT, partial(stopUpdate, expresion))
-    signal.signal(signal.SIGTERM, partial(stopUpdate, expresion))
+    setSignalsTreatment(stopUpdate)
     updatePlatform(params)
 elif(args.instruction == 'pull-images'):
+    setSignalsTreatment(stopUpdate)
     pullETImages(params)
