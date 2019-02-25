@@ -7,6 +7,8 @@ import os
 import socket
 
 pull_command = 'pull-images'
+STDOUT = subprocess.STDOUT
+FNULL = open(os.devnull, 'w')
 
 
 def pullImage(image):
@@ -24,7 +26,7 @@ def tagImage(image, tag):
         new_tagged = image.split(':')[0] + ':' + tag
     else:
         new_tagged = image + ':' + tag
-        
+
     tag_command = 'docker tag ' + image + ' ' + new_tagged
     tag_result = subprocess.call(shlex.split(tag_command))
 
@@ -75,17 +77,25 @@ def getRepoTag(imageTag):
     repoTag = ''
     try:
         repoTag = ''.join(subprocess.check_output(shlex.split(command)))
-    except TypeError:
+    except (TypeError, subprocess.CalledProcessError) as e:
         repoTag = 'imageNotExists'
-    except subprocess.CalledProcessError:
-        repoTag = 'imageNotExists'
-
     return repoTag
 
 
+def getLocalImages():
+    command = 'docker images --format "{{.Repository}}:{{.Tag}}"'
+    local_images = []
+    try:
+        local_images = subprocess.check_output(
+            shlex.split(command)).splitlines()
+    except (TypeError, subprocess.CalledProcessError) as e:
+        print('Error getting docker images: {}'.format(e))
+    return local_images
+
+
 def deleteVolume(name):
-    print ('')
-    print (' Deleting some volumes....')
+    print('')
+    print(' Deleting some volumes....')
     command = 'docker volume rm ' + name
     subprocess.call(shlex.split(command))
 
@@ -93,7 +103,7 @@ def deleteVolume(name):
 def deleteImages(images):
     if (images):
         command = 'docker rmi -f ' + images
-        subprocess.call(shlex.split(command))
+        subprocess.call(shlex.split(command), stderr=STDOUT, stdout=FNULL)
 
 
 def deleteDanglingImages():
@@ -101,11 +111,11 @@ def deleteDanglingImages():
     result = str(subprocess.check_output(shlex.split(subcommand))).split('\n')
     if (''.join(result)):
         command = 'docker rmi -f ' + ' '.join(result)
-        print ('Deleting dangling images')
+        print('Deleting dangling images')
         try:
             subprocess.check_output(shlex.split(command))
         except subprocess.CalledProcessError:
-            print (' Unable to delete dangling images.')
+            print(' Unable to delete dangling images.')
 
 
 def killContainer(container, signal):
@@ -119,12 +129,10 @@ def killContainer(container, signal):
 
 
 def executePlatformCommand(image, command, dockerArgs, commandArgs):
-    STDOUT = subprocess.STDOUT
-    FNULL = open(os.devnull, 'w')
     if (command == pull_command):
-        print ('')
-        print (' Updating ElasTest components....')
-        print ('')
+        print('')
+        print(' Updating ElasTest components....')
+        print('')
         command_line = ('docker run %s --rm -v /var/run/docker.sock:/var/run/docker.sock %s %s %s') % (
             dockerArgs, image, command, commandArgs)
 
@@ -134,7 +142,7 @@ def executePlatformCommand(image, command, dockerArgs, commandArgs):
 def existsLocalImage(image):
     if(':' not in image):
         image + ':latest'
-    return True if image in getRepoTag(image) else False
+    return True if image in getLocalImages() else False
 
 
 def containerExists(containerId):
@@ -197,6 +205,7 @@ def getWinHostMachineIp():
 def getMacHostMachineIp():
     return getIpFromTraceRoute('docker.for.mac.localhost')
 
+
 def getHostMachineIp():
     return getIpFromTraceRoute('host.docker.internal')
 
@@ -209,6 +218,7 @@ def getIpFromTraceRoute(dns):
         ip = None
     return ip
 
+
 def getHostOS():
     if(not getWinHostMachineIp() is None):
         return 'Windows'
@@ -217,11 +227,14 @@ def getHostOS():
     else:
         return 'Other'
 
+
 def hostOSIsWindows():
     return getHostOS() == 'Windows'
 
+
 def hostOSIsMac():
     return getHostOS() == 'Mac'
+
 
 def hostOSIsOther():
     return getHostOS() == 'Other'

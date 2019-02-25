@@ -35,14 +35,15 @@ def pullETImages(params):
     mode = args.mode
 
     print ('')
-    print ('Pulling ElasTest images...')
+    print ('Checking images to update...')
     images_list = getElastestImagesByExecMode(mode, False)
     for image in images_list:
-        print ('')
-        print ('Image to update: ') + image
-        print ('')
         if (existsLocalImage(image)):
+            print ('')
+            print ("Image to update: {}".format(image))
+            print ('')
             pullImage(image)
+        
 
     deleteOldImages(os.environ['ET_OLD_IMAGES'].split(','), images_list)
 
@@ -55,4 +56,3 @@ def deleteOldImages(oldImages, newImages):
             print (' Image to remove: ' + oldImage)
             imagesToRemove = imagesToRemove + oldImage + ' '
     deleteImages(imagesToRemove)
-    deleteDanglingImages()
