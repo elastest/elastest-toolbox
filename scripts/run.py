@@ -34,8 +34,6 @@ def getArgs(params):
                         required=False, action='store_true')    
     parser.add_argument('--server-address', '-sa',
                         help='Set server address Env Var. Usage: --server-address=XXXXXX', required=False)
-    parser.add_argument('--shared-folder', '-sf',
-                        required=False, help=argparse.SUPPRESS)
     parser.add_argument(
         '--user', '-u', help='Set the user to access ElasTest. Use together --password. Usage: --user=testuser', required=False)
     parser.add_argument(
@@ -47,8 +45,7 @@ def getArgs(params):
     parser.add_argument('--internet-disabled', '-id',
                         help='Set if internet is disabled. Usage: --internet-disabled', required=False, action='store_true')
     parser.add_argument('--master-slave', '-ms',
-                        help='If you enable the master-slave mode, the TJobs will be run in a remote VM (slave). Usage: --master-slave', required=False, action='store_true')
-    parser.add_argument('--enable-ere', help=argparse.SUPPRESS, required=False, action='store_true')
+                        help=argparse.SUPPRESS', required=False, action='store_true')    
     parser.add_argument('--log-level', '-ll', help='Sets the log level (at the moment, only for ETM). Usage: --log-level=debug',
                         type=str, choices=set(('trace', 'debug', 'info', 'warn', 'error')), default='DEBUG')
 
@@ -165,10 +162,7 @@ def runPlatform(params):
         files_list.append('../etm/deploy/docker-compose-main.yml')
         files_list.append('../etm/docker/docker-compose-main.yml')
         replaceEnvVarValue('ET_ETM_TESTLINK_API_KEY', testLinkAPIKey, 'none', files_list)
-
-        if(args.enable_ere):                
-            print 'ERE is enabled'
-            replaceEnvVarValue('ET_TEST_ENGINES_ERE_ENABLED', 'true', 'false', files_list)
+        replaceEnvVarValue('ET_TEST_ENGINES_ERE_ENABLED', 'true', 'false', files_list)
 
         files_list.append('../etm/docker/docker-compose-jenkins.yml')
         replaceEnvVarValue('ET_USER', integratedAppUser, 'none', files_list)
