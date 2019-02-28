@@ -45,7 +45,7 @@ def getArgs(params):
     parser.add_argument('--internet-disabled', '-id',
                         help='Set if internet is disabled. Usage: --internet-disabled', required=False, action='store_true')
     parser.add_argument('--master-slave', '-ms',
-                        help=argparse.SUPPRESS', required=False, action='store_true')    
+                        help=argparse.SUPPRESS, required=False, action='store_true')    
     parser.add_argument('--log-level', '-ll', help='Sets the log level (at the moment, only for ETM). Usage: --log-level=debug',
                         type=str, choices=set(('trace', 'debug', 'info', 'warn', 'error')), default='DEBUG')
 
