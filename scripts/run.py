@@ -48,6 +48,7 @@ def getArgs(params):
                         help=argparse.SUPPRESS, required=False, action='store_true')    
     parser.add_argument('--log-level', '-ll', help='Sets the log level (at the moment, only for ETM). Usage: --log-level=debug',
                         type=str, choices=set(('trace', 'debug', 'info', 'warn', 'error')), default='DEBUG')
+    parser.add_argument('--enable-private-ere', help=argparse.SUPPRESS, required=False, action='store_true')
 
     # Custom usage message
     usage = parser.format_usage()
@@ -162,7 +163,10 @@ def runPlatform(params):
         files_list.append('../etm/deploy/docker-compose-main.yml')
         files_list.append('../etm/docker/docker-compose-main.yml')
         replaceEnvVarValue('ET_ETM_TESTLINK_API_KEY', testLinkAPIKey, 'none', files_list)
-        replaceEnvVarValue('ET_TEST_ENGINES_ERE_ENABLED', 'true', 'false', files_list)
+
+        if(args.enable_private_ere):                
+            print 'ERE is enabled'
+            replaceEnvVarValue('ET_TEST_ENGINES_PRIVATE_ERE_ENABLED', 'true', 'false', files_list)
 
         files_list.append('../etm/docker/docker-compose-jenkins.yml')
         replaceEnvVarValue('ET_USER', integratedAppUser, 'none', files_list)
