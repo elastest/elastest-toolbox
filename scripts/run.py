@@ -321,26 +321,6 @@ def runPlatform(params):
             replaceEnvVarValue('ET_EPM_K8S_MASTER', args.kubernetes_url, 'localhost', files_list)
             replaceEnvVarValue('ET_EPM_K8S_TOKEN', args.kubernetes_token, 'none', files_list)
 
-
-        # Get timezone and set it to ETM
-        timezone='UTC'
-        if (not args.internet_disabled):
-            response = requests.get('http://ip-api.com/line?fields=timezone')
-            if(response.status_code == requests.codes.ok):
-                timezone = response.text
-            else:
-                # Re-try with other url (This has Max 50 requests/day restriction)
-                response = requests.get('https://timezoneapi.io/api/ip')
-                if(response.status_code == requests.codes.ok):    
-                    timezoneRequestData = response.json()
-                    if(timezoneRequestData['meta']['code'] == '200'):
-                        timezone =  timezoneRequestData['data']['timezone']['id']
-            if(args.dev):                
-                print 'Timezone: ' + timezone
-            
-        replaceEnvVarValue('HOST_TIMEZONE', timezone,
-                    'UTC', files_list)
-
         # If internet is disabled
         if(args.internet_disabled):
             replaceEnvVarValue('ET_INTERNET_DISABLED', 'true', 'false', files_list)
