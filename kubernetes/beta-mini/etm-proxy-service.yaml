@@ -7,10 +7,13 @@ spec:
   - name: "37000"
     port: 37000
     targetPort: 80
+    nodePort: 37000
   - name: "37443"
     port: 37443
     targetPort: 443
+    nodePort: 37443
   selector:
     elastest-service: etm-proxy
+  type: NodePort
 status:
   loadBalancer: {}
