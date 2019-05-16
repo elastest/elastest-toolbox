@@ -28,3 +28,7 @@ kubectl delete -f .
 
 *don't include the volumes folder if you don't want to lose the elastest data, as the volumes will be deleted*
 
+# Minikube
+If you use minikube you must start it with the `--extra-config=apiserver.service-node-port-range=1000-40000` parameter to change the default ports.
+
+On the other hand, you must follow the steps in the section `How to run ElasTest` and then get the ip with `minikube ip`. Type in your browser this ip with port `37000` to access ElasTest
