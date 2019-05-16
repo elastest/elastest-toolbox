@@ -49,8 +49,6 @@ def getArgs(params):
     parser.add_argument('--log-level', '-ll', help='Sets the log level (at the moment, only for ETM). Usage: --log-level=debug',
                         type=str, choices=set(('trace', 'debug', 'info', 'warn', 'error')), default='DEBUG')
     parser.add_argument('--enable-private-ere', help=argparse.SUPPRESS, required=False, action='store_true')
-    parser.add_argument('--kubernetes-url', '-ku', help=argparse.SUPPRESS, required=False)
-    parser.add_argument('--kubernetes-token', '-kt', help=argparse.SUPPRESS, required=False)
 
     # Custom usage message
     usage = parser.format_usage()
@@ -316,10 +314,6 @@ def runPlatform(params):
         replaceEnvVarValue('ET_CORE_IMAGES', elastest_core_images, 'elastest/platform', files_list)
         if(args.log_level):
             replaceEnvVarValue('ET_ETM_LOG_LEVEL', args.log_level.upper(), 'DEBUG', files_list)
-        if(args.kubernetes_url and args.kubernetes_token):
-            replaceEnvVarValue('ET_ENABLE_CLOUD_MODE', 'true', 'false', files_list)
-            replaceEnvVarValue('ET_EPM_K8S_MASTER', args.kubernetes_url, 'localhost', files_list)
-            replaceEnvVarValue('ET_EPM_K8S_TOKEN', args.kubernetes_token, 'none', files_list)
 
         # If internet is disabled
         if(args.internet_disabled):
