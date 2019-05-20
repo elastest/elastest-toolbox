@@ -19,6 +19,9 @@ from messages import *
 from k8sDeployment import *
 
 outputMessages={'update': 'Updating ElasTest Platform version ', 'pull-images': 'Pulling the ElasTest Platform Images '}
+
+elastestDockerComposeProject='elastest'
+
 def getArgs(params):
     # Define arguments
     parser = argparse.ArgumentParser()
@@ -78,7 +81,8 @@ def runPlatform(params):
     args = getArgs(params)
 
     if(args.kubernetes):
-        k8sDeployment.startK8(args)
+        print('Running with Kubernetes...')
+        startK8(args)
     else:
 
         dockerCommand = []
@@ -309,7 +313,7 @@ def runPlatform(params):
                                     'etm-jenkins', files_list)                                
             
             # Add the project name to the docker-compose command
-            dockerCommand = dockerCommand + ' -p elastest'
+            dockerCommand = dockerCommand + ' -p ' + elastestDockerComposeProject
 
             elastest_images = getElasTestImagesAsString(mode)
             elastest_core_images = getElasTestCoreImagesAsString(mode)
