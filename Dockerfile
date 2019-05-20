@@ -1,14 +1,13 @@
 FROM edujgurjc/alpine-python-compose
 
 RUN pip install 'docker-compose==1.22.0'
-
+RUN pip install epm-client
 
 ## netcat
 RUN  apk add --no-cache netcat-openbsd
 
 # Start
 RUN mkdir /elastest-toolbox
-
 
 # Copy scripts folder
 COPY scripts /elastest-toolbox/scripts
