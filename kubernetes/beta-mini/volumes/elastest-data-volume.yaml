@@ -1,16 +1,3 @@
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  name: elastest-data-volume
-spec:
-  storageClassName: manual
-  capacity:
-    storage: 10Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: ~/.elastestK8s
----
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -20,5 +7,6 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 100Mi
+      storage: 8Gi
+  storageClassName: standard
 status: {}
