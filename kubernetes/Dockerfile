@@ -10,10 +10,10 @@ RUN  apk add --no-cache netcat-openbsd
 RUN mkdir /k8s-elastest-toolbox
 
 # Copy scripts folder
-COPY platform/scripts /k8s-elastest-toolbox/scripts
+COPY kubernetes/platform/scripts /k8s-elastest-toolbox/scripts
 
 # Copy the compose file to deploy the EPM
-COPY platform/docker-compose-epm.yml /k8s-elastest-toolbox/epm
+COPY epm/deploy/docker-compose.yml /k8s-elastest-toolbox/epm
 
 # Set labels
 ARG GIT_COMMIT=unspecified
@@ -25,13 +25,13 @@ LABEL commit_date=$COMMIT_DATE
 ARG VERSION=unspecified
 LABEL version=$VERSION
 
-RUN cd /elastest-toolbox/scripts
+RUN cd /k8s-elastest-toolbox/scripts
 
 # Python prints in order
 ENV PYTHONUNBUFFERED=0
 
 # Commands
-WORKDIR /elastest-toolbox/scripts
+WORKDIR /k8s-elastest-toolbox/scripts
 
 ENTRYPOINT ["python","main.py"]
 
