@@ -1,12 +1,18 @@
 FROM edujgurjc/alpine-python-compose
 
+RUN apk add --no-cache openssl-dev libffi-dev
+
 RUN pip install 'docker-compose==1.22.0'
 RUN pip install epm-client
 RUN pip install urllib3
 RUN pip install certifi
+RUN pip install bcrypt
+RUN pip install PyNaCl
+RUN pip install paramiko
 
 ## netcat
-RUN  apk add --no-cache netcat-openbsd
+RUN apk add --no-cache netcat-openbsd
+RUN apk --no-cache add curl
 
 # Start
 RUN mkdir /elastest-toolbox
@@ -56,11 +62,17 @@ COPY etm/elastest-torm/src/main/resources/test_engines /elastest-toolbox/etm/ela
 # Copy platform-services
 COPY platform-services /elastest-toolbox/platform-services
 
+# Copy kubernetes files
+COPY kubernetes/beta-mini /kubernetes/beta-mini
+
 COPY version-scripts /elastest-toolbox/version-scripts
 
 # Copy scripts folder
 COPY scripts /elastest-toolbox/scripts
 
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$k8sversion/bin/linux/amd64/kubectl \
+    && chmod +x ./kubectl \
+    && mv ./kubectl /usr/local/bin
 
 RUN cd /elastest-toolbox/scripts
 
