@@ -22,10 +22,7 @@ def startAndWaitForEpm(dockerComposeProject):
     if(result == 0):
         insertPlatformIntoNetwork()
 
-        epm_ip = ""
-        epm_ip = getContainerIp(
-            "elastest-epm", dockerComposeProject + "_elastest")
-        epm_url = "http://" + epm_ip + ":" + epm_port + "/v1"
+        epm_url = "http://" + epm_service_name + ":" + epm_port + "/v1"
         wait = True
         sys.stdout.write('Waiting for EPM')
         while (wait):
