@@ -10,6 +10,7 @@ import argparse
 from DockerUtils import *
 
 projectName = 'elastest'
+etNetwork = projectName + "_elastest"
 component = 'etm'
 etmContainerName = projectName + '_' + component + '_1'
 etmPort = '8091'
@@ -56,23 +57,13 @@ def etprint(msg):
 
 def getETMIp():
     try:
-        return getContainerIp(etmContainerName)
+        return getContainerIp(etmContainerName, etNetwork)
     except subprocess.CalledProcessError:    
             raise Exception('Could not get the ip')
 
 def getProxyIp():
     try:
-        return getContainerIp(proxyContainerName)
-    except subprocess.CalledProcessError:    
-            raise Exception('Could not get the ip')
-
-def getContainerIp(containerName):
-    command = "docker inspect --format=\"{{.NetworkSettings.Networks." + projectName + "_elastest.IPAddress}}\" "+ containerName
-    try:
-        ip = subprocess.check_output(shlex.split(command), stderr=subprocess.PIPE)
-        # remove /n
-        ip = ip.rstrip()
-        return ip
+        return getContainerIp(proxyContainerName, etNetwork)
     except subprocess.CalledProcessError:    
             raise Exception('Could not get the ip')
 

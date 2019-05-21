@@ -238,3 +238,14 @@ def hostOSIsMac():
 
 def hostOSIsOther():
     return getHostOS() == 'Other'
+
+
+def getContainerIp(containerName, network):
+    command = "docker inspect --format=\"{{.NetworkSettings.Networks." + network + ".IPAddress}}\" "+ containerName
+    try:
+        ip = subprocess.check_output(shlex.split(command), stderr=subprocess.PIPE)
+        # remove /n
+        ip = ip.rstrip()
+        return ip
+    except subprocess.CalledProcessError:    
+            raise Exception('Could not get the ip')

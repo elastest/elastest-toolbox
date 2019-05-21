@@ -11,10 +11,15 @@ RUN  apk add --no-cache netcat-openbsd
 # Start
 RUN mkdir /elastest-toolbox
 
-# Copy scripts folder
-COPY scripts /elastest-toolbox/scripts
+# Set labels
+ARG GIT_COMMIT=unspecified
+LABEL git_commit=$GIT_COMMIT
 
-COPY version-scripts /elastest-toolbox/version-scripts
+ARG COMMIT_DATE=unspecified
+LABEL commit_date=$COMMIT_DATE
+
+ARG VERSION=unspecified
+LABEL version=$VERSION
 
 # Copy deploy folders of each component
 
@@ -51,15 +56,11 @@ COPY etm/elastest-torm/src/main/resources/test_engines /elastest-toolbox/etm/ela
 # Copy platform-services
 COPY platform-services /elastest-toolbox/platform-services
 
-# Set labels
-ARG GIT_COMMIT=unspecified
-LABEL git_commit=$GIT_COMMIT
+COPY version-scripts /elastest-toolbox/version-scripts
 
-ARG COMMIT_DATE=unspecified
-LABEL commit_date=$COMMIT_DATE
+# Copy scripts folder
+COPY scripts /elastest-toolbox/scripts
 
-ARG VERSION=unspecified
-LABEL version=$VERSION
 
 RUN cd /elastest-toolbox/scripts
 

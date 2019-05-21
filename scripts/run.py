@@ -53,7 +53,14 @@ def getArgs(params):
     parser.add_argument('--log-level', '-ll', help='Sets the log level (at the moment, only for ETM). Usage: --log-level=debug',
                         type=str, choices=set(('trace', 'debug', 'info', 'warn', 'error')), default='DEBUG')
     parser.add_argument('--enable-private-ere', help=argparse.SUPPRESS, required=False, action='store_true')
+
+    # Kubernetes
     parser.add_argument('--kubernetes','-k', help=argparse.SUPPRESS, required=False, action='store_true')
+    parser.add_argument('--paas-ip', help=argparse.SUPPRESS, required=False)
+    parser.add_argument('--paas-port', help=argparse.SUPPRESS, required=False, default='5000')
+    parser.add_argument('--paas-user', help=argparse.SUPPRESS, required=False)
+    parser.add_argument('--paas-pass', help=argparse.SUPPRESS, required=False)
+    parser.add_argument('--paas-project-name', help=argparse.SUPPRESS, required=False)
 
     # Custom usage message
     usage = parser.format_usage()
@@ -82,7 +89,7 @@ def runPlatform(params):
 
     if(args.kubernetes):
         print('Running with Kubernetes...')
-        startK8(args)
+        startK8(args, elastestDockerComposeProject)
     else:
 
         dockerCommand = []
