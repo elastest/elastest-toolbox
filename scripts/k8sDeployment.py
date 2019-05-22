@@ -34,6 +34,17 @@ def startAndWaitForEpm(dockerComposeProject):
             time.sleep(1)
         print('')
         print('EPM is available!')
+
+        sys.stdout.write('Waiting for EPM adapter')
+        epm_adapter_ansible_url="http://epm-adapter-ansible:50052"
+        wait = True
+        while (wait):
+            wait = not checkWorking(epm_adapter_ansible_url)
+            sys.stdout.write('.')
+            time.sleep(1)
+        print('')
+        print('EPM is ready now!')
+
         return epm_url
     else:
         print('Error on start EPM')
@@ -70,7 +81,7 @@ def startK8(args, dockerComposeProject):
         if(args.paas_ip and args.paas_user and args.paas_pass and args.paas_project_name):
             # TODO check args (start, mini, etc)
             epm_url = startAndWaitForEpm(dockerComposeProject)
-            time.sleep(15)
+            
             # Start EPM
             if(epm_url):
                 # STEP 1: REPLACE HERE WITH THE EPM IP !!!
