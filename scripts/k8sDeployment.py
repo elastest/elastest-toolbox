@@ -9,8 +9,6 @@ import time
 import sys
 import urllib3
 import certifi
-import bcrypt
-import PyNaCl
 import paramiko
 
 epm_service_name = "elastest-platform-manager"
@@ -110,32 +108,32 @@ def startK8(args, dockerComposeProject):
                         ansible_found = True
                 print("Ansible adapter available: " + str(ansible_found))
 
-                # STEP 4: Start VMs on OpenStack
-                # Ideally  to test everything - Send package for initializing the Cluster
-                # Send second package for adding a new node
-                resource_group = package_api.receive_package(
-                    file=ansiblePath + '/ansible-cluster.tar')
-                print('Resource group: ', resource_group)
+                # # STEP 4: Start VMs on OpenStack
+                # # Ideally  to test everything - Send package for initializing the Cluster
+                # # Send second package for adding a new node
+                # resource_group = package_api.receive_package(
+                #     file=ansiblePath + '/ansible-cluster.tar')
+                # print('Resource group: ', resource_group)
 
-                # # This package can contain one VM, which will be added to the cluster
-                # resource_group_single = package_api.receive_package(
-                #     file=ansiblePath + '/ansible-node.tar')
-                # print(resource_group_single)
+                # # # This package can contain one VM, which will be added to the cluster
+                # # resource_group_single = package_api.receive_package(
+                # #     file=ansiblePath + '/ansible-node.tar')
+                # # print(resource_group_single)
 
-                # STEP 5: Start the cluster from one of the resource groups
-                cluster_from_resource_group = ClusterFromResourceGroup(
-                    resource_group_id=resource_group.id, type=["kubernetes"], master_id=resource_group.vdus[0].id)
-                cluster = cluster_api.create_cluster(
-                    cluster_from_resource_group=cluster_from_resource_group)
+                # # STEP 5: Start the cluster from one of the resource groups
+                # cluster_from_resource_group = ClusterFromResourceGroup(
+                #     resource_group_id=resource_group.id, type=["kubernetes"], master_id=resource_group.vdus[0].id)
+                # cluster = cluster_api.create_cluster(
+                #     cluster_from_resource_group=cluster_from_resource_group)
 
-                print("Cluster:", cluster)
-                print("K8s_Master:", resource_group.vdus[0].ip)
-                getK8sConfigFromCluster(resource_group.vdus[0].ip)
+                # print("Cluster:", cluster)
+                # print("K8s_Master:", resource_group.vdus[0].ip)
+                # getK8sConfigFromCluster(resource_group.vdus[0].ip)
                 
 
-                # # STEP 6: Add a new worker to the Cluster (from the second resource group)
-                # cluster_api.add_worker(
-                #     id=cluster.id, machine_id=resource_group_single.vdus[0].id)
+                # # # STEP 6: Add a new worker to the Cluster (from the second resource group)
+                # # cluster_api.add_worker(
+                # #     id=cluster.id, machine_id=resource_group_single.vdus[0].id)
 
                 print(cluster_api.get_all_clusters())
 
