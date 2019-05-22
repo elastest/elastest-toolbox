@@ -3,7 +3,6 @@ from epm_client import ApiClient
 from epm_client.models import *
 import subprocess
 import shlex
-from DockerUtils import *
 from checkETM import *
 import time
 import sys
@@ -57,22 +56,40 @@ def stopEpm(dockerComposeProject):
         dockerComposeProject + " down"
     result = subprocess.call(shlex.split(stopEpmCommand), stderr=FNULL)
 
+
 def getK8sConfigFromCluster(k8s_host):
     HOST = k8s_host
     PUERTO = 22
     USUARIO = 'ubuntu'
-    datos = dict(hostname=HOST, port=PUERTO, username=USUARIO, key_filename=ansiblePath + '/key')
+    datos = dict(hostname=HOST, port=PUERTO, username=USUARIO, key_filename= ansiblePath + '/key')
+                #  key_filename='/home/frdiaz/.elastest/k8s/key')  # ansiblePath + '/key')
 
     ssh_client = paramiko.SSHClient()
     ssh_client.load_system_host_keys()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh_client.connect(**datos)
-    entrada, salida, error = ssh_client.exec_command('ls -la')
+    entrada, salida, error = ssh_client.exec_command('ls -la /etc/kubernetes/')
     print(salida.read())
     print('--------')
-    entrada, salida, error = ssh_client.exec_command('cat /etc/kubernetes/admin.conf')
-    print(salida.read())
+    entrada, salida, error = ssh_client.exec_command(
+        'sudo cat /etc/kubernetes/admin.conf')
+    # print(salida.read())
+    admin_conf_content = salida.read()
+    print(admin_conf_content)
+
+    kube_file = open('~/.kube/config', 'w')
+
+    kube_file.write(admin_conf_content)
+    kube_file.close()
+
     ssh_client.close()
+
+
+def startEtmOnK8s():
+    start_etm_on_k8s_command = 'cd /kubernetes/beta-mini; kubectl create -f . -f /volumes'
+    # start_etm_on_k8s_command = 'kubectl create -f /home/frdiaz/git/elastest/elastest-toolbox/kubernetes/beta-mini -f /home/frdiaz/git/elastest/elastest-toolbox/kubernetes/beta-mini/volumes'
+    # start_etm_on_k8s_command = 'ls'
+    subprocess.call(shlex.split(start_etm_on_k8s_command))
 
 def startK8(args, dockerComposeProject):
     if(args.command == 'stop'):
@@ -140,7 +157,7 @@ def startK8(args, dockerComposeProject):
                 print("Cluster:", cluster)
                 print("K8s_Master:", resource_group.vdus[0].ip)
                 getK8sConfigFromCluster(resource_group.vdus[0].ip)
-                
+                startEtmOnK8s()
 
                 # # STEP 6: Add a new worker to the Cluster (from the second resource group)
                 # cluster_api.add_worker(
