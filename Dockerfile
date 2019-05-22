@@ -6,8 +6,6 @@ RUN pip install 'docker-compose==1.22.0'
 RUN pip install epm-client
 RUN pip install urllib3
 RUN pip install certifi
-RUN pip install bcrypt
-RUN pip install PyNaCl
 RUN pip install paramiko
 
 ## netcat
