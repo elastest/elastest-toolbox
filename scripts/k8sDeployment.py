@@ -10,39 +10,31 @@ import urllib3
 import certifi
 import paramiko
 
+FNULL = subprocess.STDOUT
+
 epm_service_name = "elastest-platform-manager"
 epm_port = "8180"
-FNULL = subprocess.STDOUT
+epm_adapter_ansible_service_name = "epm-adapter-ansible"
+epm_adapter_ansible_port = "50052"
+
 ansiblePath = "/data/ansible"
-epmComposeCommand = "docker-compose -f ../epm/deploy/docker-compose.yml -p "
+epmComposeCommandPrefix = "docker-compose -f ../epm/deploy/docker-compose.yml -p "
 
 
 def startAndWaitForEpm(dockerComposeProject):
-    startEpmCommand = epmComposeCommand + \
+    startEpmCommand = epmComposeCommandPrefix + \
         dockerComposeProject + " up -d"
     result = subprocess.call(shlex.split(startEpmCommand), stderr=FNULL)
     if(result == 0):
         insertPlatformIntoNetwork()
 
         epm_url = "http://" + epm_service_name + ":" + epm_port + "/v1"
-        wait = True
-        sys.stdout.write('Waiting for EPM')
-        while (wait):
-            wait = not checkWorking(epm_url)
-            sys.stdout.write('.')
-            time.sleep(1)
-        print('')
-        print('EPM is available!')
+        waitForUrl(epm_url, 'Waiting for EPM', 'EPM is available!')
 
-        sys.stdout.write('Waiting for EPM adapter')
-        epm_adapter_ansible_url="http://epm-adapter-ansible:50052"
-        wait = True
-        while (wait):
-            wait = not checkWorking(epm_adapter_ansible_url)
-            sys.stdout.write('.')
-            time.sleep(1)
-        print('')
-        print('EPM is ready now!')
+        epm_adapter_ansible_url = "http://" + \
+            epm_adapter_ansible_service_name + ":" + epm_adapter_ansible_port
+        waitForUrl(epm_adapter_ansible_url,
+                   'Waiting for EPM adapter', 'EPM is ready now!')
 
         return epm_url
     else:
@@ -52,7 +44,7 @@ def startAndWaitForEpm(dockerComposeProject):
 
 def stopEpm(dockerComposeProject):
     print('Stopping EPM...')
-    stopEpmCommand = epmComposeCommand + \
+    stopEpmCommand = epmComposeCommandPrefix + \
         dockerComposeProject + " down"
     result = subprocess.call(shlex.split(stopEpmCommand), stderr=FNULL)
 
@@ -61,8 +53,9 @@ def getK8sConfigFromCluster(k8s_host):
     HOST = k8s_host
     PUERTO = 22
     USUARIO = 'ubuntu'
-    datos = dict(hostname=HOST, port=PUERTO, username=USUARIO, key_filename= ansiblePath + '/key')
-                #  key_filename='/home/frdiaz/.elastest/k8s/key')  # ansiblePath + '/key')
+    datos = dict(hostname=HOST, port=PUERTO, username=USUARIO,
+                 key_filename=ansiblePath + '/key')
+    #  key_filename='/home/frdiaz/.elastest/k8s/key')  # ansiblePath + '/key')
 
     ssh_client = paramiko.SSHClient()
     ssh_client.load_system_host_keys()
@@ -91,6 +84,7 @@ def startEtmOnK8s():
     # start_etm_on_k8s_command = 'ls'
     subprocess.call(shlex.split(start_etm_on_k8s_command))
 
+
 def startK8(args, dockerComposeProject):
     if(args.command == 'stop'):
         stopEpm(dockerComposeProject)
@@ -98,7 +92,7 @@ def startK8(args, dockerComposeProject):
         if(args.paas_ip and args.paas_user and args.paas_pass and args.paas_project_name):
             # TODO check args (start, mini, etc)
             epm_url = startAndWaitForEpm(dockerComposeProject)
-            
+
             # Start EPM
             if(epm_url):
                 # STEP 1: REPLACE HERE WITH THE EPM IP !!!
@@ -129,11 +123,26 @@ def startK8(args, dockerComposeProject):
                 pop_api.register_po_p(os_pop)
 
                 # STEP 3: Check if ansible adapter is available
-                adapters = adapter_api.get_all_adapters()
-                ansible_found = False
-                for a in adapters:
-                    if a.type == "ansible":
-                        ansible_found = True
+                wait_ansible = True
+                max_retries = 5
+                current_retry = 0
+                while (wait_ansible):
+                    adapters = adapter_api.get_all_adapters()
+                    ansible_found = False
+                    for a in adapters:
+                        if a.type == "ansible":
+                            ansible_found = True
+                    wait_ansible = not ansible_found
+                    time.sleep(1)
+                    if(current_retry == max_retries):
+                        print("Error: Ansible adapter not available after " +
+                              str(max_retries) + "retries")
+
+                    if(wait_ansible):
+                        print("Ansible adapter not available. Retry " +
+                              str(current_retry + 1) + "/" + str(max_retries))
+                    max_retries = max_retries - 1
+                print('')
                 print("Ansible adapter available: " + str(ansible_found))
 
                 # STEP 4: Start VMs on OpenStack

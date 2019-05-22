@@ -18,8 +18,8 @@ etmPort = '8091'
 proxyContainerName = projectName + '_' + component + '-proxy_1'
 proxyPort = '37000'
 
-etprintEnabled=True
-args=[]
+etprintEnabled = True
+args = []
 
 HEADER = '\033[95m'
 OKBLUE = '\033[94m'
@@ -38,72 +38,31 @@ elastestGoogleGroupsUrl = 'https://groups.google.com/forum/#!forum/elastest-user
 def getArgs(params):
     # Define arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('--container', '-c', help='Sets timeout in seconds for wait to the ETM container creation. Usage: --container=800', required=False)
-    parser.add_argument('--running', '-r', help='Sets timeout in seconds for wait to ETM is running. Usage: --running=800')
+    parser.add_argument(
+        '--container', '-c', help='Sets timeout in seconds for wait to the ETM container creation. Usage: --container=800', required=False)
+    parser.add_argument(
+        '--running', '-r', help='Sets timeout in seconds for wait to ETM is running. Usage: --running=800')
 
     # Custom usage message
     usage = parser.format_usage()
-    usage = usage.replace("usage: main.py", "docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform wait")
+    usage = usage.replace(
+        "usage: main.py", "docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform wait")
     parser.usage = usage
 
     args = parser.parse_args(params)
     return args
 
+# ################################### #
+# ######## Generic functions ######## #
+# ################################### #
 
 # Custom print function
+
+
 def etprint(msg):
     if(etprintEnabled):
         print(msg)
 
-def getETMIp():
-    try:
-        return getContainerIp(etmContainerName, etNetwork)
-    except subprocess.CalledProcessError:    
-            raise Exception('Could not get the ip')
-
-def getProxyIp():
-    try:
-        return getContainerIp(proxyContainerName, etNetwork)
-    except subprocess.CalledProcessError:    
-            raise Exception('Could not get the ip')
-
-def containerIP():
-    ip = ''
-    wait = True
-    timeout = 800 #seconds
-    if(args.container):
-        timeout=args.container
-    start_time = time.time()
-    # your code
-    while (wait):
-        try:
-            ip = getETMIp()
-            wait = False
-        except subprocess.CalledProcessError:    
-            pass
-        except KeyboardInterrupt: # Hide error on SIGINT
-            exit(0)
-        except Exception as error:
-            pass
-        if(float(time.time() - start_time) >= float(timeout)):
-            etprint(FAIL + 'Timeout: container ' + etmContainerName + ' not created' + ENDC)
-            exit(1)
-    return ip
-
-def getEtmUrl():
-    # Insert platform into network
-    insertPlatformIntoNetwork()
-    try:
-        ip = getETMIp()
-        url = 'http://' + ip + ':' + etmPort
-        return url
-    except subprocess.CalledProcessError:    
-        pass
-    except KeyboardInterrupt: # Hide error on SIGINT
-        pass
-    except Exception as error:
-            raise Exception('Could not get the url')
-    return ''
 
 def checkWorking(url):
     working = False
@@ -114,7 +73,7 @@ def checkWorking(url):
         return working
     except urllib2.URLError as e2:
         return working
-    except KeyboardInterrupt: # Hide error on SIGINT
+    except KeyboardInterrupt:  # Hide error on SIGINT
         exit(0)
     else:
         # 200
@@ -122,10 +81,85 @@ def checkWorking(url):
     return working
 
 
+def waitForUrl(url, waitMsg, readyMsg):
+    wait = True
+    if(waitMsg):
+        sys.stdout.write(waitMsg)
+    while (wait):
+        wait = not checkWorking(url)
+        if(waitMsg):
+            sys.stdout.write('.')
+        time.sleep(1)
+    if(waitMsg):
+        print('')
+    if(readyMsg):
+        print(readyMsg)
+
+
+# #################################### #
+# ######## Elastest functions ######## #
+# #################################### #
+
+
+def getETMIp():
+    try:
+        return getContainerIp(etmContainerName, etNetwork)
+    except subprocess.CalledProcessError:
+        raise Exception('Could not get the ip')
+
+
+def getProxyIp():
+    try:
+        return getContainerIp(proxyContainerName, etNetwork)
+    except subprocess.CalledProcessError:
+        raise Exception('Could not get the ip')
+
+
+def etmContainerIp():
+    ip = ''
+    wait = True
+    timeout = 800  # seconds
+    if(args.container):
+        timeout = args.container
+    start_time = time.time()
+    # your code
+    while (wait):
+        try:
+            ip = getETMIp()
+            wait = False
+        except subprocess.CalledProcessError:
+            pass
+        except KeyboardInterrupt:  # Hide error on SIGINT
+            exit(0)
+        except Exception as error:
+            pass
+        if(float(time.time() - start_time) >= float(timeout)):
+            etprint(FAIL + 'Timeout: container ' +
+                    etmContainerName + ' not created' + ENDC)
+            exit(1)
+    return ip
+
+
+def getEtmUrl():
+    # Insert platform into network
+    insertPlatformIntoNetwork()
+    try:
+        ip = getETMIp()
+        url = 'http://' + ip + ':' + etmPort
+        return url
+    except subprocess.CalledProcessError:
+        pass
+    except KeyboardInterrupt:  # Hide error on SIGINT
+        pass
+    except Exception as error:
+        raise Exception('Could not get the url')
+    return ''
+
+
 def insertPlatformIntoNetwork():
     try:
         backslashStr = '\\'
-        doubleBackslash = backslashStr + backslashStr        
+        doubleBackslash = backslashStr + backslashStr
         id = getContainerId()
         if(id == ''):
             return ''
@@ -134,10 +168,10 @@ def insertPlatformIntoNetwork():
         result = subprocess.call(shlex.split(commandTwo))
         if(result > 0):
             etprint(FAIL + 'Error: Unable to register Platform on the network' + ENDC)
-            exit (1)
+            exit(1)
     except subprocess.CalledProcessError:
         pass
-    except KeyboardInterrupt: # Hide error on SIGINT
+    except KeyboardInterrupt:  # Hide error on SIGINT
         exit(0)
 
 
@@ -151,10 +185,10 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
     etprint('')
     etprint('ElasTest services are starting. This will likely take some time. The ElasTest URL will be shown when ready.')
     etprint('')
-        
+
     # Wait for ETM container created and
     # Get ETM container IP
-    etmIP = containerIP()
+    etmIP = etmContainerIp()
 
     # Get ETM Url
     try:
@@ -168,28 +202,36 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
     # Check if service is started and running
     wait = True
     working = False
-    message_counter=1
+    message_counter = 1
 
-    timeout = 800 #seconds
+    timeout = 800  # seconds
     if(args.running):
-        timeout=args.running
+        timeout = args.running
     start_time = time.time()
     while (wait):
         # If ETM container is exited, throw error
         etmIsNotExited = containerExistsAndIsNotExited(etmContainerName)
 
         if(not etmIsNotExited):
-                
-            errorRelativeFilePath = '/etmExited.log'
-            errorHostPath =    os.environ['ET_DATA_IN_HOST'] +  os.environ['ET_LOGS_RELATIVE_FOLDER_PATH'] + errorRelativeFilePath
-            errorContainerPath = os.environ['ET_DATA_IN_CONTAINER'] +  os.environ['ET_LOGS_RELATIVE_FOLDER_PATH'] + errorRelativeFilePath
-            etprint(FAIL + 'ERROR: ElasTest main service container (' + etmContainerName + ') is Stopped or Exited' + ENDC)
 
-            writed = writeContainerLogsToFile(etmContainerName, errorContainerPath)
+            errorRelativeFilePath = '/etmExited.log'
+            errorHostPath = os.environ['ET_DATA_IN_HOST'] + \
+                os.environ['ET_LOGS_RELATIVE_FOLDER_PATH'] + \
+                errorRelativeFilePath
+            errorContainerPath = os.environ['ET_DATA_IN_CONTAINER'] + \
+                os.environ['ET_LOGS_RELATIVE_FOLDER_PATH'] + \
+                errorRelativeFilePath
+            etprint(FAIL + 'ERROR: ElasTest main service container (' +
+                    etmContainerName + ') is Stopped or Exited' + ENDC)
+
+            writed = writeContainerLogsToFile(
+                etmContainerName, errorContainerPath)
             if(writed):
-                etprint(OKGREEN + 'An error file has been generated in ' + errorHostPath + ENDC)
-                
-            etprint(OKGREEN + 'Please, report the problem to us at ' + elastestGoogleGroupsUrl + ENDC)
+                etprint(
+                    OKGREEN + 'An error file has been generated in ' + errorHostPath + ENDC)
+
+            etprint(OKGREEN + 'Please, report the problem to us at ' +
+                    elastestGoogleGroupsUrl + ENDC)
 
             return 1
         working = checkWorking(url)
@@ -198,8 +240,9 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
         else:
             if (message_counter == 1):
                 message_counter = 0
-            if(float(time.time() - start_time) >= float(timeout)):    
-                etprint('Timeout: container ' + etmContainerName + ' not started')
+            if(float(time.time() - start_time) >= float(timeout)):
+                etprint('Timeout: container ' +
+                        etmContainerName + ' not started')
                 wait = False
 
     if (working):
@@ -211,22 +254,22 @@ def runCheckETM(params=[], printEnabled=True, proxy=False, server_address=''):
                 #proxy_ip = getProxyIp()
                 proxy_ip = 'localhost'
                 final_url = 'http://' + proxy_ip + ':' + proxyPort
-            except Exception:    
+            except Exception:
                 etprint('ERROR: Proxy is not started')
                 exit(1)
 
         etprint('')
         etprint(WARNING + 'ElasTest Platform is available at ' + final_url + ENDC)
         etprint('')
-        
+
         # If host OS is Windows, show stop command instead of Ctrl+C
         if(hostOSIsWindows()):
             platform_version = getVersionFromHostContainer()
-            etprint(OKGREEN + 'Run "docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform:' + platform_version + ' stop" to stop.' + ENDC)
+            etprint(OKGREEN + 'Run "docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform:' +
+                    platform_version + ' stop" to stop.' + ENDC)
         else:
             etprint(OKGREEN + 'Press Ctrl+C to stop.' + ENDC)
         return 0
     else:
         etprint(FAIL + 'ERROR: ElasTest Platform not started correctly' + ENDC)
         return 1
-
