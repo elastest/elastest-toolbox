@@ -10,7 +10,7 @@ from functools import partial
 from messages import *
 from checkETM import *
 from run import *
-from inspect import *
+from platformInspect import *
 from update import *
 from pull import *
 from DockerUtils import *
