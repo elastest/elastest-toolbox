@@ -2,6 +2,8 @@ FROM edujgurjc/alpine-python-compose
 
 RUN apk add --no-cache openssl-dev libffi-dev
 
+RUN pip install --upgrade pip
+
 RUN pip install 'docker-compose==1.22.0'
 RUN pip install epm-client
 RUN pip install urllib3

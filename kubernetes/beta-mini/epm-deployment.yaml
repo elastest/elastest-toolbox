@@ -1,0 +1,155 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: epm-deploy
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        elastest-service: epm
+    spec:
+      containers:
+      - name: epm
+        image: elastest/epm:latest
+        env:
+        - name: ET_EDM_ALLUXIO_API
+          value: http://edm-alluxio-master:19998/
+        - name: ET_EDM_API
+          value: http://edm:8080/
+        - name: ET_EDM_ELASTICSEARCH_API
+          value: http://edm-elasticsearch:9200/
+        - name: ET_EDM_MYSQL_HOST
+          value: edm-mysql
+        - name: ET_EDM_MYSQL_PORT
+          value: "3306"
+        - name: ET_EIM_API
+          value: http://eim:8080/
+        - name: ET_EMP_API
+          value: http://emp:9000/
+        - name: ET_EMP_INFLUXDB_API
+          value: http://emp-influxdb:8086/
+        - name: ET_EMP_INFLUXDB_GRAPHITE_PORT
+          value: "2003"
+        - name: ET_EMP_INFLUXDB_HOST
+          value: emp-influxdb
+        - name: ET_EPM_API
+          value: http://epm:8180/
+        - name: ET_ESM_API
+          value: http://esm:37005/
+        - name: ET_ETM_API
+          value: http://etm:8091/
+        - name: ET_ETM_LSBEATS_HOST
+          value: etm-beats
+        - name: ET_ETM_LSBEATS_PORT
+          value: "5044"
+        - name: ET_ETM_LSHTTP_API
+          value: http://etm-logstash:5002/
+        - name: ET_ETM_RABBIT_HOST
+          value: etm-rabbitmq
+        - name: ET_ETM_RABBIT_PORT
+          value: "5672"
+        - name: ET_PUBLIC_HOST
+          value: localhost
+        resources: {}
+        volumeMounts:
+        - name: docker-socket
+          mountPath: /var/run/docker.sock
+      restartPolicy: Always
+      volumes:
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock
+status: {}
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: epm-adapter-docker-deploy
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        elastest-service: epm-adapter-docker
+    spec:
+      containers:
+      - command:
+        - java
+        - -jar
+        - epm-adapter-docker.jar
+        - --register-adapter
+        image: elastest/epm-adapter-docker
+        name: elastest-epm-adapter-docker
+        resources: {}
+        volumeMounts:
+        - name: docker-socket
+          mountPath: /var/run/docker.sock
+      restartPolicy: Always
+      volumes:
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: epm-adapter-docker-compose-deploy
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.service: epm-adapter-docker-compose
+    spec:
+      containers:
+      - command:
+        - python
+        - run.py
+        - --register-adapter
+        image: elastest/epm-adapter-docker-compose
+        name: elastest-epm-adapter-docker-compose
+        resources: {}
+        volumeMounts:
+        - name: docker-socket
+          mountPath: /var/run/docker.sock
+      restartPolicy: Always
+      volumes:
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: epm-adapter-ansible-deploy
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        io.kompose.service: epm-adapter-ansible
+    spec:
+      containers:
+      - command:
+        - python
+        - -m
+        - run
+        - --register-adapter
+        - elastest-epm
+        - elastest-epm-adapter-ansible
+        image: elastest/epm-adapter-ansible
+        name: elastest-epm-adapter-ansible
+        resources: {}
+      restartPolicy: Always
+status: {}

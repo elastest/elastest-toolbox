@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: epm
+  name: epm
+spec:
+  ports:
+  - name: "epm-port"
+    port: 8180
+    targetPort: 8180
+    nodePort: 8180
+  selector:
+    elastest-service: epm
+  type: NodePort
+status:
+  loadBalancer: {}
