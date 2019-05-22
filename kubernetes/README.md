@@ -1,7 +1,7 @@
 # How to run ElasTest
 - Clone toolbox project
 ```
-git clone elastest/elastest-toolbox
+git clone https://github.com/elastest/elastest-toolbox.git
 ```
 - Navigate to folder
 ```
