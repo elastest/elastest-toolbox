@@ -38,7 +38,9 @@ def startAndWaitForEpm(dockerComposeProject):
 
         return epm_url
     else:
-        print('Error on start EPM')
+        print(FAIL + 'Error on start EPM' + ENDC)
+        print('')
+        stopEpm(dockerComposeProject)
         exit(1)
 
 
@@ -135,8 +137,11 @@ def startK8(args, dockerComposeProject):
                     wait_ansible = not ansible_found
                     time.sleep(1)
                     if(current_retry == max_retries):
-                        print("Error: Ansible adapter not available after " +
-                              str(max_retries) + "retries")
+                        print(FAIL + "Error: Ansible adapter not available after " +
+                              str(max_retries) + "retries" + ENDC)
+                        print('')
+                        stopEpm(dockerComposeProject)
+                        exit(1)
 
                     if(wait_ansible):
                         print("Ansible adapter not available. Retry " +
@@ -158,6 +163,12 @@ def startK8(args, dockerComposeProject):
                 # print(resource_group_single)
 
                 # STEP 5: Start the cluster from one of the resource groups
+                if(not resource_group.vdus or len(resource_group.vdus) == 0):
+                    print(FAIL + 'Error: resource_group.vdus is empty or null' + ENDC)
+                    print('')
+                    stopEpm(dockerComposeProject)
+                    exit(1)
+
                 cluster_from_resource_group = ClusterFromResourceGroup(
                     resource_group_id=resource_group.id, type=["kubernetes"], master_id=resource_group.vdus[0].id)
                 cluster = cluster_api.create_cluster(
@@ -187,5 +198,5 @@ def startK8(args, dockerComposeProject):
                 # package_api.delete_package(resource_group.id)
                 # package_api.delete_package(resource_group_single.id)
         else:
-            print('K8 parameters are mandatory')
+            print(FAIL +'K8 parameters are mandatory' + ENDC)
             exit(1)
