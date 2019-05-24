@@ -9,6 +9,7 @@ RUN pip install epm-client
 RUN pip install urllib3
 RUN pip install certifi
 RUN pip install paramiko
+RUN pip install ruamel.yaml
 
 ## netcat
 RUN apk add --no-cache netcat-openbsd
@@ -70,11 +71,16 @@ COPY version-scripts /elastest-toolbox/version-scripts
 # Copy scripts folder
 COPY scripts /elastest-toolbox/scripts
 
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$k8sversion/bin/linux/amd64/kubectl \
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl \
     && chmod +x ./kubectl \
-    && mv ./kubectl /usr/local/bin
+    && mv ./kubectl /usr/local/bin/kubectl
+
+RUN mkdir ~/.kube \
+    && cd ~/.kube \
+    && touch config
 
 RUN cd /elastest-toolbox/scripts
+
 
 # Python prints in order
 ENV PYTHONUNBUFFERED=0

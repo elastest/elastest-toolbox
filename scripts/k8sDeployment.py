@@ -9,6 +9,8 @@ import sys
 import urllib3
 import certifi
 import paramiko
+from ruamel.yaml import YAML
+import os
 
 FNULL = subprocess.STDOUT
 
@@ -24,7 +26,8 @@ epmComposeCommandPrefix = "docker-compose -f ../epm/deploy/docker-compose.yml -p
 def startAndWaitForEpm(dockerComposeProject):
     startEpmCommand = epmComposeCommandPrefix + \
         dockerComposeProject + " up -d"
-    result = subprocess.call(shlex.split(startEpmCommand), stderr=FNULL)
+    # result = subprocess.call(shlex.split(startEpmCommand), stderr=FNULL)
+    result = 0
     if(result == 0):
         insertPlatformIntoNetwork()
 
@@ -46,12 +49,37 @@ def startAndWaitForEpm(dockerComposeProject):
 
 def stopEpm(dockerComposeProject):
     print('Stopping EPM...')
-    stopEpmCommand = epmComposeCommandPrefix + \
-        dockerComposeProject + " down"
-    result = subprocess.call(shlex.split(stopEpmCommand), stderr=FNULL)
+    # stopEpmCommand = epmComposeCommandPrefix + \
+    #     dockerComposeProject + " down"
+    # result = subprocess.call(shlex.split(stopEpmCommand), stderr=FNULL)
 
 
-def getK8sConfigFromCluster(k8s_host):
+# def getK8sConfigFromCluster(k8s_host):
+#     HOST = k8s_host
+#     PUERTO = 22
+#     USUARIO = 'ubuntu'
+#     datos = dict(hostname=HOST, port=PUERTO, username=USUARIO,
+#                  key_filename=ansiblePath + '/key')
+#     #  key_filename='/home/frdiaz/.elastest/k8s/key')  # ansiblePath + '/key')
+
+#     ssh_client = paramiko.SSHClient()
+#     ssh_client.load_system_host_keys()
+#     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+#     # Connecting to the k8s Master
+#     ssh_client.connect(**datos)
+#     entrada, salida, error = ssh_client.exec_command(
+#         'sudo cat /etc/kubernetes/admin.conf')
+#     # Retrieve k8s client configuration from the cluster
+#     admin_conf_content = salida.read()
+#     print('K8s cluster configuration:', admin_conf_content)
+#     # Setting the kubectl to access the cluster
+#     kube_file = open('~/.kube/config', 'w')
+#     kube_file.write(admin_conf_content)
+#     kube_file.close()
+#     ssh_client.close()
+
+
+def getSshConnection(k8s_host):
     HOST = k8s_host
     PUERTO = 22
     USUARIO = 'ubuntu'
@@ -62,29 +90,55 @@ def getK8sConfigFromCluster(k8s_host):
     ssh_client = paramiko.SSHClient()
     ssh_client.load_system_host_keys()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    # Connecting to the k8s Master
     ssh_client.connect(**datos)
-    entrada, salida, error = ssh_client.exec_command('ls -la /etc/kubernetes/')
-    print(salida.read())
-    print('--------')
-    entrada, salida, error = ssh_client.exec_command(
-        'sudo cat /etc/kubernetes/admin.conf')
-    # print(salida.read())
-    admin_conf_content = salida.read()
-    print(admin_conf_content)
+    return ssh_client
 
-    kube_file = open('~/.kube/config', 'w')
-
-    kube_file.write(admin_conf_content)
-    kube_file.close()
-
-    ssh_client.close()
+def closeSshConnection(ssh_client):
+    if ssh_client is not None:
+        ss_client.close();
 
 
-def startEtmOnK8s():
+def setK8sClientConfigurarion(ssh_client):
+    if ssh_client is not None:
+        entrada, salida, error = ssh_client.exec_command(
+            'sudo cat /etc/kubernetes/admin.conf')
+        # Retrieve k8s client configuration from the cluster
+        admin_conf_content = salida.read()
+        print('K8s cluster configuration:', admin_conf_content)
+        # Setting the kubectl to access the cluster
+        kube_file = open(os.environ['HOME'] + '/.kube/config', 'w')
+        kube_file.write(admin_conf_content)
+        kube_file.close()
+
+
+def modifyNodePortRangePort(ssh_client):
+    if ssh_client is not None:
+        yaml = YAML()
+        entrada, salida, error = ssh_client.exec_command(
+            'sudo cat /etc/kubernetes/manifests/kube-apiserver.yaml')
+        cluster_api_spec_from_k8s_cluster = salida.read()
+        print(cluster_api_spec_from_k8s_cluster)
+        cluster_api_spec_as_dict = yaml.load(cluster_api_spec_from_k8s_cluster)
+        print('---------')
+        print('Yaml field: ', cluster_api_spec_as_dict['apiVersion'])
+        cluster_api_spec_as_dict['spec']['containers'][0]['command'].append("--service-node-port-range=1000-40000")
+        print('Cluster api spec: ', cluster_api_spec_as_dict)
+        
+        kube_file = open('/etc/kubernetes/manifests/kube-apiserver.yaml', 'w')
+        kube_file.write(admin_conf_content)
+        kube_file.close()
+
+# def configureNodePortPortsRange():
+
+
+def startEtm():
+    print('Deploying the ETM....')
     start_etm_on_k8s_command = 'cd /kubernetes/beta-mini; kubectl create -f . -f /volumes'
     # start_etm_on_k8s_command = 'kubectl create -f /home/frdiaz/git/elastest/elastest-toolbox/kubernetes/beta-mini -f /home/frdiaz/git/elastest/elastest-toolbox/kubernetes/beta-mini/volumes'
     # start_etm_on_k8s_command = 'ls'
     subprocess.call(shlex.split(start_etm_on_k8s_command))
+
 
 
 def startK8(args, dockerComposeProject):
@@ -162,34 +216,39 @@ def startK8(args, dockerComposeProject):
                 print('')
                 print("Ansible adapter available: " + str(ansible_found))
 
-                # STEP 4: Start VMs on OpenStack
-                # Ideally  to test everything - Send package for initializing the Cluster
-                # Send second package for adding a new node
-                resource_group = package_api.receive_package(
-                    file=ansiblePath + '/ansible-cluster.tar')
-                print('Resource group: ', resource_group)
+                # # STEP 4: Start VMs on OpenStack
+                # # Ideally  to test everything - Send package for initializing the Cluster
+                # # Send second package for adding a new node
+                # resource_group = package_api.receive_package(
+                #     file=ansiblePath + '/ansible-cluster.tar')
+                # print('Resource group: ', resource_group)
 
-                # # This package can contain one VM, which will be added to the cluster
-                # resource_group_single = package_api.receive_package(
-                #     file=ansiblePath + '/ansible-node.tar')
-                # print(resource_group_single)
+                # # # This package can contain one VM, which will be added to the cluster
+                # # resource_group_single = package_api.receive_package(
+                # #     file=ansiblePath + '/ansible-node.tar')
+                # # print(resource_group_single)
 
-                # STEP 5: Start the cluster from one of the resource groups
-                if(not resource_group.vdus or len(resource_group.vdus) == 0):
-                    print(FAIL + 'Error: resource_group.vdus is empty or null' + ENDC)
-                    print('')
-                    stopEpm(dockerComposeProject)
-                    exit(1)
+                # # STEP 5: Start the cluster from one of the resource groups
+                # if(not resource_group.vdus or len(resource_group.vdus) == 0):
+                #     print(FAIL + 'Error: resource_group.vdus is empty or null' + ENDC)
+                #     print('')
+                #     # stopEpm(dockerComposeProject)
+                #     exit(1)
 
-                cluster_from_resource_group = ClusterFromResourceGroup(
-                    resource_group_id=resource_group.id, type=["kubernetes"], master_id=resource_group.vdus[0].id)
-                cluster = cluster_api.create_cluster(
-                    cluster_from_resource_group=cluster_from_resource_group)
+                # cluster_from_resource_group = ClusterFromResourceGroup(
+                #     resource_group_id=resource_group.id, type=["kubernetes"], master_id=resource_group.vdus[0].id)
+                # cluster = cluster_api.create_cluster(
+                #     cluster_from_resource_group=cluster_from_resource_group)
 
-                print("Cluster:", cluster)
-                print("K8s_Master:", resource_group.vdus[0].ip)
-                getK8sConfigFromCluster(resource_group.vdus[0].ip)
-                startEtmOnK8s()
+                # ssh_client = getSshConnection(resource_group.vdus[0].ip)
+                ssh_client = getSshConnection('192.168.116.15')
+                setK8sClientConfigurarion(ssh_client)
+                modifyNodePortRangePort(ssh_client)
+                closeSshConnection(ssh_client)
+
+
+                # getK8sConfigFromCluster(resource_group.vdus[0].ip)
+                # startEtm()
 
                 # # STEP 6: Add a new worker to the Cluster (from the second resource group)
                 # cluster_api.add_worker(
