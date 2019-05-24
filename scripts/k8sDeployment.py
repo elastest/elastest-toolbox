@@ -91,7 +91,7 @@ def startK8(args, dockerComposeProject):
     if(args.command == 'stop'):
         stopEpm(dockerComposeProject)
     elif(args.command == 'start'):
-        if(args.paas_ip and args.paas_user and args.paas_pass and args.paas_project_name):
+        if(args.paas_url and args.paas_user and args.paas_pass and args.paas_project_name and args.paas_type):
             # TODO check args (start, mini, etc)
             epm_url = startAndWaitForEpm(dockerComposeProject)
 
@@ -111,17 +111,28 @@ def startK8(args, dockerComposeProject):
                 cluster_api = ClusterApi(api_client=api_client)
 
                 # STEP 2: Provide the OpenStack credentials
-                paasStackUrl = "http://" + args.paas_ip + ":" + args.paas_port + "/v2.0"
-                os_pop = PoP(interface_endpoint=paasStackUrl,
-                             interface_info=[{"key": "type", "value": "openstack"},
-                                             {"key": "username",
-                                              "value": args.paas_user},
-                                             {"key": "password",
-                                              "value": args.paas_pass},
-                                             {"key": "project_name",
-                                              "value": args.paas_project_name},
-                                             {"key": "auth_url",
-                                              "value": paasStackUrl}], name="os-dc1", status="active")
+                print('Paas type: ' + args.paas_type)
+                if(args.paas_type == 'openstack'):
+                    os_pop = PoP(interface_endpoint=args.paas_url,
+                                 interface_info=[{"key": "type", "value": args.paas_type},
+                                                 {"key": "username",
+                                                  "value": args.paas_user},
+                                                 {"key": "password",
+                                                  "value": args.paas_pass},
+                                                 {"key": "project_name",
+                                                  "value": args.paas_project_name},
+                                                 {"key": "auth_url",
+                                                  "value": args.paas_url}], name="os-dc1", status="active")
+                else:
+                    os_pop = PoP(interface_endpoint=args.paas_url,
+                                 interface_info=[{"key": "type", "value": args.paas_type},
+                                                 {"key": "aws_access_key",
+                                                  "value": args.paas_user},
+                                                 {"key": "aws_secret_key",
+                                                  "value": args.paas_pass},
+                                                 {"key": "region",
+                                                  "value": args.paas_project_name}], name="os-dc1", status="active")
+
                 pop_api.register_po_p(os_pop)
 
                 # STEP 3: Check if ansible adapter is available
@@ -134,6 +145,7 @@ def startK8(args, dockerComposeProject):
                     for a in adapters:
                         if a.type == "ansible":
                             ansible_found = True
+                            break
                     wait_ansible = not ansible_found
                     time.sleep(1)
                     if(current_retry == max_retries):
@@ -198,5 +210,5 @@ def startK8(args, dockerComposeProject):
                 # package_api.delete_package(resource_group.id)
                 # package_api.delete_package(resource_group_single.id)
         else:
-            print(FAIL +'K8 parameters are mandatory' + ENDC)
+            print(FAIL + 'K8 parameters are mandatory' + ENDC)
             exit(1)
