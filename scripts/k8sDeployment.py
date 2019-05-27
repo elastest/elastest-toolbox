@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../version-scripts')
+from ETFiles import *
 from epm_client.apis import *
 from epm_client import ApiClient
 from epm_client.models import *
@@ -5,12 +8,12 @@ import subprocess
 import shlex
 from checkETM import *
 import time
-import sys
 import urllib3
 import certifi
 import paramiko
 from ruamel.yaml import YAML
 import os
+import StringIO
 
 FNULL = subprocess.STDOUT
 
@@ -96,7 +99,7 @@ def getSshConnection(k8s_host):
 
 def closeSshConnection(ssh_client):
     if ssh_client is not None:
-        ss_client.close();
+        ssh_client.close();
 
 
 def setK8sClientConfigurarion(ssh_client):
@@ -112,24 +115,55 @@ def setK8sClientConfigurarion(ssh_client):
         kube_file.close()
 
 
+def uploadFile(file, target_path, ssh_client):
+    print('Uploading file')
+    entrada, salida, error = ssh_client.exec_command(
+        'sudo chmod 777 /etc/kubernetes/manifests/kube-apiserver.yaml')
+    ftp_client = ssh_client.open_sftp()
+    ftp_client.put('kube-apiserver.yaml',
+                   '/etc/kubernetes/manifests/kube-apiserver.yaml')
+    ftp_client.close()
+    entrada, salida, error = ssh_client.exec_command(
+        'sudo chmod 600 /etc/kubernetes/manifests/kube-apiserver.yaml')
+
+
 def modifyNodePortRangePort(ssh_client):
     if ssh_client is not None:
         yaml = YAML()
         entrada, salida, error = ssh_client.exec_command(
             'sudo cat /etc/kubernetes/manifests/kube-apiserver.yaml')
         cluster_api_spec_from_k8s_cluster = salida.read()
-        print(cluster_api_spec_from_k8s_cluster)
+        print('Yamel as dict:', cluster_api_spec_from_k8s_cluster)
         cluster_api_spec_as_dict = yaml.load(cluster_api_spec_from_k8s_cluster)
-        print('---------')
-        print('Yaml field: ', cluster_api_spec_as_dict['apiVersion'])
         cluster_api_spec_as_dict['spec']['containers'][0]['command'].append("--service-node-port-range=1000-40000")
-        print('Cluster api spec: ', cluster_api_spec_as_dict)
+        dm = StringIO.StringIO()
+        yaml.dump(cluster_api_spec_as_dict, dm)
+        yaml_as_string = dm.getvalue()
         
-        kube_file = open('/etc/kubernetes/manifests/kube-apiserver.yaml', 'w')
-        kube_file.write(admin_conf_content)
-        kube_file.close()
+        print('Kube-api upadated content: ' + yaml_as_string)
+        writeFile('kube-apiserver.yaml', yaml_as_string)
 
-# def configureNodePortPortsRange():
+
+# # def configureNodePortPortsRange():
+
+# def processYamlFromFile(pathFile):
+#     # yamlAsString = getYml(pathFile)
+#     # print('YAML as string: ', yamlAsString)
+#     # print('--------------')
+#     # yaml = YAML()
+#     # cluster_api_spec_as_dict = yaml.load(yamlAsString.read())
+#     cluster_api_spec_as_dict = getYml(pathFile)
+#     print('YAML as dict: ', cluster_api_spec_as_dict)
+#     print('--------------\n\n\n')
+#     cluster_api_spec_as_dict['spec']['containers'][0]['command'].append("--service-node-port-range=1000-40000")
+#     print('YAML as dict modified: ', cluster_api_spec_as_dict)
+#     print('--------------\n\n\n')
+#     # yaml_as_string_modified = yaml.dump(cluster_api_spec_as_dict, stream=None, default_flow_style=True)
+#     yaml_as_string_modified = yaml.dump(cluster_api_spec_as_dict, default_flow_style=False)
+#     print ('dict modified: ' + yaml_as_string_modified)
+#     print('YAML as string modified: ' + yaml_as_string_modified)
+#     writeFile(os.environ['PWD'] + '/cluster_api2.yml', yaml.dump(cluster_api_spec_as_dict, default_flow_style=False))
+#     #+ pathFile,yaml_as_string_modified)
 
 
 def startEtm():
@@ -216,43 +250,42 @@ def startK8(args, dockerComposeProject):
                 print('')
                 print("Ansible adapter available: " + str(ansible_found))
 
-                # # STEP 4: Start VMs on OpenStack
-                # # Ideally  to test everything - Send package for initializing the Cluster
-                # # Send second package for adding a new node
-                # resource_group = package_api.receive_package(
-                #     file=ansiblePath + '/ansible-cluster.tar')
-                # print('Resource group: ', resource_group)
+                # STEP 4: Start VMs on OpenStack
+                # Ideally  to test everything - Send package for initializing the Cluster
+                # Send second package for adding a new node
+                resource_group = package_api.receive_package(
+                    file=ansiblePath + '/ansible-cluster.tar')
+                print('Resource group: ', resource_group)
 
-                # # # This package can contain one VM, which will be added to the cluster
-                # # resource_group_single = package_api.receive_package(
-                # #     file=ansiblePath + '/ansible-node.tar')
-                # # print(resource_group_single)
+                # # This package can contain one VM, which will be added to the cluster
+                # resource_group_single = package_api.receive_package(
+                #     file=ansiblePath + '/ansible-node.tar')
+                # print(resource_group_single)
 
-                # # STEP 5: Start the cluster from one of the resource groups
-                # if(not resource_group.vdus or len(resource_group.vdus) == 0):
-                #     print(FAIL + 'Error: resource_group.vdus is empty or null' + ENDC)
-                #     print('')
-                #     # stopEpm(dockerComposeProject)
-                #     exit(1)
+                # STEP 5: Start the cluster from one of the resource groups
+                if(not resource_group.vdus or len(resource_group.vdus) == 0):
+                    print(FAIL + 'Error: resource_group.vdus is empty or null' + ENDC)
+                    print('')
+                    # stopEpm(dockerComposeProject)
+                    exit(1)
 
-                # cluster_from_resource_group = ClusterFromResourceGroup(
-                #     resource_group_id=resource_group.id, type=["kubernetes"], master_id=resource_group.vdus[0].id)
-                # cluster = cluster_api.create_cluster(
-                #     cluster_from_resource_group=cluster_from_resource_group)
+                cluster_from_resource_group = ClusterFromResourceGroup(
+                    resource_group_id=resource_group.id, type=["kubernetes"], master_id=resource_group.vdus[0].id)
+                cluster = cluster_api.create_cluster(
+                    cluster_from_resource_group=cluster_from_resource_group)
 
-                # ssh_client = getSshConnection(resource_group.vdus[0].ip)
-                ssh_client = getSshConnection('192.168.116.15')
+                ssh_client = getSshConnection(resource_group.vdus[0].ip)
                 setK8sClientConfigurarion(ssh_client)
                 modifyNodePortRangePort(ssh_client)
                 closeSshConnection(ssh_client)
 
 
                 # getK8sConfigFromCluster(resource_group.vdus[0].ip)
-                # startEtm()
+                startEtm()
 
-                # # STEP 6: Add a new worker to the Cluster (from the second resource group)
-                # cluster_api.add_worker(
-                #     id=cluster.id, machine_id=resource_group_single.vdus[0].id)
+                # STEP 6: Add a new worker to the Cluster (from the second resource group)
+                cluster_api.add_worker(
+                    id=cluster.id, machine_id=resource_group_single.vdus[0].id)
 
                 print(cluster_api.get_all_clusters())
 
