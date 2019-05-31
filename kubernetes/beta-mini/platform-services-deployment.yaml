@@ -9,6 +9,7 @@ spec:
   template:
     metadata:
       labels:
+        app: elastest
         elastest-service: platform-services
     spec:
       containers:

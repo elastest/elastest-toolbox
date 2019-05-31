@@ -27,10 +27,12 @@ epmComposeCommandPrefix = "docker-compose -f ../epm/deploy/docker-compose.yml -p
 
 
 def startAndWaitForEpm(dockerComposeProject):
-    startEpmCommand = epmComposeCommandPrefix + \
-        dockerComposeProject + " up -d"
-    # result = subprocess.call(shlex.split(startEpmCommand), stderr=FNULL)
-    result = 0
+    if(args.dev):
+        result = 0
+    else:
+        startEpmCommand = epmComposeCommandPrefix + \
+            dockerComposeProject + " up -d"
+        result = subprocess.call(shlex.split(startEpmCommand), stderr=FNULL)
     if(result == 0):
         insertPlatformIntoNetwork()
 
@@ -52,9 +54,10 @@ def startAndWaitForEpm(dockerComposeProject):
 
 def stopEpm(dockerComposeProject):
     print('Stopping EPM...')
-    # stopEpmCommand = epmComposeCommandPrefix + \
-    #     dockerComposeProject + " down"
-    # result = subprocess.call(shlex.split(stopEpmCommand), stderr=FNULL)
+    if(not args.dev):
+        stopEpmCommand = epmComposeCommandPrefix + \
+            dockerComposeProject + " down"
+        result = subprocess.call(shlex.split(stopEpmCommand), stderr=FNULL)
 
 
 # def getK8sConfigFromCluster(k8s_host):
@@ -97,9 +100,10 @@ def getSshConnection(k8s_host):
     ssh_client.connect(**datos)
     return ssh_client
 
+
 def closeSshConnection(ssh_client):
     if ssh_client is not None:
-        ssh_client.close();
+        ssh_client.close()
 
 
 def setK8sClientConfigurarion(ssh_client):
@@ -135,11 +139,12 @@ def modifyNodePortRangePort(ssh_client):
         cluster_api_spec_from_k8s_cluster = salida.read()
         print('Yamel as dict:', cluster_api_spec_from_k8s_cluster)
         cluster_api_spec_as_dict = yaml.load(cluster_api_spec_from_k8s_cluster)
-        cluster_api_spec_as_dict['spec']['containers'][0]['command'].append("--service-node-port-range=1000-40000")
+        cluster_api_spec_as_dict['spec']['containers'][0]['command'].append(
+            "--service-node-port-range=1000-40000")
         dm = StringIO.StringIO()
         yaml.dump(cluster_api_spec_as_dict, dm)
         yaml_as_string = dm.getvalue()
-        
+
         print('Kube-api upadated content: ' + yaml_as_string)
         writeFile('kube-apiserver.yaml', yaml_as_string)
 
@@ -172,7 +177,6 @@ def startEtm():
     # start_etm_on_k8s_command = 'kubectl create -f /home/frdiaz/git/elastest/elastest-toolbox/kubernetes/beta-mini -f /home/frdiaz/git/elastest/elastest-toolbox/kubernetes/beta-mini/volumes'
     # start_etm_on_k8s_command = 'ls'
     subprocess.call(shlex.split(start_etm_on_k8s_command))
-
 
 
 def startK8(args, dockerComposeProject):
@@ -278,7 +282,6 @@ def startK8(args, dockerComposeProject):
                 setK8sClientConfigurarion(ssh_client)
                 modifyNodePortRangePort(ssh_client)
                 closeSshConnection(ssh_client)
-
 
                 # getK8sConfigFromCluster(resource_group.vdus[0].ip)
                 startEtm()

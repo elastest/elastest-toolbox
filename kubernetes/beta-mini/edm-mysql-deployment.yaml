@@ -10,6 +10,7 @@ spec:
     metadata:
       labels:
         elastest-service: edm-mysql
+        app: elastest
     spec:
       containers:
       - name: edm-mysql

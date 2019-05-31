@@ -5,6 +5,7 @@ metadata:
   name: filebeat-config
   namespace: default
   labels:
+    app: elastest
     k8s-app: filebeat
 data:
   filebeat.yml: |-
@@ -48,6 +49,7 @@ metadata:
   name: filebeat
   namespace: default
   labels:
+    app: elastest
     k8s-app: filebeat
 spec:
   template:
@@ -122,6 +124,7 @@ kind: ClusterRole
 metadata:
   name: filebeat
   labels:
+    app: elastest
     k8s-app: filebeat
 rules:
 - apiGroups: [""] # "" indicates the core API group

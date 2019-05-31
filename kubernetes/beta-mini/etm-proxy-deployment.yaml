@@ -8,6 +8,7 @@ spec:
   template:
     metadata:
       labels:
+        app: elastest
         elastest-service: etm-proxy
     spec:
       containers:

@@ -10,6 +10,7 @@ spec:
     metadata:
       labels:
         elastest-service: epm
+        app: elastest
     spec:
       containers:
       - name: epm
@@ -77,6 +78,7 @@ spec:
     metadata:
       labels:
         elastest-service: epm-adapter-docker
+        app: elastest
     spec:
       containers:
       - command:
@@ -109,6 +111,7 @@ spec:
     metadata:
       labels:
         io.kompose.service: epm-adapter-docker-compose
+        app: elastest
     spec:
       containers:
       - command:
@@ -139,6 +142,7 @@ spec:
     metadata:
       labels:
         io.kompose.service: epm-adapter-ansible
+        app: elastest
     spec:
       containers:
       - command:
