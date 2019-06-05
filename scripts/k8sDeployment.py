@@ -26,7 +26,7 @@ ansiblePath = "/data/ansible"
 epmComposeCommandPrefix = "docker-compose -f ../epm/deploy/docker-compose.yml -p "
 
 
-def startAndWaitForEpm(dockerComposeProject):
+def startAndWaitForEpm(args, dockerComposeProject):
     if(args.dev):
         result = 0
     else:
@@ -185,7 +185,7 @@ def startK8(args, dockerComposeProject):
     elif(args.command == 'start'):
         if(args.paas_url and args.paas_user and args.paas_pass and args.paas_project_name and args.paas_type):
             # TODO check args (start, mini, etc)
-            epm_url = startAndWaitForEpm(dockerComposeProject)
+            epm_url = startAndWaitForEpm(args, dockerComposeProject)
 
             # Start EPM
             if(epm_url):
