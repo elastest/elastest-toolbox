@@ -48,11 +48,11 @@ def startAndWaitForEpm(args, dockerComposeProject):
     else:
         print(FAIL + 'Error on start EPM' + ENDC)
         print('')
-        stopEpm(dockerComposeProject)
+        stopEpm(args, dockerComposeProject)
         exit(1)
 
 
-def stopEpm(dockerComposeProject):
+def stopEpm(args,dockerComposeProject):
     print('Stopping EPM...')
     if(not args.dev):
         stopEpmCommand = epmComposeCommandPrefix + \
@@ -181,7 +181,7 @@ def startEtm():
 
 def startK8(args, dockerComposeProject):
     if(args.command == 'stop'):
-        stopEpm(dockerComposeProject)
+        stopEpm(args, dockerComposeProject)
     elif(args.command == 'start'):
         if(args.paas_url and args.paas_user and args.paas_pass and args.paas_project_name and args.paas_type):
             # TODO check args (start, mini, etc)
@@ -244,7 +244,7 @@ def startK8(args, dockerComposeProject):
                         print(FAIL + "Error: Ansible adapter not available after " +
                               str(max_retries) + "retries" + ENDC)
                         print('')
-                        stopEpm(dockerComposeProject)
+                        stopEpm(args, dockerComposeProject)
                         exit(1)
 
                     if(wait_ansible):
@@ -270,7 +270,7 @@ def startK8(args, dockerComposeProject):
                 if(not resource_group.vdus or len(resource_group.vdus) == 0):
                     print(FAIL + 'Error: resource_group.vdus is empty or null' + ENDC)
                     print('')
-                    # stopEpm(dockerComposeProject)
+                    # stopEpm(args, dockerComposeProject)
                     exit(1)
 
                 cluster_from_resource_group = ClusterFromResourceGroup(
