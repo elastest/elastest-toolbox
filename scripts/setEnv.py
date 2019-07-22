@@ -34,3 +34,14 @@ def replaceEnvVarValue(var_name, new_value, old_value, files_paths):
 		print 'Error: Environment variable could not be inserted'
 		exit(1)
 
+def replaceKeyValue(key_name, new_value, old_value, files_paths):
+	new_key_entry = key_name + ': ' + new_value
+	old_key_entry = key_name + ': ' + old_value
+	
+	try:
+		for file_path in files_paths:
+			searchAndReplace(file_path, old_key_entry, new_key_entry)
+	except IOError:
+		print 'Error: Environment variable could not be inserted'
+		exit(1)
+

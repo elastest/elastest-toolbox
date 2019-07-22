@@ -14,6 +14,7 @@ import paramiko
 from ruamel.yaml import YAML
 import os
 import StringIO
+from setEnv import *
 
 FNULL = subprocess.STDOUT
 
@@ -24,19 +25,28 @@ epm_adapter_ansible_port = "50052"
 
 ansiblePath = "/data/ansible"
 epmComposeCommandPrefix = "docker-compose -f ../epm/deploy/docker-compose.yml -p "
+epmComposeFilePath = "../epm/deploy/docker-compose.yml"
 
 
 def startAndWaitForEpm(args, dockerComposeProject):
-    if(args.dev):
-        result = 0
-    else:
+    # if(args.dev):
+    #     result = 0
+    # else:
+    if(args.paas_short_domain):
+        searchAndReplace(epmComposeFilePath, "entrypoint: python -m run --register-adapter elastest-epm elastest-epm-adapter-ansible",
+                         "entrypoint: python -m run --register-adapter elastest-epm elastest-epm-adapter-ansible --register-namespace codeurjc.es")
+
+    try:
         startEpmCommand = epmComposeCommandPrefix + \
             dockerComposeProject + " up -d"
         result = subprocess.call(shlex.split(startEpmCommand), stderr=FNULL)
+    except:
+        print('Error starting EPM') 
     if(result == 0):
         insertPlatformIntoNetwork()
 
         epm_url = "http://" + epm_service_name + ":" + epm_port + "/v1"
+        print('Waiting for ' + epm_url)
         waitForUrl(epm_url, 'Waiting for EPM', 'EPM is available!')
 
         epm_adapter_ansible_url = "http://" + \
@@ -205,6 +215,7 @@ def startK8(args, dockerComposeProject):
                 # STEP 2: Provide the OpenStack credentials
                 print('Paas type: ' + args.paas_type)
                 if(args.paas_type == 'openstack'):
+                    print('Deploying ElasTest on OpenStack')
                     os_pop = PoP(interface_endpoint=args.paas_url,
                                  interface_info=[{"key": "type", "value": args.paas_type},
                                                  {"key": "username",
@@ -216,6 +227,7 @@ def startK8(args, dockerComposeProject):
                                                  {"key": "auth_url",
                                                   "value": args.paas_url}], name="os-dc1", status="active")
                 else:
+                    print('Deploying ElasTest on AWS')
                     os_pop = PoP(interface_endpoint=args.paas_url,
                                  interface_info=[{"key": "type", "value": args.paas_type},
                                                  {"key": "aws_access_key",
