@@ -9,7 +9,7 @@ spec:
   template:
     metadata:
       labels:
-	app: elastest
+        app: elastest
         elastest-service: etm
     spec:
       containers:
@@ -45,7 +45,7 @@ spec:
         - name: ET_ETM_INTERNAL_HOST
           value: etm
         - name: ET_ETM_JENKINS_HOST
-          value: etm-jenkins
+          value: none
         - name: ET_ETM_LOG_LEVEL
           value: DEBUG
         - name: ET_ETM_LSBEATS_HOST
@@ -58,6 +58,8 @@ spec:
           value: etm
         - name: ET_ETM_TESTLINK_API_KEY
           value: none
+        - name: ET_ETM_TESTLINK_HOST
+          value: none
         - name: ET_IN_PROD
           value: "true"
         - name: ET_PASS
@@ -69,7 +71,7 @@ spec:
         - name: ET_PUBLIC_HOST
           value: localhost
         - name: ET_PUBLIC_HOST_TYPE
-          value: default
+          value: server_address
         - name: ET_USER
           value: none
         - name: EXEC_MODE
@@ -91,7 +93,6 @@ spec:
         persistentVolumeClaim:
           claimName: elastest-data-claim
 status: {}
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
