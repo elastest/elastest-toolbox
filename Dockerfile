@@ -9,7 +9,7 @@ RUN pip install epm-client
 RUN pip install urllib3
 RUN pip install certifi
 RUN pip install paramiko
-RUN pip install ruamel.yaml
+RUN pip install 'ruamel.yaml==0.15.0'
 
 ## netcat
 RUN apk add --no-cache netcat-openbsd
