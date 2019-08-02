@@ -29,19 +29,17 @@ epmComposeFilePath = "../epm/deploy/docker-compose.yml"
 
 
 def startAndWaitForEpm(args, dockerComposeProject):
-    # if(args.dev):
-    #     result = 0
-    # else:
-    if(args.paas_short_domain):
-        searchAndReplace(epmComposeFilePath, "entrypoint: python -m run --register-adapter elastest-epm elastest-epm-adapter-ansible",
-                         "entrypoint: python -m run --register-adapter elastest-epm elastest-epm-adapter-ansible --register-namespace codeurjc.es")
-
-    try:
+    if(args.dev):
+        result = 0
+    else:
+        if(args.paas_domain):
+            searchAndReplace(epmComposeFilePath, "entrypoint: python -m run --register-adapter elastest-epm elastest-epm-adapter-ansible",
+                            "entrypoint: python -m run --register-adapter elastest-epm elastest-epm-adapter-ansible --register-namespace codeurjc.es")
+        
         startEpmCommand = epmComposeCommandPrefix + \
             dockerComposeProject + " up -d"
         result = subprocess.call(shlex.split(startEpmCommand), stderr=FNULL)
-    except:
-        print('Error starting EPM') 
+ 
     if(result == 0):
         insertPlatformIntoNetwork()
 
@@ -183,7 +181,7 @@ def modifyNodePortRangePort(ssh_client):
 
 def startEtm():
     print('Deploying the ETM....')
-    start_etm_on_k8s_command = 'cd /kubernetes/beta-mini; kubectl create -f . -f /volumes'
+    start_etm_on_k8s_command = 'kubectl create -f /kubernetes/beta-mini -f /kubernetes/beta-mini/volumes'
     # start_etm_on_k8s_command = 'kubectl create -f /home/frdiaz/git/elastest/elastest-toolbox/kubernetes/beta-mini -f /home/frdiaz/git/elastest/elastest-toolbox/kubernetes/beta-mini/volumes'
     # start_etm_on_k8s_command = 'ls'
     subprocess.call(shlex.split(start_etm_on_k8s_command))

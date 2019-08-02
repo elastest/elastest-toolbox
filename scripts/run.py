@@ -68,6 +68,7 @@ def getArgs(params):
                         help=argparse.SUPPRESS, required=False)
     parser.add_argument('--paas-type', help=argparse.SUPPRESS,
                         type=str, choices=set(('openstack', 'aws')), default='openstack')
+    parser.add_argument('--paas-domain', help=argparse.SUPPRESS,required=False, type=str)
 
     # Custom usage message
     usage = parser.format_usage()
