@@ -242,7 +242,7 @@ def updateImagesTagOfJsonFile(path, tag):
         yml = getYmlFromETServicesJsonFile(manifest)
         new_yml = updateImagesTagOfReadYml(yml, tag)
         new_yml = updateETDockerImagesTagYml(new_yml, tag)
-        manifest['manifest_content'] = json.loads(json.dumps(yaml.dump(
+        manifest['manifest_content'] = json.loads(json.dumps(yaml.dump_all(
             new_yml, encoding=('utf-8'), default_flow_style=False), cls=MyEncoder))
     
     # Save new json file with images tag updated
