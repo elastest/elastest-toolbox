@@ -238,7 +238,7 @@ def updateImagesTagOfJsonFile(path, tag):
     json_file = getJson(path)
 
     # Update images version in the docker-compose files
-    for manifest in json.load(json_file['manifests']):
+    for manifest in json_file['manifests']:
         yml = getYmlFromETServicesJsonFile(manifest)
         new_yml = updateImagesTagOfReadYml(yml, tag)
         new_yml = updateETDockerImagesTagYml(new_yml, tag)
