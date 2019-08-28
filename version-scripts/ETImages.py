@@ -60,7 +60,7 @@ def getYmlFromETServicesJsonPath(path):
 
 def getYmlFromETServicesJsonFile(json):
     try:
-        return yaml.load_all(json['manifest_content'])
+        return next(yaml.load_all(json['manifest_content']))
     except KeyError:
         return yaml.load('')
 
