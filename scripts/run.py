@@ -57,6 +57,9 @@ def getArgs(params):
                         type=str, choices=set(('trace', 'debug', 'info', 'warn', 'error')), default='DEBUG')
     parser.add_argument('--enable-private-ere',
                         help=argparse.SUPPRESS, required=False, action='store_true')
+                        
+    parser.add_argument('--view-only', '-v', help='Configure View Only mode for ElasTest (Only GET method allowed).',
+                        required=False, action='store_true')
 
     # Kubernetes
     parser.add_argument('--kubernetes', '-k', help=argparse.SUPPRESS,
@@ -193,6 +196,14 @@ def runPlatform(params):
             files_list.append('../etm/docker/docker-compose-main.yml')
             replaceEnvVarValue('ET_ETM_TESTLINK_API_KEY',
                                testLinkAPIKey, 'none', files_list)
+
+
+            if(args.view_only):
+                print('"View Only" mode')
+                replaceEnvVarValue(
+                    'ET_ETM_ALLOWED_METHODS', 'GET', '*', files_list)
+
+                
 
             if(args.enable_private_ere):
                 print 'ERE is enabled'
