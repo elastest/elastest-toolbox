@@ -201,7 +201,7 @@ def runPlatform(params):
             if(args.view_only):
                 print('"View Only" mode')
                 replaceEnvVarValue(
-                    'ET_ETM_ALLOWED_METHODS', 'GET', '*', files_list)
+                    'ET_ETM_VIEW_ONLY', 'true', 'false', files_list)
 
                 
 
