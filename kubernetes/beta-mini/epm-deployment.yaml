@@ -154,6 +154,11 @@ spec:
         - elastest-epm-adapter-ansible
         image: elastest/epm-adapter-ansible
         name: elastest-epm-adapter-ansible
+        env:
+        - name: EPM_PORT_FROM
+          value: "1000"
+        - name: EPM_PORT_TO
+          value: "60000"
         resources: {}
       restartPolicy: Always
 status: {}
