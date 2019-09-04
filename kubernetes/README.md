@@ -1,4 +1,11 @@
-# How to run ElasTest
+# Minikube in Host
+Run Minikube with this command in your local:
+```
+sudo minikube start --memory=4098 --cpus=4 --vm-driver=none --apiserver-ips 127.0.0.1 --apiserver-name localhost --extra-config=kubelet.resolv-conf=/run/systemd/resolve/resolv.conf --extra-config=apiserver.service-node-port-range=1000-60000
+```
+
+
+## How to run ElasTest
 - Clone toolbox project
 ```
 git clone https://github.com/elastest/elastest-toolbox.git
@@ -14,8 +21,60 @@ kubectl create -f . -f volumes/
 *-f volumes it’s only necessary first time, but there is no problem if it is used at another time, although error messages will be output*
 
 # How to access
-- Can be accessed with the IP of the machine where elastest has been raised, or with the service ip. For this, run `kubectl get service etm-proxy` to view info and get CLUSTER-IP. You can also directly execute this command that returns only the ip: `kubectl describe service etm-proxy | grep IP: | sed -E 's/IP:[[:space:]]+//'`
+- When you run Minikube with this configuration, the cluster ip match with your machine ip, but you can run `sudo minikube ip` to get the cluster ip.
 - Open your browser and navigate to http://CLUSTER-IP:37000
+
+# AWS
+If you want to deploy ElasTest on a k8s cluster in AWS, you will need to do something else before executing the command to start ElasTest on k8s.
+
+## Cluster Configuration
+- Extend default NodePort range 
+Add this line `--service-node-port-range=1000-40000` to the file `/etc/kubernetes/manifests/kube-apiserver.yaml`
+
+```
+:q!apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    component: kube-apiserver
+    tier: control-plane
+  name: kube-apiserver
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - kube-apiserver
+    - --advertise-address=10.1.47.54
+    ……
+    - --service-node-port-range=1000-40000
+```
+## How to run ElasTest
+- Clone toolbox project
+```
+git clone https://github.com/elastest/elastest-toolbox.git
+```
+- Navigate to folder
+```
+cd elastest-toolbox/kubernetes/beta-mini
+```
+- Set the Public Node IP in ElasTest
+Edit the file `etm-deployment.yml` and update this environment variable with the public ip for the node in AWS:
+```
+        - name: ET_PUBLIC_HOST
+          value: AWS Public Node IP
+```
+
+- Start ElasTest
+```
+kubectl create -f . -f volumes/
+```
+*-f volumes it’s only necessary first time, but there is no problem if it is used at another time, although error messages will be output*
+
+## How to access
+- Use the AWS public IP as your cluster IP.
+- Open your browser and navigate to http://CLUSTER-IP:37000
+
 
 # How to stop:
 ```
@@ -24,7 +83,9 @@ kubectl delete -f .
 
 *don't include the volumes folder if you don't want to lose the elastest data, as the volumes will be deleted*
 
-# Minikube
-If you use minikube you must start it with the `--extra-config=apiserver.service-node-port-range=1000-40000` parameter to change the default ports.
 
-On the other hand, you must follow the steps in the section `How to run ElasTest` and then get the ip with `minikube ip`. Type in your browser this ip with port `37000` to access ElasTest
+
+
+
+
+
