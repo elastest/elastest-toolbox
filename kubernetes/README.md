@@ -61,8 +61,8 @@ Add this line `--service-node-port-range=1000-40000` to the file `/etc/kubernete
 - Set the Public Node IP in ElasTest
 Edit the file `etm-deployment.yml` and update this environment variable with the public ip for the node in AWS:
     ```
-            - name: ET_PUBLIC_HOST
-            value: AWS Public Node IP
+      - name: ET_PUBLIC_HOST
+        value: AWS Public Node IP
     ```
 
 - Start ElasTest
