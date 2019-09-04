@@ -1,6 +1,6 @@
 # How to run ElasTest on K8s
 
-## Minikube in Host
+## Minikube in Ubuntu host (without a VM)
 Run Minikube with this command in your local:
 ```
 sudo minikube start --memory=4098 --cpus=4 --vm-driver=none --apiserver-ips 127.0.0.1 --apiserver-name localhost --extra-config=kubelet.resolv-conf=/run/systemd/resolve/resolv.conf --extra-config=apiserver.service-node-port-range=1000-60000
