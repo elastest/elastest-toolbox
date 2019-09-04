@@ -1,11 +1,12 @@
 # How to run ElasTest on K8s
 
-## Minikube in Ubuntu host (without a VM)
+## Minikube
+### Minikube in Ubuntu host (without a VM)
 Run Minikube with this command in your local:
 ```
 sudo minikube start --memory=4098 --cpus=4 --vm-driver=none --apiserver-ips 127.0.0.1 --apiserver-name localhost --extra-config=kubelet.resolv-conf=/run/systemd/resolve/resolv.conf --extra-config=apiserver.service-node-port-range=1000-60000
 ```
-### Deploy ElasTest
+#### Deploy ElasTest
 - Clone toolbox project
     ```
     git clone https://github.com/elastest/elastest-toolbox.git
@@ -20,8 +21,37 @@ sudo minikube start --memory=4098 --cpus=4 --vm-driver=none --apiserver-ips 127.
     ```
     **Note:** `-f volumes` it’s only necessary first time, but there is no problem if it is used at another time, although error messages will be output*
 
+### Minikube in VM
+Run Minikube with this command in your local:
+```
+sudo minikube start --memory=6048 --cpus=4 --extra-config=apiserver.service-node-port-range=1000-60000 --extra-config kubelet.node-ip=VM-IP
+```
+#### Deploy ElasTest
+- Clone toolbox project
+    ```
+    git clone https://github.com/elastest/elastest-toolbox.git
+    ```
+- Navigate to folder
+    ```
+    cd elastest-toolbox/kubernetes/beta-mini
+    ```
+- Set the Public Node IP in ElasTest
+Edit the file `etm-deployment.yml` and update this environment variable with the VM IP:
+    ```
+      - name: ET_PUBLIC_HOST
+        value: VM IP
+    ```
+
+- Start ElasTest
+    ```
+    kubectl create -f . -f volumes/
+    ```
+    **Note:** `-f volumes` it’s only necessary first time, but there is no problem if it is used at another time, although error messages will be output*
+
+
+
 ### How to access
-- When you run Minikube with this configuration, the cluster ip match with your machine ip, but you can run `sudo minikube ip` to get the cluster ip.
+- Execute `sudo minikube ip` to get the cluster ip.
 - Open your browser and navigate to http://CLUSTER-IP:37000
 
 ## AWS
