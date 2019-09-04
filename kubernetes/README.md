@@ -47,7 +47,7 @@ Edit the file `etm-deployment.yml` and update this environment variable with the
 - Execute `sudo minikube ip` to get the cluster ip.
 - Open your browser and navigate to http://CLUSTER-IP:37000
 
-## AWS
+## AWS (Single Node)
 If you want to deploy ElasTest on a k8s cluster in AWS, you will need to do something else before executing the command to start ElasTest on k8s.
 
 ### Cluster Configuration
