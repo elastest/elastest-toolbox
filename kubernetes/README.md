@@ -1,6 +1,6 @@
 # How to run ElasTest on K8s
 
-## Clone ElasTest Toolbox Repository
+## Get the ElasTest Manifests
 - Clone toolbox project
     ```
     git clone https://github.com/elastest/elastest-toolbox.git
