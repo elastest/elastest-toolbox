@@ -27,9 +27,10 @@ If you want to stablish credentials to access to ElasTest, follow these steps:
       value: YYYYYY
     ```
     In addition, you have to set to true the variable `ET_SECURITY`.
+    ```
     - name: ET_SECURITY
       value: "true"
-
+    ```
 ## Minikube
 ### Minikube in Ubuntu host (without a VM)
 Run Minikube with this command in your local:
