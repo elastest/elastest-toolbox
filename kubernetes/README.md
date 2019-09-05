@@ -9,6 +9,27 @@
     ```
     cd elastest-toolbox/kubernetes/beta-mini
     ```
+## Enable Security
+If you want to stablish credentials to access to ElasTest, follow these steps:
+- **Enable ETM Security.** Edit the file *"etm-deployment.yml"* and replace the value "none" in the variables `ET_USER` and `ET_PASS` for whatever you want.
+    ```
+    - name: ET_USER
+          value: XXXXXX
+    - name: ET_PASS
+          value: YYYYYY
+    ```
+  
+- **Enable Proxy Security.** Edit the file *"etm-proxy-deployment.yml"* and replace the value "none" in the variables `ET_USER` and `ET_PASS` for whatever you want.
+    ```
+    - name: ET_USER
+      value: XXXXXX
+    - name: ET_PASS
+      value: YYYYYY
+    ```
+    In addition, you have to set to true the variable `ET_SECURITY`.
+    - name: ET_SECURITY
+      value: "true"
+
 ## Minikube
 ### Minikube in Ubuntu host (without a VM)
 Run Minikube with this command in your local:
