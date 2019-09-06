@@ -11,7 +11,7 @@
     ```
 ## Enable Security
 If you want to stablish credentials to access to ElasTest, follow these steps:
-- **Enable ETM Security.** Edit the file *"etm-deployment.yml"* and replace the value "none" in the variables `ET_USER` and `ET_PASS` for whatever you want.
+- **Set Jenkins and TL Credentials.** Edit the file *"etm-deployment.yml"* and replace the value "none" in the variables `ET_USER` and `ET_PASS` for whatever you want.
     ```
     - name: ET_USER
           value: XXXXXX
@@ -19,7 +19,7 @@ If you want to stablish credentials to access to ElasTest, follow these steps:
           value: YYYYYY
     ```
   
-- **Enable Proxy Security.** Edit the file *"etm-proxy-deployment.yml"* and replace the value "none" in the variables `ET_USER` and `ET_PASS` for whatever you want.
+- **Set ElasTest Credentials.** Edit the file *"etm-proxy-deployment.yml"* and replace the value "none" in the variables `ET_USER` and `ET_PASS` for whatever you want.
     ```
     - name: ET_USER
       value: XXXXXX
