@@ -10,7 +10,7 @@
     cd elastest-toolbox/kubernetes/beta-mini
     ```
 ## Enable Security
-If you want to stablish credentials to access to ElasTest, follow these steps:
+If you want to stablish credentials to access to ElasTest and its integrated services, follow these steps:
 - **Set Jenkins and TestLink Credentials.** Edit the file *"etm-deployment.yml"* and replace the value "none" in the variables `ET_USER` and `ET_PASS` for whatever you want.
     ```
     - name: ET_USER
