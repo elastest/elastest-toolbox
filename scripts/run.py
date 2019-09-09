@@ -144,6 +144,9 @@ def runPlatform(params):
                     '8080', '../etm/docker/docker-compose-jenkins-ports.yml'))
                 replaceEnvVarValue('JENKINS_LOCATION', 'http://' +
                                    args.server_address + ':' + jenkinsPort, 'none', files_list)
+                if(args.view_only):
+                    replaceEnvVarValue(
+                        'ET_ETM_VIEW_ONLY', 'true', 'false', files_list)                                   
 
             # Create config and logs folders
             configPad = os.environ['ET_DATA_IN_CONTAINER'] + \
