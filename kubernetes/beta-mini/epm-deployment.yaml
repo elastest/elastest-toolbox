@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: epm
-        image: elastest/epm:latest
+        image: elastest/epm:lates
+        imagePullPolicy: Always
         env:
         - name: ET_EDM_ALLUXIO_API
           value: http://edm-alluxio-master:19998/
@@ -59,7 +60,6 @@ spec:
         - name: docker-socket
           mountPath: /var/run/docker.sock
       restartPolicy: Always
-      imagePullPolicy: Always
       volumes:
       - name: docker-socket
         hostPath:
@@ -88,13 +88,13 @@ spec:
         - epm-adapter-docker.jar
         - --register-adapter
         image: elastest/epm-adapter-docker
+        imagePullPolicy: Always
         name: elastest-epm-adapter-docker
         resources: {}
         volumeMounts:
         - name: docker-socket
           mountPath: /var/run/docker.sock
       restartPolicy: Always
-      imagePullPolicy: Always
       volumes:
       - name: docker-socket
         hostPath:
@@ -121,13 +121,13 @@ spec:
         - run.py
         - --register-adapter
         image: elastest/epm-adapter-docker-compose
+        imagePullPolicy: Always
         name: elastest-epm-adapter-docker-compose
         resources: {}
         volumeMounts:
         - name: docker-socket
           mountPath: /var/run/docker.sock
       restartPolicy: Always
-      imagePullPolicy: Always
       volumes:
       - name: docker-socket
         hostPath:
@@ -156,6 +156,7 @@ spec:
         - elastest-epm
         - elastest-epm-adapter-ansible
         image: elastest/epm-adapter-ansible
+        imagePullPolicy: Always
         name: elastest-epm-adapter-ansible
         env:
         - name: EPM_PORT_FROM

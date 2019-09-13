@@ -15,6 +15,7 @@ spec:
       containers:
       - name: edm-mysql
         image: elastest/edm-mysql:latest
+        imagePullPolicy: Always
         args:
           - "--ignore-db-dir=lost+found"
         env:
@@ -33,7 +34,6 @@ spec:
         - mountPath: /etc/mysql/conf.d
           name: edm-mysql-claim1
       restartPolicy: Always
-      imagePullPolicy: Always
       volumes:
       - name: edm-mysql
         persistentVolumeClaim:

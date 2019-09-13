@@ -14,6 +14,7 @@ spec:
       containers:
       - name: etm-proxy
         image: elastest/etm-proxy:latest
+        imagePullPolicy: Always
         env:
         - name: ET_PASS
           value: none
@@ -32,5 +33,4 @@ spec:
         - containerPort: 443
         resources: {}
       restartPolicy: Always
-      imagePullPolicy: Always
 status: {}

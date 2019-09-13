@@ -15,6 +15,7 @@ spec:
       containers:
       - name: etm
         image: elastest/etm:latest
+        imagePullPolicy: Always
         command:
         - /run.sh
         env:
@@ -85,7 +86,6 @@ spec:
         - mountPath: /data
           name: elastest-data
       restartPolicy: Always
-      imagePullPolicy: Always
       volumes:
       - name: platform-services
         persistentVolumeClaim:
