@@ -85,6 +85,7 @@ spec:
         - mountPath: /data
           name: elastest-data
       restartPolicy: Always
+      imagePullPolicy: Always
       volumes:
       - name: platform-services
         persistentVolumeClaim:

@@ -33,6 +33,7 @@ spec:
         - mountPath: /etc/mysql/conf.d
           name: edm-mysql-claim1
       restartPolicy: Always
+      imagePullPolicy: Always
       volumes:
       - name: edm-mysql
         persistentVolumeClaim:

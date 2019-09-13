@@ -59,6 +59,7 @@ spec:
         - name: docker-socket
           mountPath: /var/run/docker.sock
       restartPolicy: Always
+      imagePullPolicy: Always
       volumes:
       - name: docker-socket
         hostPath:
@@ -93,6 +94,7 @@ spec:
         - name: docker-socket
           mountPath: /var/run/docker.sock
       restartPolicy: Always
+      imagePullPolicy: Always
       volumes:
       - name: docker-socket
         hostPath:
@@ -125,6 +127,7 @@ spec:
         - name: docker-socket
           mountPath: /var/run/docker.sock
       restartPolicy: Always
+      imagePullPolicy: Always
       volumes:
       - name: docker-socket
         hostPath:
