@@ -11,10 +11,13 @@ spec:
       labels:
         app: elastest
         elastest-service: platform-services
+        elastest-component-type: core
+        elastest-component: platform-services
     spec:
       containers:
       - name: platform-services
         image: elastest/platform-services:dev
+        imagePullPolicy: Always
         resources: {}
         command: ["/bin/sh"]
         args: ["-c", "cp /platform-services/* /platform-services2; exec top 2>&1 >/dev/null"]
@@ -22,7 +25,6 @@ spec:
         - mountPath: /platform-services2
           name: platform-services
       restartPolicy: Always
-      imagePullPolicy: Always
       volumes:
       - name: platform-services
         persistentVolumeClaim:

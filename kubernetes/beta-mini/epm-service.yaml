@@ -3,7 +3,8 @@ kind: Service
 metadata:
   labels:
     app: elastest
-    io.kompose.service: epm
+    elastest-component: epm
+    io.elastest.service: epm
   name: epm
 spec:
   ports:

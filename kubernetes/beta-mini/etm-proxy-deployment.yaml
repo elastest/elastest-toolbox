@@ -10,6 +10,8 @@ spec:
       labels:
         app: elastest
         elastest-service: etm-proxy
+        elastest-component-type: core
+        elastest-component: etm-proxy
     spec:
       containers:
       - name: etm-proxy

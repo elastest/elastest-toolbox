@@ -9,12 +9,14 @@ spec:
   template:
     metadata:
       labels:
+        elastest-component-type: core
+        elastest-component: epm
         elastest-service: epm
         app: elastest
     spec:
       containers:
       - name: epm
-        image: elastest/epm:lates
+        image: elastest/epm:latest
         imagePullPolicy: Always
         env:
         - name: ET_EDM_ALLUXIO_API
@@ -79,6 +81,8 @@ spec:
     metadata:
       labels:
         elastest-service: epm-adapter-docker
+        elastest-component-type: core
+        elastest-component: epm-adapter-docker
         app: elastest
     spec:
       containers:
@@ -112,7 +116,9 @@ spec:
   template:
     metadata:
       labels:
-        io.kompose.service: epm-adapter-docker-compose
+        elastest-service: epm-adapter-docker-compose
+        elastest-component-type: core
+        elastest-component: epm-adapter-docker
         app: elastest
     spec:
       containers:
@@ -144,6 +150,8 @@ spec:
   template:
     metadata:
       labels:
+        elastest-component-type: core
+        elastest-component: epm-adapter-ansible
         io.kompose.service: epm-adapter-ansible
         app: elastest
     spec:

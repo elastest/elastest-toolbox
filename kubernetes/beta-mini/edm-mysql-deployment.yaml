@@ -9,8 +9,10 @@ spec:
   template:
     metadata:
       labels:
-        elastest-service: edm-mysql
         app: elastest
+        elastest-component-type: core
+        elastest-component: edm-mysql
+        elastest-service: edm-mysql
     spec:
       containers:
       - name: edm-mysql

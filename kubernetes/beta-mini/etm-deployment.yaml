@@ -11,6 +11,8 @@ spec:
       labels:
         app: elastest
         elastest-service: etm
+        elastest-component-type: core
+        elastest-component: etm
     spec:
       containers:
       - name: etm
