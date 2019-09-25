@@ -7,7 +7,7 @@
     ```
 - Navigate to folder
     ```
-    cd elastest-toolbox/kubernetes/beta-mini
+    cd elastest-toolbox/kubernetes/ek
     ```
 ## Enable Security
 If you want to stablish credentials to access to ElasTest and its integrated services, follow these steps:
