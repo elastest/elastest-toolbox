@@ -16,8 +16,7 @@ spec:
     spec:
       containers:
       - name: etm
-        image: elastest/etm:latest
-        imagePullPolicy: Always
+        image: elastest/etm:dev-local
         command:
         - /run.sh
         env:
@@ -51,6 +50,8 @@ spec:
           value: none
         - name: ET_ETM_LOG_LEVEL
           value: DEBUG
+        - name: LOGSTASH_HOST
+          value: etm
         - name: ET_ETM_LSBEATS_HOST
           value: etm
         - name: ET_ETM_LSHTTP_API
