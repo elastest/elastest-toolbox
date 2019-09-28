@@ -64,7 +64,8 @@ COPY etm/elastest-torm/src/main/resources/test_engines /elastest-toolbox/etm/ela
 COPY platform-services /elastest-toolbox/platform-services
 
 # Copy kubernetes files
-COPY kubernetes/beta-mini /kubernetes/beta-mini
+COPY kubernetes/ek /kubernetes/ek
+COPY kubernetes/hek /kubernetes/hek
 
 COPY version-scripts /elastest-toolbox/version-scripts
 
