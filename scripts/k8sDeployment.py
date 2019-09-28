@@ -181,7 +181,7 @@ def modifyNodePortRangePort(ssh_client):
 
 def startEtm():
     print('Deploying the ETM....')
-    start_etm_on_k8s_command = 'kubectl create -f /kubernetes/beta-mini -f /kubernetes/beta-mini/volumes'
+    start_etm_on_k8s_command = 'kubectl create -f /kubernetes/ek -f /kubernetes/ek/volumes'
     # start_etm_on_k8s_command = 'kubectl create -f /home/frdiaz/git/elastest/elastest-toolbox/kubernetes/beta-mini -f /home/frdiaz/git/elastest/elastest-toolbox/kubernetes/beta-mini/volumes'
     # start_etm_on_k8s_command = 'ls'
     subprocess.call(shlex.split(start_etm_on_k8s_command))
