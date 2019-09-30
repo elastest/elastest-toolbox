@@ -50,7 +50,13 @@ def getValuesListOfKey(d, key):
 
 
 def getImagesList(d):
-    return getValuesListOfKey(d, 'image')
+    images = []
+    if isinstance(d, dict):
+        images = getValuesListOfKey(d, 'image')
+    else:
+        for yml in d:
+            images + getValuesListOfKey(yml, 'image')
+    return images
 
 
 def getYmlFromETServicesJsonPath(path):
@@ -60,7 +66,10 @@ def getYmlFromETServicesJsonPath(path):
 
 def getYmlFromETServicesJsonFile(json):
     try:
-        return next(yaml.load_all(json['manifest_content']))
+        ymls = []
+        for yml in yaml.load_all(json['manifest_content']):
+            ymls.append(yml)
+        return ymls
     except KeyError:
         return yaml.load('')
 
@@ -124,9 +133,12 @@ def getImageFromJsonFile(service_name):
 
 
 def getETDockerImagesFromETServiceJsonFile(path):
+    images = []
     json_file = getJson(path)
-    yml = getYmlFromETServicesJsonFile(json_file['manifests'][0])
-    return getETDockerImagesFromYml(yml)
+    ymls = getYmlFromETServicesJsonFile(json_file['manifests'][0])
+    for yml in ymls:
+        images = images + getETDockerImagesFromYml(yml)
+    return images
 
 #*** Images Lists Getters By Component Type ***#
 
@@ -190,7 +202,6 @@ def modifyImageTag(image, tag):
 
 def updateImagesTagOfReadYml(d, tag):
     key = 'image'
-    #print ('dict: ' + str(d))
     if key in d:
         # If is ElasTest Image, set image tag
         try:
@@ -207,6 +218,16 @@ def updateImagesTagOfReadYml(d, tag):
     for k in d:
         if isinstance(d[k], dict):
             d[k] = updateImagesTagOfReadYml(d[k], tag)
+    return d
+
+
+def updateImagesTagInYmlList(d, name, tag):
+    if name in d:
+        for container in d[name]:
+            updateImagesTagOfReadYml(container, tag)
+    for k in d:
+        if isinstance(d[k], dict):
+            d[k] = updateImagesTagInYmlList(d[k], name, tag)
     return d
 
 
@@ -239,11 +260,14 @@ def updateImagesTagOfJsonFile(path, tag):
 
     # Update images version in the docker-compose files
     for manifest in json_file['manifests']:
-        yml = getYmlFromETServicesJsonFile(manifest)
-        new_yml = updateImagesTagOfReadYml(yml, tag)
-        new_yml = updateETDockerImagesTagYml(new_yml, tag)
+        ymls = getYmlFromETServicesJsonFile(manifest)
+        for yml in ymls:
+            new_yml = updateImagesTagOfReadYml(yml, tag)
+            new_yml = updateImagesTagInYmlList(new_yml, 'containers',tag)
+            updateETDockerImagesTagYml(new_yml, tag)
+        print("Manifest content updated: " + yaml.dump_all(ymls))
         manifest['manifest_content'] = json.loads(json.dumps(yaml.dump_all(
-            new_yml, encoding=('utf-8'), default_flow_style=False), cls=MyEncoder))
+            ymls, encoding=('utf-8'), default_flow_style=False), cls=MyEncoder))
     
     # Save new json file with images tag updated
     saveJson(path, json_file)
