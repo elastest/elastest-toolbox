@@ -32,6 +32,7 @@ If you want to stablish credentials to access to ElasTest and its integrated ser
       value: "true"
     ```
 ## Minikube
+It is possible that when you start with this mini tutorial, you don't have Minikube and the necessary tools installed. To know how to do this, please follow the steps in described in the official [site](https://kubernetes.io/es/docs/tasks/tools/install-minikube/)
 ### Minikube in Ubuntu host (without a VM)
 Run Minikube with this command in your local:
 ```
