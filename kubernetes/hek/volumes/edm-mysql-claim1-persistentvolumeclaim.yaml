@@ -3,15 +3,14 @@ kind: PersistentVolumeClaim
 metadata:
   creationTimestamp: null
   labels:
-    io.kompose.service: edm-mysql
-    elastest-component: edm-mysql
+    elastest-component: edm-mysql-claim1
     elastest-component-type: volumen
-  name: edm-mysql
+  name: edm-mysql-claim1
 spec:
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 100Mi
+      storage: 8Gi
   storageClassName: standard
 status: {}

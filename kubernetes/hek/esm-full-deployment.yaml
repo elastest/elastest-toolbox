@@ -1,0 +1,200 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    io.elastest.service: esm
+    elastest-component: esm
+  name: esm
+spec:
+  ports:
+  - name: "esm-37005"
+    port: 37005
+    targetPort: 37005
+  selector:
+    elastest-component: esm
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    io.elastest.service: mongo
+    elastest-component: mongo
+  name: mongo
+spec:
+  ports:
+  - name: "mongo-27017"
+    port: 27017
+    targetPort: 27017
+  selector:
+    elastest-component: mongo
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    io.elastest.service: esm-ui
+    elastest-component: esm-ui
+  name: esm-ui
+spec:
+  ports:
+  - name: "esm-ui-8000"
+    port: 8000
+    targetPort: 8000
+  selector:
+    io.kompose.service: esm-ui
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    io.elastest.type: core
+    elastest-component-type: core
+    elastest-component: esm
+  name: esm
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.elastest.type: core
+        elastest-component-type: core
+        elastest-component: esm
+    spec:
+      containers:
+      - env:
+        - name: ESM_MEASURE_INSTANCES
+          value: "NO"
+        - name: ESM_PORT
+          value: "37005"
+        - name: ET_DATA_IN_HOST
+        - name: ET_EDM_ALLUXIO_API
+          value: http://edm-alluxio-master:19999/
+        - name: ET_EDM_API
+          value: http://edm:37003/
+        - name: ET_EDM_ELASTICSEARCH_API
+          value: http://edm-elasticsearch:9200/
+        - name: ET_EDM_MYSQL_HOST
+          value: edm-mysql
+        - name: ET_EDM_MYSQL_PORT
+          value: "3306"
+        - name: ET_EIM_API
+          value: http://eim:37004/
+        - name: ET_EMP_API
+          value: http://eim:37001/
+        - name: ET_EMP_INFLUXDB_API
+          value: http://emp-influxdb:8086/
+        - name: ET_EMP_INFLUXDB_GRAPHITE_PORT
+          value: "2003"
+        - name: ET_EMP_INFLUXDB_HOST
+          value: emp-influxdb
+        - name: ET_EPM_API
+          value: http://elastest-platform-manager:8180/
+        - name: ET_ESM_API
+          value: http://esm:37005/
+        - name: ET_ETM_API
+          value: http://etm:37006/
+        - name: ET_ETM_LSBEATS_HOST
+          value: etm-beats
+        - name: ET_ETM_LSBEATS_PORT
+          value: "5044"
+        - name: ET_ETM_LSHTTP_API
+          value: http://etm-logstash:5002/
+        - name: ET_ETM_RABBIT_HOST
+          value: etm-rabbitmq
+        - name: ET_ETM_RABBIT_PORT
+          value: "5672"
+        - name: ET_SHARED_FOLDER
+        image: elastest/esm:latest
+        name: esm
+        ports:
+        - containerPort: 37005
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/run/docker.sock
+          name: dockersock
+      hostname: esm
+      restartPolicy: Always
+      volumes:
+      - name: dockersock
+        hostPath:
+          path: /var/run/docker.sock
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    io.elastest.type: core
+    elastest-component-type: core
+    elastest-component: esm-ui
+  name: esm-ui
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.elastest.type: core
+        elastest-component-type: core
+        elastest-component: esm-ui
+    spec:
+      containers:
+      - env:
+        - name: DEBUG
+          value: "true"
+        - name: ET_ESM_API
+          value: http://esm:37005
+        - name: SECRET_KEY
+          value: not secure only use for development
+        image: ademord/esmweb:latest
+        name: esm-ui
+        ports:
+        - containerPort: 8000
+        resources: {}
+      restartPolicy: Always
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    io.elastest.type: core
+    elastest-component-type: core
+    elastest-component: mongo
+  name: mongo
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.elastest.type: core
+        elastest-component-type: core
+        elastest-component: mongo
+    spec:
+      containers:
+      - image: mongo:latest
+        name: mongo
+        ports:
+        - containerPort: 27017
+        resources: {}
+      hostname: mongo
+      restartPolicy: Always
+status: {}

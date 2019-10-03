@@ -1,12 +1,9 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  creationTimestamp: null
   labels:
-    io.kompose.service: edm-mysql
-    elastest-component: edm-mysql
-    elastest-component-type: volumen
-  name: edm-mysql
+    io.kompose.service: platform-services
+  name: platform-services
 spec:
   accessModes:
   - ReadWriteOnce
