@@ -180,11 +180,10 @@ status: {}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  creationTimestamp: null
   labels:
     elastest-component: edm-mysql
     elastest-component-type: core
-  name: edm-mysql
+  name: edm-mysql-deploy
 spec:
   replicas: 1
   strategy:
@@ -207,14 +206,22 @@ spec:
         - name: MYSQL_USER
           value: elastest
         image: elastest/edm-mysql:latest
+        imagePullPolicy: Always
         name: edm-mysql
+        args:
+          - "--ignore-db-dir=lost+found"
         resources: {}
         volumeMounts:
         - mountPath: /var/lib/mysql
           name: edm-mysql
+        - mountPath: /etc/mysql/conf.d
+          name: edm-mysql-claim1
       restartPolicy: Always
       volumes:
       - name: edm-mysql
         persistentVolumeClaim:
           claimName: edm-mysql
+      - name: edm-mysql-claim1
+        persistentVolumeClaim:
+          claimName: edm-mysql-claim1
 status: {}
