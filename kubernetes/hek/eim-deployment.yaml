@@ -48,11 +48,11 @@ spec:
           value: "3306"
         image: elastest/eim:latest
         name: eim
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         resources: {}
         stdin: true
         tty: true
       restartPolicy: Always
-      imagePullPolicy: Always
 status: {}
