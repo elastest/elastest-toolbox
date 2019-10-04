@@ -25,7 +25,7 @@ spec:
         - name: ET_USER
           value: none
         - name: LOCATION_RULES
-          value: nginx-base-location.conf
+          value: nginx-experimental-locations.conf
         - name: LOGSTASH_HOST
           value: etm
         - name: LOGSTASH_HTTP_PATH
