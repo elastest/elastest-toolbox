@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: etm
-        image: elastest/etm:dev-local
+        image: elastest/etm:latest
         command:
         - /run.sh
         env:
