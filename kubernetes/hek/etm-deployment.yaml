@@ -64,6 +64,14 @@ spec:
           value: none
         - name: ET_ETM_TESTLINK_HOST
           value: none
+        - name: ELASTICHOST
+          value: edm-elasticsearch
+        - name: RABBITHOST
+          value: etm-rabbitmq
+        - name: RABBITUSER
+          value: elastest-etm
+        - name: RABBITPASS
+          value: elastest-etm
         - name: ET_IN_PROD
           value: "true"
         - name: ET_PASS
