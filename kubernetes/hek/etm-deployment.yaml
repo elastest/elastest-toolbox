@@ -33,7 +33,7 @@ spec:
         - name: ET_EPM_BINDED_PORT
           value: "8180"
         - name: ET_EPM_K8S_MASTER
-          value: 192.168.1.41
+          value: localhost
         - name: ET_EPM_K8S_TOKEN
           value: none
         - name: ET_ESM_API
@@ -81,7 +81,7 @@ spec:
         - name: ET_PROXY_PORT
           value: "37000"
         - name: ET_PUBLIC_HOST
-          value: 192.168.1.41
+          value: localhost
         - name: ET_PUBLIC_HOST_TYPE
           value: server_address
         - name: ET_USER
