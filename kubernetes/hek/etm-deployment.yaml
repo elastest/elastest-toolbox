@@ -51,15 +51,15 @@ spec:
         - name: ET_ETM_LOG_LEVEL
           value: DEBUG
         - name: LOGSTASH_HOST
-          value: etm
+          value: etm-logstash 
         - name: ET_ETM_LSBEATS_HOST
-          value: etm
+          value: etm-logstash
         - name: ET_ETM_LSHTTP_API
-          value: http://etm:5003/
+          value: http://etm-logstash:5003/
         - name: ET_ETM_LSTCP_HOST
-          value: etm
+          value: etm-logstash
         - name: ET_ETM_RABBIT_HOST
-          value: etm
+          value: etm-rabbitmq
         - name: ET_ETM_TESTLINK_API_KEY
           value: none
         - name: ET_ETM_TESTLINK_HOST
