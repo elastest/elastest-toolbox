@@ -61,7 +61,7 @@ spec:
         - name: ET_ETM_RABBIT_HOST
           value: etm-rabbitmq
         - name: ET_ETM_RABBIT_PORT
-          value: 5672
+          value: "5672"
         - name: ET_ETM_TESTLINK_API_KEY
           value: none
         - name: ET_ETM_TESTLINK_HOST
