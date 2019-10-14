@@ -166,7 +166,7 @@ spec:
         - name: GF_SECURITY_ADMIN_PASSWORD
           value: 1ccl@b2017
         - name: GF_SERVER_DOMAIN
-          value: nightly.elastest.io:37000
+          value: 99.81.234.102:37000
         - name: GF_SERVER_ROOT_URL
           value: '%(protocol)s://%(domain)s:/grafana'
         image: grafana/grafana:4.6.1
@@ -282,7 +282,7 @@ spec:
         - name: ADMIN_TOKEN
           value: somevalue
         - name: DASHBOARD_ENDPOINT
-          value: nightly.elastest.io:37000/grafana
+          value: 99.81.234.102:37000/grafana
         - name: DASHBOARD_TITLE
           value: elastest
         - name: ET_EDM_ALLUXIO_API
