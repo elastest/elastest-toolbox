@@ -231,22 +231,22 @@ spec:
         elastest-component-type: core
     spec:
       containers:
-      - env:
-        - name: DOCKER_SOCKET
-          value: unix://var/run/docker.sock
-        - name: KAFKA_ENDPOINT
-          value: emp-kafka:9092
-        - name: KAFKA_KEY_SERIALIZER
-          value: StringSerializer
-        - name: KAFKA_VALUE_SERIALIZER
-          value: StringSerializer
-        - name: PERIODICITY
-          value: "30"
-        - name: SENTINEL_SERIES
-          value: docker-stats
-        - name: SENTINEL_TOPIC
-          value: user-1-elastest_core
-        image: elastest/emp-docker-agent:latest
+      - env:        
+        - name: host
+          value: emp-kafka
+        - name: port
+          value: "9092"
+        - name: topic
+          value: user-1-test_space
+        - name: series
+          value: kubernetes
+        - name: clientid
+          value: sentinel-k8s-client
+        - name: periodicity
+          value: 30
+        - name: mode
+          value: incluster
+        image: elastest/emp-k8s-agent:latest
         name: emp-docker-agent
         resources: {}
         volumeMounts:
