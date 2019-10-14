@@ -60,10 +60,14 @@ spec:
           value: etm-logstash
         - name: ET_ETM_RABBIT_HOST
           value: etm-rabbitmq
+        - name: ET_ETM_RABBIT_PORT
+          value: 5672
         - name: ET_ETM_TESTLINK_API_KEY
           value: none
         - name: ET_ETM_TESTLINK_HOST
           value: none
+        - name: ET_EDM_ELASTICSEARCH_API
+          value: http://edm-elasticsearch:9200/
         - name: ELASTICHOST
           value: edm-elasticsearch
         - name: RABBITHOST
