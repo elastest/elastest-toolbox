@@ -29,7 +29,7 @@ data:
           templates:
             - condition:
                 regexp:
-                  kubernetes.container.name: ${ET_MON_CONTAINERS_NAME:"(^(test|sut)(_|-)?(.*)?)"}
+                  kubernetes.container.name: ${ET_MON_CONTAINERS_NAME:"(^(test|sut|eus(_|-)browser(_|-).*_exec|k8s_test|k8s_sut|k8s_eus(_|-)browser(_|-).*(_|-)exec)(_|-)?(.*)?)"}
               config:
                 - type: docker
                   containers.ids:
