@@ -37,22 +37,22 @@ metadata:
 spec:
   ports:
   - name: "37500"
-    port: 37500
+    port: 5000
     targetPort: 5000
   - name: "37501"
-    port: 37501
+    port: 5037
     targetPort: 5037
   - name: "37502"
-    port: 37502
+    port: 5044
     targetPort: 5044
   - name: "37503"
-    port: 37503
+    port: 5001
     targetPort: 5001
   - name: "37504"
-    port: 37504
+    port: 5002
     targetPort: 5002
   - name: "37505"
-    port: 37505
+    port: 5003
     targetPort: 5003
   selector:
     elastest-component: etm-logstash
