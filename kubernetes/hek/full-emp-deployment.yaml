@@ -243,7 +243,7 @@ spec:
         - name: clientid
           value: sentinel-k8s-client
         - name: periodicity
-          value: 30
+          value: "30"
         - name: mode
           value: incluster
         image: elastest/emp-k8s-agent:latest
