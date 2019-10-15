@@ -36,22 +36,22 @@ metadata:
   name: etm-logstash
 spec:
   ports:
-  - name: "37500"
+  - name: "5000"
     port: 5000
     targetPort: 5000
-  - name: "37501"
+  - name: "5037"
     port: 5037
     targetPort: 5037
-  - name: "37502"
+  - name: "5044"
     port: 5044
     targetPort: 5044
-  - name: "37503"
+  - name: "5001"
     port: 5001
     targetPort: 5001
-  - name: "37504"
+  - name: "5002"
     port: 5002
     targetPort: 5002
-  - name: "37505"
+  - name: "5003"
     port: 5003
     targetPort: 5003
   selector:
