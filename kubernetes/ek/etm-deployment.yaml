@@ -82,6 +82,8 @@ spec:
           value: mini
         - name: HOST_TIMEZONE
           value: UTC
+        - name: ET_TEST_ENGINES_PRIVATE_ERE_ENABLED
+          value: "false"
         resources: {}
         volumeMounts:
         - mountPath: /platform-services
