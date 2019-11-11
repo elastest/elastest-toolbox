@@ -1,20 +1,20 @@
+from setEnv import *
+import StringIO
+import os
+from ruamel.yaml import YAML
+import paramiko
+import certifi
+import urllib3
+import time
+from checkETM import *
+import shlex
+import subprocess
+from epm_client.models import *
+from epm_client import ApiClient
+from epm_client.apis import *
+from ETFiles import *
 import sys
 sys.path.append('../version-scripts')
-from ETFiles import *
-from epm_client.apis import *
-from epm_client import ApiClient
-from epm_client.models import *
-import subprocess
-import shlex
-from checkETM import *
-import time
-import urllib3
-import certifi
-import paramiko
-from ruamel.yaml import YAML
-import os
-import StringIO
-from setEnv import *
 
 FNULL = subprocess.STDOUT
 
@@ -34,12 +34,12 @@ def startAndWaitForEpm(args, dockerComposeProject):
     else:
         if(args.paas_domain):
             searchAndReplace(epmComposeFilePath, "entrypoint: python -m run --register-adapter elastest-epm elastest-epm-adapter-ansible",
-                            "entrypoint: python -m run --register-adapter elastest-epm elastest-epm-adapter-ansible --register-namespace codeurjc.es")
-        
+                             "entrypoint: python -m run --register-adapter elastest-epm elastest-epm-adapter-ansible --register-namespace codeurjc.es")
+
         startEpmCommand = epmComposeCommandPrefix + \
             dockerComposeProject + " up -d"
         result = subprocess.call(shlex.split(startEpmCommand), stderr=FNULL)
- 
+
     if(result == 0):
         insertPlatformIntoNetwork()
 
@@ -60,7 +60,7 @@ def startAndWaitForEpm(args, dockerComposeProject):
         exit(1)
 
 
-def stopEpm(args,dockerComposeProject):
+def stopEpm(args, dockerComposeProject):
     print('Stopping EPM...')
     if(not args.dev):
         stopEpmCommand = epmComposeCommandPrefix + \
@@ -179,11 +179,16 @@ def modifyNodePortRangePort(ssh_client):
 #     #+ pathFile,yaml_as_string_modified)
 
 
-def startEtm():
+def startEtm(paas_type):
     print('Deploying the ETM....')
-    start_etm_on_k8s_command = 'kubectl create -f /kubernetes/ek -f /kubernetes/ek/volumes'
-    # start_etm_on_k8s_command = 'kubectl create -f /home/frdiaz/git/elastest/elastest-toolbox/kubernetes/beta-mini -f /home/frdiaz/git/elastest/elastest-toolbox/kubernetes/beta-mini/volumes'
-    # start_etm_on_k8s_command = 'ls'
+    start_etm_on_k8s_command = 'kubectl create'
+    if(paas_type == 'openstack'):
+        start_etm_on_k8s_command += ' -f /kubernetes/ek/storage-class/openstack-storage-class.yaml'
+    else:
+        start_etm_on_k8s_command += ' -f /kubernetes/ek/storage-class/aws-storage-class.yaml'
+
+    start_etm_on_k8s_command += ' -f /kubernetes/ek -f /kubernetes/ek/volumes'
+
     subprocess.call(shlex.split(start_etm_on_k8s_command))
 
 
@@ -191,7 +196,7 @@ def startK8(args, dockerComposeProject):
     if(args.command == 'stop'):
         stopEpm(args, dockerComposeProject)
     elif(args.command == 'start'):
-        if(args.paas_url and args.paas_user and args.paas_pass and args.paas_project_name and args.paas_type):
+        if(args.paas_url and args.paas_user and args.paas_pass and args.paas_project_name and args.paas_type and args.ansible_file):
             # TODO check args (start, mini, etc)
             epm_url = startAndWaitForEpm(args, dockerComposeProject)
 
@@ -267,8 +272,10 @@ def startK8(args, dockerComposeProject):
                 # STEP 4: Start VMs on OpenStack
                 # Ideally  to test everything - Send package for initializing the Cluster
                 # Send second package for adding a new node
+                print('File with the definition of the cluster:',
+                      ansiblePath + '/' + args.ansible_file)
                 resource_group = package_api.receive_package(
-                    file=ansiblePath + '/ansible-cluster.tar')
+                    file=ansiblePath + '/' + args.ansible_file)
                 print('Resource group: ', resource_group)
 
                 # # This package can contain one VM, which will be added to the cluster
@@ -290,15 +297,15 @@ def startK8(args, dockerComposeProject):
 
                 ssh_client = getSshConnection(resource_group.vdus[0].ip)
                 setK8sClientConfigurarion(ssh_client)
-                modifyNodePortRangePort(ssh_client)
+                # modifyNodePortRangePortmodifyNodePortRangePort(ssh_client)
                 closeSshConnection(ssh_client)
 
                 # getK8sConfigFromCluster(resource_group.vdus[0].ip)
-                startEtm()
+                startEtm(args.paas_type)
 
                 # STEP 6: Add a new worker to the Cluster (from the second resource group)
-                cluster_api.add_worker(
-                    id=cluster.id, machine_id=resource_group_single.vdus[0].id)
+                # cluster_api.add_worker(
+                #     id=cluster.id, machine_id=resource_group_single.vdus[0].id)
 
                 print(cluster_api.get_all_clusters())
 

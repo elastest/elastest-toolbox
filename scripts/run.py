@@ -57,7 +57,7 @@ def getArgs(params):
                         type=str, choices=set(('trace', 'debug', 'info', 'warn', 'error')), default='DEBUG')
     parser.add_argument('--enable-private-ere',
                         help=argparse.SUPPRESS, required=False, action='store_true')
-                        
+
     parser.add_argument('--view-only', '-v', help='Configure View Only mode for ElasTest (Only GET method allowed).',
                         required=False, action='store_true')
 
@@ -71,7 +71,10 @@ def getArgs(params):
                         help=argparse.SUPPRESS, required=False)
     parser.add_argument('--paas-type', help=argparse.SUPPRESS,
                         type=str, choices=set(('openstack', 'aws')), default='openstack')
-    parser.add_argument('--paas-domain', help=argparse.SUPPRESS,required=False, type=str)
+    parser.add_argument(
+        '--paas-domain', help=argparse.SUPPRESS, required=False, type=str)
+    parser.add_argument('--ansible-file', '-af', help=argparse.SUPPRESS,
+                        required=False)
 
     # Custom usage message
     usage = parser.format_usage()
@@ -146,7 +149,7 @@ def runPlatform(params):
                                    args.server_address + ':' + jenkinsPort, 'none', files_list)
                 if(args.view_only):
                     replaceEnvVarValue(
-                        'ET_ETM_VIEW_ONLY', 'true', 'false', files_list)                                   
+                        'ET_ETM_VIEW_ONLY', 'true', 'false', files_list)
 
             # Create config and logs folders
             configPad = os.environ['ET_DATA_IN_CONTAINER'] + \
@@ -200,13 +203,10 @@ def runPlatform(params):
             replaceEnvVarValue('ET_ETM_TESTLINK_API_KEY',
                                testLinkAPIKey, 'none', files_list)
 
-
             if(args.view_only):
                 print('"View Only" mode')
                 replaceEnvVarValue(
                     'ET_ETM_VIEW_ONLY', 'true', 'false', files_list)
-
-                
 
             if(args.enable_private_ere):
                 print 'ERE is enabled'
