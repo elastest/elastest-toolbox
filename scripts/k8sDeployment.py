@@ -192,135 +192,138 @@ def startEtm(paas_type):
     subprocess.call(shlex.split(start_etm_on_k8s_command))
 
 
+def checkParametersByPaas(args):
+    interface_info = []
+    if(args.paas_type and args.paas_type == 'openstack' and args.paas_url and args.paas_user and args.paas_pass and args.paas_project_name and args.ansible_file):
+        interface_info = [{"key": "type", "value": args.paas_type},
+                          {"key": "username",
+                           "value": args.paas_user},
+                          {"key": "password",
+                           "value": args.paas_pass},
+                          {"key": "project_name",
+                           "value": args.paas_project_name},
+                          {"key": "auth_url",
+                           "value": args.paas_url}]
+    elif(args.paas_type and args.paas_type == 'aws' and args.paas_user and args.paas_pass and args.paas_project_name and args.ansible_file):
+        interface_info = [{"key": "type", "value": args.paas_type},
+                          {"key": "aws_access_key",
+                           "value": args.paas_user},
+                          {"key": "aws_secret_key",
+                           "value": args.paas_pass},
+                          {"key": "region",
+                           "value": args.paas_project_name}]
+    else:
+        print(FAIL + 'K8 parameters are mandatory' + ENDC)
+        exit(1)
+
+    return interface_info
+
+
 def startK8(args, dockerComposeProject):
     if(args.command == 'stop'):
         stopEpm(args, dockerComposeProject)
-    elif(args.command == 'start'):
-        if(args.paas_url and args.paas_user and args.paas_pass and args.paas_project_name and args.paas_type and args.ansible_file):
-            # TODO check args (start, mini, etc)
-            epm_url = startAndWaitForEpm(args, dockerComposeProject)
+    elif(args.command == 'start'):     
+        info = checkParametersByPaas(args)
+        epm_url = startAndWaitForEpm(args, dockerComposeProject)
 
-            # Start EPM
-            if(epm_url):
-                # STEP 1: REPLACE HERE WITH THE EPM IP !!!
-                api_client = ApiClient(
-                    host=epm_url)
+        # Start EPM
+        if(epm_url):
+            # STEP 1: REPLACE HERE WITH THE EPM IP !!!
+            api_client = ApiClient(
+                host=epm_url)
 
-                # Setup the needed APIs
-                key_api = KeyApi(api_client=api_client)
-                worker_api = WorkerApi(api_client=api_client)
-                package_api = PackageApi(api_client=api_client)
-                runtime_api = RuntimeApi(api_client=api_client)
-                adapter_api = AdapterApi(api_client=api_client)
-                pop_api = PoPApi(api_client=api_client)
-                cluster_api = ClusterApi(api_client=api_client)
+            # Setup the needed APIs
+            key_api = KeyApi(api_client=api_client)
+            worker_api = WorkerApi(api_client=api_client)
+            package_api = PackageApi(api_client=api_client)
+            runtime_api = RuntimeApi(api_client=api_client)
+            adapter_api = AdapterApi(api_client=api_client)
+            pop_api = PoPApi(api_client=api_client)
+            cluster_api = ClusterApi(api_client=api_client)
 
-                # STEP 2: Provide the OpenStack credentials
-                print('Paas type: ' + args.paas_type)
-                if(args.paas_type == 'openstack'):
-                    print('Deploying ElasTest on OpenStack')
-                    os_pop = PoP(interface_endpoint=args.paas_url,
-                                 interface_info=[{"key": "type", "value": args.paas_type},
-                                                 {"key": "username",
-                                                  "value": args.paas_user},
-                                                 {"key": "password",
-                                                  "value": args.paas_pass},
-                                                 {"key": "project_name",
-                                                  "value": args.paas_project_name},
-                                                 {"key": "auth_url",
-                                                  "value": args.paas_url}], name="os-dc1", status="active")
-                else:
-                    print('Deploying ElasTest on AWS')
-                    os_pop = PoP(interface_endpoint=args.paas_url,
-                                 interface_info=[{"key": "type", "value": args.paas_type},
-                                                 {"key": "aws_access_key",
-                                                  "value": args.paas_user},
-                                                 {"key": "aws_secret_key",
-                                                  "value": args.paas_pass},
-                                                 {"key": "region",
-                                                  "value": args.paas_project_name}], name="os-dc1", status="active")
+            # STEP 2: Provide the OpenStack credentials            
+            print('Deploying ElasTest on ' + args.paas_type)
+            os_pop = PoP(interface_endpoint=args.paas_url,
+                         interface_info=info, name="os-dc1", status="active")
+            
+            pop_api.register_po_p(os_pop)
 
-                pop_api.register_po_p(os_pop)
-
-                # STEP 3: Check if ansible adapter is available
-                wait_ansible = True
-                max_retries = 5
-                current_retry = 0
-                while (wait_ansible):
-                    adapters = adapter_api.get_all_adapters()
-                    ansible_found = False
-                    for a in adapters:
-                        if a.type == "ansible":
-                            ansible_found = True
-                            break
-                    wait_ansible = not ansible_found
-                    time.sleep(1)
-                    if(current_retry == max_retries):
-                        print(FAIL + "Error: Ansible adapter not available after " +
-                              str(max_retries) + "retries" + ENDC)
-                        print('')
-                        stopEpm(args, dockerComposeProject)
-                        exit(1)
-
-                    if(wait_ansible):
-                        print("Ansible adapter not available. Retry " +
-                              str(current_retry + 1) + "/" + str(max_retries))
-                    max_retries = max_retries - 1
-                print('')
-                print("Ansible adapter available: " + str(ansible_found))
-
-                # STEP 4: Start VMs on OpenStack
-                # Ideally  to test everything - Send package for initializing the Cluster
-                # Send second package for adding a new node
-                print('File with the definition of the cluster:',
-                      ansiblePath + '/' + args.ansible_file)
-                resource_group = package_api.receive_package(
-                    file=ansiblePath + '/' + args.ansible_file)
-                print('Resource group: ', resource_group)
-
-                # # This package can contain one VM, which will be added to the cluster
-                # resource_group_single = package_api.receive_package(
-                #     file=ansiblePath + '/ansible-node.tar')
-                # print(resource_group_single)
-
-                # STEP 5: Start the cluster from one of the resource groups
-                if(not resource_group.vdus or len(resource_group.vdus) == 0):
-                    print(FAIL + 'Error: resource_group.vdus is empty or null' + ENDC)
+            # STEP 3: Check if ansible adapter is available
+            wait_ansible = True
+            max_retries = 5
+            current_retry = 0
+            while (wait_ansible):
+                adapters = adapter_api.get_all_adapters()
+                ansible_found = False
+                for a in adapters:
+                    if a.type == "ansible":
+                        ansible_found = True
+                        break
+                wait_ansible = not ansible_found
+                time.sleep(1)
+                if(current_retry == max_retries):
+                    print(FAIL + "Error: Ansible adapter not available after " +
+                          str(max_retries) + "retries" + ENDC)
                     print('')
-                    # stopEpm(args, dockerComposeProject)
+                    stopEpm(args, dockerComposeProject)
                     exit(1)
 
-                cluster_from_resource_group = ClusterFromResourceGroup(
-                    resource_group_id=resource_group.id, type=["kubernetes"], master_id=resource_group.vdus[0].id)
-                cluster = cluster_api.create_cluster(
-                    cluster_from_resource_group=cluster_from_resource_group)
+                if(wait_ansible):
+                    print("Ansible adapter not available. Retry " +
+                          str(current_retry + 1) + "/" + str(max_retries))
+                max_retries = max_retries - 1
+            print('')
+            print("Ansible adapter available: " + str(ansible_found))
 
-                ssh_client = getSshConnection(resource_group.vdus[0].ip)
-                setK8sClientConfigurarion(ssh_client)
-                # modifyNodePortRangePortmodifyNodePortRangePort(ssh_client)
-                closeSshConnection(ssh_client)
+            # STEP 4: Start VMs on OpenStack
+            # Ideally  to test everything - Send package for initializing the Cluster
+            # Send second package for adding a new node
+            print('File with the definition of the cluster:',
+                  ansiblePath + '/' + args.ansible_file)
+            resource_group = package_api.receive_package(
+                file=ansiblePath + '/' + args.ansible_file)
+            print('Resource group: ', resource_group)
 
-                # getK8sConfigFromCluster(resource_group.vdus[0].ip)
-                startEtm(args.paas_type)
+            # # This package can contain one VM, which will be added to the cluster
+            # resource_group_single = package_api.receive_package(
+            #     file=ansiblePath + '/ansible-node.tar')
+            # print(resource_group_single)
 
-                # STEP 6: Add a new worker to the Cluster (from the second resource group)
-                # cluster_api.add_worker(
-                #     id=cluster.id, machine_id=resource_group_single.vdus[0].id)
+            # STEP 5: Start the cluster from one of the resource groups
+            if(not resource_group.vdus or len(resource_group.vdus) == 0):
+                print(FAIL + 'Error: resource_group.vdus is empty or null' + ENDC)
+                print('')
+                # stopEpm(args, dockerComposeProject)
+                exit(1)
 
-                print(cluster_api.get_all_clusters())
+            cluster_from_resource_group = ClusterFromResourceGroup(
+                resource_group_id=resource_group.id, type=["kubernetes"], master_id=resource_group.vdus[0].id)
+            cluster = cluster_api.create_cluster(
+                cluster_from_resource_group=cluster_from_resource_group)
 
-                # # STEP 7: Remove a node from the cluster (Note: This does not remove the VM, just makes the node inactive on the Cluster)
-                # cluster_api.remove_node(
-                #     id=cluster.id, worker_id=cluster.nodes[0].id)
+            ssh_client = getSshConnection(resource_group.vdus[0].ip)
+            setK8sClientConfigurarion(ssh_client)
+            # modifyNodePortRangePortmodifyNodePortRangePort(ssh_client)
+            closeSshConnection(ssh_client)
 
-                # print(cluster_api.get_all_clusters())
+            # getK8sConfigFromCluster(resource_group.vdus[0].ip)
+            startEtm(args.paas_type)
 
-                # # STEP 8: Remove cluster (Note: does not remove the VMs)
-                # cluster_api.delete_cluster(id=cluster.id)
+            # STEP 6: Add a new worker to the Cluster (from the second resource group)
+            # cluster_api.add_worker(
+            #     id=cluster.id, machine_id=resource_group_single.vdus[0].id)
 
-                # # Step 9: Remove OS vms
-                # package_api.delete_package(resource_group.id)
-                # package_api.delete_package(resource_group_single.id)
-        else:
-            print(FAIL + 'K8 parameters are mandatory' + ENDC)
-            exit(1)
+            print(cluster_api.get_all_clusters())
+
+            # # STEP 7: Remove a node from the cluster (Note: This does not remove the VM, just makes the node inactive on the Cluster)
+            # cluster_api.remove_node(
+            #     id=cluster.id, worker_id=cluster.nodes[0].id)
+
+            # print(cluster_api.get_all_clusters())
+
+            # # STEP 8: Remove cluster (Note: does not remove the VMs)
+            # cluster_api.delete_cluster(id=cluster.id)
+
+            # # Step 9: Remove OS vms
+            # package_api.delete_package(resource_group.id)
+            # package_api.delete_package(resource_group_single.id)
