@@ -36,11 +36,8 @@ class MyEncoder(json.JSONEncoder):
 def getValuesListOfKey(d, key):
     values_list = []
     if key in d:
-        print('DEBUG getValuesListOfKey() -> key: ' + key)
         try:
-            print('DEBUG getValuesListOfKey() -> value: ' + d[key])
             return [d[key]]
-
         except TypeError:
             print ('dict modified: ' + yaml.dump(d,
                                                  stream=None, default_flow_style=True))
@@ -59,7 +56,7 @@ def getImagesList(d):
         images = getValuesListOfKey(d, 'image')
     else:
         for yml in d:
-            images + getValuesListOfKey(yml, 'image')
+            images = images + getValuesListOfKey(yml, 'image')
     print(', '.join(images))
     print('DEBUG getImagesList() -> end')
     return images
