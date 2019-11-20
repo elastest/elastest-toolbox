@@ -125,11 +125,14 @@ def getImagesFromJsonFilesList(files_list):
     files_images = []
     for path in files_list:
         print('Obtaining images list from file at path ' + path)
+        print(', '.join(files_images))
         files_images = files_images + \
             getImagesList(getYmlFromETServicesJsonPath(path))
         files_images = files_images + \
             getETDockerImagesFromETServiceJsonFile(path)
+    print('DEBUG getImagesFromJsonFilesList -> end for')
     print(', '.join(files_images))
+    print('DEBUG getImagesFromJsonFilesList -> end')
     return files_images
 
 def getETDockerImagesFromETServiceJsonFile(path):
