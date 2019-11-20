@@ -145,7 +145,7 @@ def modifyNodePortRangePort(ssh_client):
         entrada, salida, error = ssh_client.exec_command(
             'sudo cat /etc/kubernetes/manifests/kube-apiserver.yaml')
         cluster_api_spec_from_k8s_cluster = salida.read()
-        print('Yamel as dict:', cluster_api_spec_from_k8s_cluster)
+        print('Yaml as dict:', cluster_api_spec_from_k8s_cluster)
         cluster_api_spec_as_dict = yaml.load(cluster_api_spec_from_k8s_cluster)
         cluster_api_spec_as_dict['spec']['containers'][0]['command'].append(
             "--service-node-port-range=1000-40000")

@@ -133,11 +133,14 @@ def getImageFromJsonFile(service_name):
 
 
 def getETDockerImagesFromETServiceJsonFile(path):
+    print('DEBUG: getETDockerImagesFromETServiceJsonFile() -> start')
     images = []
     json_file = getJson(path)
     ymls = getYmlFromETServicesJsonFile(json_file['manifests'][0])
     for yml in ymls:
+        print('DEBUG: getETDockerImagesFromETServiceJsonFile() -> yml: '+ yml)
         images = images + getETDockerImagesFromYml(yml)
+    print('DEBUG: getETDockerImagesFromETServiceJsonFile() -> end')
     return images
 
 #*** Images Lists Getters By Component Type ***#
@@ -326,6 +329,7 @@ def getTSSImagesByServices(tss_list):
     image_list = []
     image_file_list = []
     for tss in tss_list:
+        print('Obtaining images list from tss file at ' + tss)
         image_file_list.append(getTSSFile(tss))
     image_list = getImagesFromJsonFilesList(image_file_list)
     return image_list

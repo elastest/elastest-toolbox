@@ -34,7 +34,7 @@ def buildPlatform(tag):
 
 
 buildingNightly = False
-if (len(sys.argv) > 1):
+if (len(sys.argv) > 1 and not sys.argv[1] == 'bytime'):
     print('Freezing release')
     tag = sys.argv[1]    
 else:
