@@ -97,6 +97,7 @@ def getETDockerImagesFromYml(yml):
                 print ('Error getting ET_DOCKER_IMAGES')
         return dynamic_images
     for k in yml:
+        print('DEBUG: getETDockerImagesFromYml() -> yml k: '+ k)
         if isinstance(yml[k], dict):
             dynamic_images = dynamic_images + getETDockerImagesFromYml(yml[k])
     return dynamic_images
@@ -138,7 +139,6 @@ def getETDockerImagesFromETServiceJsonFile(path):
     json_file = getJson(path)
     ymls = getYmlFromETServicesJsonFile(json_file['manifests'][0])
     for yml in ymls:
-        print('DEBUG: getETDockerImagesFromETServiceJsonFile() -> yml: '+ yml)
         images = images + getETDockerImagesFromYml(yml)
     print('DEBUG: getETDockerImagesFromETServiceJsonFile() -> end')
     return images
