@@ -36,8 +36,11 @@ class MyEncoder(json.JSONEncoder):
 def getValuesListOfKey(d, key):
     values_list = []
     if key in d:
+        print('DEBUG getValuesListOfKey() -> key: ' + key)
         try:
             return [d[key]]
+            print('DEBUG getValuesListOfKey() -> value: '+d[key])
+
         except TypeError:
             print ('dict modified: ' + yaml.dump(d,
                                                  stream=None, default_flow_style=True))
@@ -51,11 +54,14 @@ def getValuesListOfKey(d, key):
 
 def getImagesList(d):
     images = []
+    print('DEBUG getImagesList() -> start')
     if isinstance(d, dict):
         images = getValuesListOfKey(d, 'image')
     else:
         for yml in d:
             images + getValuesListOfKey(yml, 'image')
+    print(', '.join(images))
+    print('DEBUG getImagesList() -> end')
     return images
 
 
@@ -125,14 +131,10 @@ def getImagesFromJsonFilesList(files_list):
     files_images = []
     for path in files_list:
         print('Obtaining images list from file at path ' + path)
-        print(', '.join(files_images))
         files_images = files_images + \
             getImagesList(getYmlFromETServicesJsonPath(path))
         files_images = files_images + \
             getETDockerImagesFromETServiceJsonFile(path)
-    print('DEBUG getImagesFromJsonFilesList -> end for')
-    print(', '.join(files_images))
-    print('DEBUG getImagesFromJsonFilesList -> end')
     return files_images
 
 def getETDockerImagesFromETServiceJsonFile(path):
