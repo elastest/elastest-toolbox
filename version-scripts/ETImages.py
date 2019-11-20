@@ -38,8 +38,8 @@ def getValuesListOfKey(d, key):
     if key in d:
         print('DEBUG getValuesListOfKey() -> key: ' + key)
         try:
+            print('DEBUG getValuesListOfKey() -> value: ' + d[key])
             return [d[key]]
-            print('DEBUG getValuesListOfKey() -> value: '+d[key])
 
         except TypeError:
             print ('dict modified: ' + yaml.dump(d,
