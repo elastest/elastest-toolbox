@@ -51,14 +51,11 @@ def getValuesListOfKey(d, key):
 
 def getImagesList(d):
     images = []
-    print('DEBUG getImagesList() -> start')
     if isinstance(d, dict):
         images = getValuesListOfKey(d, 'image')
     else:
         for yml in d:
             images = images + getValuesListOfKey(yml, 'image')
-    print(', '.join(images))
-    print('DEBUG getImagesList() -> end')
     return images
 
 
