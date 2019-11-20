@@ -36,6 +36,7 @@ class MyEncoder(json.JSONEncoder):
 def getValuesListOfKey(d, key):
     values_list = []
     if key in d:
+        print('DEBUG getValuesListOfKey() -> key: ' + key)
         try:
             return [d[key]]
         except TypeError:
@@ -52,8 +53,10 @@ def getValuesListOfKey(d, key):
 def getImagesList(d):
     images = []
     if isinstance(d, dict):
+        print('DEBUG getImagesList() -> is dict')
         images = getValuesListOfKey(d, 'image')
     else:
+        print('DEBUG getImagesList() -> not is dict')
         for yml in d:
             images + getValuesListOfKey(yml, 'image')
     return images
@@ -97,7 +100,6 @@ def getETDockerImagesFromYml(yml):
                 print ('Error getting ET_DOCKER_IMAGES')
         return dynamic_images
     for k in yml:
-        print('DEBUG: getETDockerImagesFromYml() -> yml k: '+ k)
         if isinstance(yml[k], dict):
             dynamic_images = dynamic_images + getETDockerImagesFromYml(yml[k])
     return dynamic_images
@@ -116,31 +118,28 @@ def getImagesFromYmlFilesList(files_list, get_from_env=True):
     return files_images
 
 
-def getImagesFromJsonFilesList(files_list):
-    files_images = []
-    for path in files_list:
-        files_images = files_images + \
-            getImagesList(getYmlFromETServicesJsonPath(path))
-        files_images = files_images + \
-            getETDockerImagesFromETServiceJsonFile(path)
-    return files_images
-
-
 def getImageFromJsonFile(service_name):
     image = None
     file_path = getFilePathByImage(service_name)
     image = getImagesList(getYmlFromETServicesJsonPath(file_path))
     return image
 
+def getImagesFromJsonFilesList(files_list):
+    files_images = []
+    for path in files_list:
+        print('Obtaining images list from file at path ' + path)
+        files_images = files_images + \
+            getImagesList(getYmlFromETServicesJsonPath(path))
+        files_images = files_images + \
+            getETDockerImagesFromETServiceJsonFile(path)
+    return files_images
 
 def getETDockerImagesFromETServiceJsonFile(path):
-    print('DEBUG: getETDockerImagesFromETServiceJsonFile() -> start')
     images = []
     json_file = getJson(path)
     ymls = getYmlFromETServicesJsonFile(json_file['manifests'][0])
     for yml in ymls:
         images = images + getETDockerImagesFromYml(yml)
-    print('DEBUG: getETDockerImagesFromETServiceJsonFile() -> end')
     return images
 
 #*** Images Lists Getters By Component Type ***#
@@ -329,7 +328,6 @@ def getTSSImagesByServices(tss_list):
     image_list = []
     image_file_list = []
     for tss in tss_list:
-        print('Obtaining images list from tss file at ' + tss)
         image_file_list.append(getTSSFile(tss))
     image_list = getImagesFromJsonFilesList(image_file_list)
     return image_list
