@@ -29,6 +29,8 @@ def createETNightlyImage(image, tag):
 
 def createETNightlyImages(default_tag):
     images_list = getElastestImages(True)
+    print(', '.join(images_list))
+
     tag = default_tag
     if (default_tag == 'bytime'):
         tag = getNightlyTag()

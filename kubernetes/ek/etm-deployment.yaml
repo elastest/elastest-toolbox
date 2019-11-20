@@ -73,7 +73,7 @@ spec:
         - name: ET_PROXY_PORT
           value: "37000"
         - name: ET_PUBLIC_HOST
-          value: 10.0.79.139
+          value: localhost
         - name: ET_PUBLIC_HOST_TYPE
           value: server_address
         - name: ET_USER
