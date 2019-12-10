@@ -19,7 +19,7 @@ platform_services = '../platform-services/docker-compose.yml'
 etm_complementary_lite = '../etm/docker/docker-compose-complementary.yml'
 mysql_elasticsearch_lite = '../docker-compose-mysql-elasticsearch-lite.yml'
 etm_main_lite = '../etm/docker/docker-compose-main.yml'
-etm_eim = '../etm/docker/docker-compose-eim.yml'
+eim_in_etm = '../etm/elastest-torm/src/main/resources/test_engines/eim.yml'
 
 etm_proxy = '../etm/docker/docker-compose-proxy.yml'
 
@@ -48,7 +48,7 @@ tss_images_files = {'eus': eus, 'ebs': ebs, 'ess': ess, 'eds': eds, 'ems': ems}
 
 
 def getCoreList():
-    core_list = [emp, edm_lite, esm, eim, epm, etm_complementary_singlenode, platform_services,
+    core_list = [emp, edm_lite, esm, eim, eim_in_etm, epm, etm_complementary_singlenode, platform_services,
                  etm_main_singlenode, etm_complementary_lite, etm_main_lite, etm_proxy]
     return core_list
 
