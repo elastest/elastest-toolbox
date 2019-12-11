@@ -247,6 +247,7 @@ def updateETDockerImagesTagYml(yml, tag):
 
 
 def updateImagesTagOfYmlFile(path, tag):
+    print("Updating images of YML with path '" + path + "' with tag " + tag)
     yml_file = getYml(path)
     new_yml = updateImagesTagOfReadYml(yml_file, tag)
     new_yml = updateETDockerImagesTagYml(new_yml, tag)
