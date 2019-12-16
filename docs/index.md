@@ -2,6 +2,8 @@
 
 This repository contains the needed tools to install and execute ElasTest Platform. At the moment, the only way to start the ElasTest Platform is in a single machine with Docker installed. In the near future, ElasTest Platform could be installed and executed in a cluster of machines or in a cloud provider (public or private).
 
+It's recommended to follow the documentation of the main web: [https://elastest.io/docs](https://elastest.io/docs)
+
 ## System Requirements
 
 To install and execute ElasTest you can use any mayor operating systema (linux, windows or mac) with Docker installed. To install Docker CE (Community Edition), please follow the [official installation instructions](https://docs.docker.com/engine/installation/).
@@ -18,15 +20,14 @@ For good performance, we recommend that you install ElasTest on a machine with t
 ## ElasTest execution modes
 
 ElasTest has three operating modes:
-* **normal**: This mode is the lightest of the three and is the default operating mode. In this mode, you can only use the EUS (ElasTest User Emulator Service) as a TSS (Test Support Services) and you can not enable the TE (Test Enginges). It is ideal if you only need execute test (JUnit, E2E,...) without additional functionalities.
 
-* **experimental-lite**: This mode is designed to be lighter than `experimental` mode and provides more functionalities than `normal` mode, such as the posibility to add the functionalities of the TSS  or TE to your test execution. It executes a basic persistence (no redundancy) and doesn't execute the monitoring platform. It is ideal to execute ElasTest in the development laptop as it consume less resources and starts in less time.
+- **mini**: This mode is the lightest of all and is the default operating mode. Is intended for testing on a laptop or small server. In this mode, the EUS (ElasTest User Emulator Service) is integrated as library into ETM. ETM acts as ESS, Logstash and RabbitMQ and the monitoring data is stored in MySQL instead of ElasticSearch
 
-* **experimental**: ElasTest is executed with all components. It is ideal to execute in a server with high computing resources. It can take several minutes to start all services included.
+- **singlenode**: ElasTest is executed with all components. It is ideal to execute in a server with high computing resources. It can take several minutes to start all services included.
 
 Test Support Services and Engines are started on demand by the user when needed to improve startup time and save some resources if that components are not used.
 
-ElasTest can be executed in the developer machine with linux, windows or mac operating system. But it also can be installed in a server to be used remotely using its public IP or FQDN. In the current version, ElasTest doesn't have a user management system. It has only one admin user. It is planned to include a powerful user management system with fine grained autorization in future releases. 
+ElasTest can be executed in the developer machine with linux, windows or mac operating system. But it also can be installed in a server to be used remotely using its public IP or FQDN. In the current version, ElasTest doesn't have a user management system. It has only one admin user. It is planned to include a powerful user management system with fine grained autorization in future releases.
 
 ## How to execute ElasTest in the developer machine
 
@@ -160,7 +161,6 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-
 ```
 
 In addition, you can execute the following commands to see the help of the instructions:
@@ -174,24 +174,25 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform s
 The output is:
 
 ```
-usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start [-h] [--mode {experimental,experimental-lite,normal}]
-               [--pullall] [--pullcore] [--noports] [--logs]
-               [--server-address SERVER_ADDRESS] [--user USER]
-               [--password PASSWORD]
-               {start,stop}
+usage: docker run -v /var/run/docker.sock:/var/run/docker.sock --rm elastest/platform start [-h] [--mode {mini,singlenode}] [--dev] [--pullall]
+               [--pullcore] [--noports] [--server-address SERVER_ADDRESS]
+               [--user USER] [--password PASSWORD] [--testlink] [--jenkins]
+               [--internet-disabled]
+               [--log-level {debug,info,warn,trace,error}] [--view-only]
+               {start,pull-images,stop,update}
 
 positional arguments:
-  {start,stop}          Platform command to execute: start or stop
+  {start,pull-images,stop,update}
+                        Platform command to execute: start, stop, update, ...
 
 optional arguments:
   -h, --help            show this help message and exit
-  --mode {experimental,experimental-lite,normal}, -m {experimental,experimental-lite,normal}
-                        Set ElasTest execution mode. Usage:
-                        --mode=experimental
+  --mode {mini,singlenode}, -m {mini,singlenode}
+                        Set ElasTest execution mode. Usage: --mode=singlenode
+  --dev, -d             Configure ElasTest for development.
   --pullall, -pa        Force pull of all images. Usage: --pullall
   --pullcore, -pc       Force pull of only necessary images. Usage: --pullcore
   --noports, -np        Unbind all ports. Usage: --noports
-  --logs, -l            Show logs of all containers. Usage: --logs
   --server-address SERVER_ADDRESS, -sa SERVER_ADDRESS
                         Set server address Env Var. Usage: --server-
                         address=XXXXXX
@@ -199,7 +200,19 @@ optional arguments:
                         --password. Usage: --user=testuser
   --password PASSWORD, -p PASSWORD
                         Set the user password to access ElasTest. Use together
-                        --user. Usage: --password=passuserge: --password=passuser
+                        --user. Usage: --password=passuser
+  --testlink, -tl       Start the TestLink Tool integrated with ElasTest.
+                        Usage: --testlink
+  --jenkins, -jk        Start the Jenkins Tool integrated with ElasTest.
+                        Usage: --jenkins
+  --internet-disabled, -id
+                        Set if internet is disabled. Usage: --internet-
+                        disabled
+  --log-level {debug,info,warn,trace,error}, -ll {debug,info,warn,trace,error}
+                        Sets the log level (at the moment, only for ETM).
+                        Usage: --log-level=debug
+  --view-only, -v       Configure View Only mode for ElasTest (Only GET method
+                        allowed).
 ```
 
 ### Inspect command
@@ -259,16 +272,18 @@ optional arguments:
 ElasTest consists of multiple components. Every component has their own GitHub repository. In this repository (ElasTest Toolbox) is implemented the ElasTest Platform container, the docker container that starts the whole platform. 
 
 The ElasTest Platform container is basically a container with the following elements:
-* **Docker-compose tool:** To execute the docker-comopose.yml files of the core components.
-* **Python runtime:** To execute python scripts.
-* **Python scripts:** The python scripts that process the command options and manage the docker-compose files to be executed.
+
+- **Docker-compose tool:** To execute the docker-comopose.yml files of the core components.
+- **Python runtime:** To execute python scripts.
+- **Python scripts:** The python scripts that process the command options and manage the docker-compose files to be executed.
 
 ### Development system requirements
 
 To create the ElasTest Platform container the following development tools are needed:
-* **git:** To manipulate the git repository
-* **docker-compose:** To execute the docker-compose.yml files of the components. 
-* **python runtime:** To execute python scripts.
+
+- **git:** To manipulate the git repository
+- **docker-compose:** To execute the docker-compose.yml files of the components. 
+- **python runtime:** To execute python scripts.
 
 ### How to develop the platform container
 
@@ -301,4 +316,5 @@ python main.py stop --experimental-lite
 ```
 
 # Troubleshooting
+
 In case of you have problems starting, try running platform with --logs (or -l) parameter to view more information of process
