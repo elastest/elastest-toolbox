@@ -94,6 +94,8 @@ spec:
           value: singlenode
         - name: HOST_TIMEZONE
           value: UTC
+        - name: ET_CORE_POOL_SIZE
+          value: 10
         resources: {}
         volumeMounts:
         - mountPath: /platform-services
