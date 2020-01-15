@@ -95,7 +95,9 @@ spec:
         - name: HOST_TIMEZONE
           value: UTC
         - name: ET_CORE_POOL_SIZE
-          value: 10
+          value: "10"
+        - name: SPRING_DATASOURCE_HIKARI_MAXIMUM-POOL-SIZE
+          value: "20"
         resources: {}
         volumeMounts:
         - mountPath: /platform-services
