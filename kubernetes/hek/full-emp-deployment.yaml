@@ -9,11 +9,14 @@ spec:
   - name: "2181"
     port: 2181
     targetPort: 2181
+    nodePort: 2181
   - name: "9092"
     port: 9092
     targetPort: 9092
+    nodePort: 9092
   selector:
     elastest-component: emp-kafka
+  type: NodePort
 status:
   loadBalancer: {}
 ---
@@ -28,14 +31,18 @@ spec:
   - name: "8083"
     port: 8083
     targetPort: 8083
+    nodePort: 8083
   - name: "8086"
     port: 8086
     targetPort: 8086
+    nodePort: 8086
   - name: "2003"
     port: 2003
     targetPort: 2003
+    nodePort: 2003
   selector:
     elastest-component: emp-influxdb
+  type: NodePort
 status:
   loadBalancer: {}
 ---
@@ -50,8 +57,10 @@ spec:
   - name: "3000"
     port: 3000
     targetPort: 3000
+    nodePort: 3000
   selector:
     elastest-component: emp-grafana
+  type: NodePort
 status:
   loadBalancer: {}
 ---
@@ -176,15 +185,13 @@ spec:
 status: {}
 ---
 apiVersion: extensions/v1beta1
-kind: Deployment
+kind: DaemonSet
 metadata:
   labels:
     elastest-component: emp-system-agent
     elastest-component-type: core
   name: emp-system-agent
 spec:
-  replicas: 1
-  strategy: {}
   template:
     metadata:
       creationTimestamp: null
@@ -210,19 +217,15 @@ spec:
         name: emp-system-agent
         resources: {}
       restartPolicy: Always
-status: {}
 ---
 apiVersion: extensions/v1beta1
-kind: Deployment
+kind: DaemonSet
 metadata:
   labels:
     elastest-component: emp-docker-agent
     elastest-component-type: core
   name: emp-docker-agent
 spec:
-  replicas: 1
-  strategy:
-    type: Recreate
   template:
     metadata:
       creationTimestamp: null
@@ -231,22 +234,22 @@ spec:
         elastest-component-type: core
     spec:
       containers:
-      - env:        
-        - name: host
-          value: emp-kafka
-        - name: port
-          value: "9092"
-        - name: topic
+      - env:
+        - name: KAFKA_ENDPOINT
+          value: emp-kafka:9092
+        - name: KAFKA_KEY_SERIALIZER
+          value: StringSerializer
+        - name: KAFKA_VALUE_SERIALIZER
+          value: StringSerializer
+        - name: SENTINEL_TOPIC
           value: user-1-elastest_core
-        - name: series
-          value: kubernetes
-        - name: clientid
-          value: sentinel-k8s-client
-        - name: periodicity
-          value: "30"
-        - name: mode
-          value: incluster
-        image: elastest/emp-k8s-agent:latest
+        - name: SENTINEL_SERIES
+          value: docker-stats
+        - name: DOCKER_SOCKET
+          value: unix://var/run/docker.sock
+        - name: PERIODICITY
+          value: "60"
+        image: elastest/emp-docker-agent:latest
         name: emp-docker-agent
         resources: {}
         volumeMounts:
@@ -256,7 +259,6 @@ spec:
       - name: dockersock
         hostPath:
           path: /var/run/docker.sock
-status: {}
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -370,4 +372,43 @@ spec:
       - name: emp
         persistentVolumeClaim:
           claimName: emp
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    elastest-component: emp-k8s-agent
+    elastest-component-type: core
+  name: emp-k8s-agent
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        elastest-component: emp-k8s-agent
+        elastest-component-type: core
+    spec:
+      containers:
+      - env:
+        - name: host
+          value: emp-kafka
+        - name: port
+          value: "9092"
+        - name: topic
+          value: user-1-elastest_core
+        - name: series
+          value: kubernetes
+        - name: clientid
+          value: sentinel-k8s-client
+        - name: periodicity
+          value: "30"
+        - name: mode
+          value: incluster
+        image: elastest/emp-k8s-agent:latest
+        name: emp-k8s-agent
+        resources: {}
+      restartPolicy: Always
 status: {}
