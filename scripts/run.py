@@ -31,6 +31,7 @@ def getArgs(params):
                         type=str, choices=set(('start', 'stop', 'update', 'pull-images')))
     parser.add_argument('--mode', '-m', help='Set ElasTest execution mode. Usage: --mode=singlenode',
                         type=str, choices=set(('mini', 'singlenode')), default='mini')
+
     parser.add_argument('--dev', '-d', help='Configure ElasTest for development.',
                         required=False, action='store_true')
     parser.add_argument('--pullall', '-pa', help='Force pull of all images. Usage: --pullall',
@@ -39,27 +40,46 @@ def getArgs(params):
                         required=False, action='store_true')
     parser.add_argument('--noports', '-np', help='Unbind all ports. Usage: --noports',
                         required=False, action='store_true')
+
     parser.add_argument('--server-address', '-sa',
                         help='Set server address Env Var. Usage: --server-address=XXXXXX', required=False)
     parser.add_argument(
         '--user', '-u', help='Set the user to access ElasTest. Use together --password. Usage: --user=testuser', required=False)
     parser.add_argument(
         '--password', '-p', help='Set the user password to access ElasTest. Use together --user. Usage: --password=passuser', required=False)
+
     parser.add_argument('--testlink', '-tl', help='Start the TestLink Tool integrated with ElasTest. Usage: --testlink',
                         required=False, action='store_true')
     parser.add_argument('--jenkins', '-jk', help='Start the Jenkins Tool integrated with ElasTest. Usage: --jenkins',
                         required=False, action='store_true')
+
     parser.add_argument('--internet-disabled', '-id',
                         help='Set if internet is disabled. Usage: --internet-disabled', required=False, action='store_true')
     parser.add_argument('--master-slave', '-ms',
                         help=argparse.SUPPRESS, required=False, action='store_true')
+
     parser.add_argument('--log-level', '-ll', help='Sets the log level (at the moment, only for ETM). Usage: --log-level=debug',
                         type=str, choices=set(('trace', 'debug', 'info', 'warn', 'error')), default='DEBUG')
+
     parser.add_argument('--enable-private-ere',
                         help=argparse.SUPPRESS, required=False, action='store_true')
 
     parser.add_argument('--view-only', '-v', help='Configure View Only mode for ElasTest (Only GET method allowed).',
                         required=False, action='store_true')
+
+
+    # Monitoring service
+    parser.add_argument('--monitoring-service', help='Type of monitoring service: default-integrated or external (elasticsearch). Usage: --monitoring-service=elasticsearch',
+                    type=str, choices=set(('default', 'elasticsearch')), default='default', required=False)
+
+    parser.add_argument('--monitoring-url', help='External monitoring service url. Usage: --monitoring-url=protocol//ip:port',
+                    type=str, default='', required=False)
+    parser.add_argument('--monitoring-user', help='External monitoring service user. Usage: --monitoring-user=user',
+                    type=str, default='', required=False)
+    parser.add_argument('--monitoring-pass', help='External monitoring service pass. Usage: --monitoring-pass=pass',
+                    type=str, default='', required=False)
+    parser.add_argument('--monitoring-path', help='External monitoring service path. Usage: --monitoring-path=path',
+                    type=str, default='', required=False)
 
     # Kubernetes
     parser.add_argument('--kubernetes', '-k', help=argparse.SUPPRESS,
@@ -207,6 +227,14 @@ def runPlatform(params):
                 print('"View Only" mode')
                 replaceEnvVarValue(
                     'ET_ETM_VIEW_ONLY', 'true', 'false', files_list)
+
+            if(args.monitoring_service and args.monitoring_service != 'default'):
+                print 'Using external monitoring service: ' + args.monitoring_service
+                replaceEnvVarValue('ET_MONITORING_SERVICE_TYPE', args.monitoring_service, 'default', files_list)
+                replaceEnvVarValue('ET_MONITORING_SERVICE_URL', args.monitoring_url, '', files_list)
+                replaceEnvVarValue('ET_MONITORING_SERVICE_USER', args.monitoring_user, '', files_list)
+                replaceEnvVarValue('ET_MONITORING_SERVICE_PASS', args.monitoring_pass, '', files_list)
+                replaceEnvVarValue('ET_MONITORING_SERVICE_PATH', args.monitoring_path, '', files_list)
 
             if(args.enable_private_ere):
                 print 'ERE is enabled'
